@@ -355,6 +355,9 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
     <div class="sb-divider"></div>
     <div class="sb-footer">
       <div class="sb-user" id="sbUser"></div>
+      <button class="sb-btn" id="nav-sheetcheck" onclick="loadSheetFromSidebar()">
+  <span class="sb-btn-icon">📄</span>シート接続確認
+</button>
       <button class="sb-btn" id="nav-settings" onclick="switchView('settings')"><span class="sb-btn-icon">⚙</span>設定</button>
       <button class="sb-btn" onclick="doLogout()"><span class="sb-btn-icon">🚪</span>ログアウト</button>
     </div>
@@ -608,6 +611,36 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       </div>
     </div>
 
+    <!-- VIEW: SHEET CHECK -->
+<div class="view" id="view-sheetcheck">
+  <div class="page-title">シート接続確認</div>
+  <div class="page-desc">
+    GoogleスプレッドシートをCSVで取得して、接続できているか確認します。
+  </div>
+
+  <div class="card">
+    <div class="card-title">Google Sheets CSV 接続テスト</div>
+    <div class="card-desc">
+      設定画面の Google Sheets URL を使って、CSVを取得します。
+    </div>
+
+    <div class="fg" style="margin-bottom:16px">
+      <div class="fl">取得結果</div>
+      <div class="fh">最初の数行だけ表示します</div>
+    </div>
+
+    <button class="run-btn p3" id="sheetCheckBtn" onclick="loadSheetFromSidebar()">
+      <span id="sheetCheckBtnTxt">CSVを取得する</span>
+    </button>
+
+    <div class="run-hint">シート側は「リンクを知っている全員が閲覧可」にしてください</div>
+
+    <div id="sheetCheckResult" style="margin-top:16px; display:none;">
+      <div class="stream-box done" id="sheetCheckOutput" style="max-height:420px"></div>
+    </div>
+  </div>
+</div>
+    
   </div><!-- /mainContent -->
 </div><!-- /app -->
 
