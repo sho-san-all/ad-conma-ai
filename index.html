@@ -590,6 +590,84 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
           <div><div class="settings-row-label">Google Sheets URL</div><div class="settings-row-desc">会社情報マスターシートのURL</div></div>
           <div><input type="text" class="settings-input" id="sheetsUrlInput" value="https://docs.google.com/spreadsheets/d/1ZzIdUmkc9Zd1CXDiKMZKnyg72CBGdLaUesERSmolIjs/edit"><button class="small-btn" style="margin-left:8px" onclick="saveSettings()">保存</button></div>
         </div>
+  <script>
+function getSheetCsvUrl() {
+  const input = document.getElementById('sheetsUrlInput');
+  const saved = localStorage.getItem('comma_sheets_url') || '';
+  const rawUrl = (input?.value || saved || '').trim();
+
+  if (!rawUrl) {
+    throw new Error('Google Sheets URL が未設定です');
+  }
+
+  const match = rawUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (!match) {
+    throw new Error('Google Sheets のURL形式が正しくありません');
+  }
+
+  const sheetId = match[1];
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+}
+
+async function loadSheetFromSidebar() {
+  try {
+    switchView('sheetcheck');
+
+    const btn = document.getElementById('sheetCheckBtn');
+    const btnTxt = document.getElementById('sheetCheckBtnTxt');
+    const result = document.getElementById('sheetCheckResult');
+    const output = document.getElementById('sheetCheckOutput');
+
+    if (btn) btn.disabled = true;
+    if (btnTxt) btnTxt.textContent = '取得中...';
+
+    const csvUrl = getSheetCsvUrl();
+    const res = await fetch(csvUrl);
+
+    if (!res.ok) {
+      throw new Error(`CSV取得に失敗しました（${res.status}）`);
+    }
+
+    const text = await res.text();
+
+    if (!text || !text.trim()) {
+      throw new Error('CSVは取得できましたが、中身が空です');
+    }
+
+    const preview = text
+      .split('\n')
+      .slice(0, 15)
+      .join('\n');
+
+    result.style.display = 'block';
+    output.textContent =
+      '✅ 接続成功\n\n' +
+      'CSV URL:\n' + csvUrl + '\n\n' +
+      '--- 先頭15行プレビュー ---\n' +
+      preview;
+
+    showError('Google Sheets に接続できました', true);
+  } catch (e) {
+    const result = document.getElementById('sheetCheckResult');
+    const output = document.getElementById('sheetCheckOutput');
+
+    if (result && output) {
+      result.style.display = 'block';
+      output.textContent =
+        '❌ 接続失敗\n\n' +
+        (e?.message || '不明なエラー');
+    }
+
+    showError(e?.message || 'シート接続に失敗しました');
+  } finally {
+    const btn = document.getElementById('sheetCheckBtn');
+    const btnTxt = document.getElementById('sheetCheckBtnTxt');
+
+    if (btn) btn.disabled = false;
+    if (btnTxt) btnTxt.textContent = 'CSVを取得する';
+  }
+}
+</script>
         <div class="settings-row">
           <div><div class="settings-row-label">使用モデル</div><div class="settings-row-desc">Claude API モデル</div></div>
           <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-sub)">claude-sonnet-4-20250514</span></div>
@@ -611,6 +689,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       </div>
     </div>
 
+    
     <!-- VIEW: SHEET CHECK -->
 <div class="view" id="view-sheetcheck">
   <div class="page-title">シート接続確認</div>
