@@ -614,7 +614,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 <div class="etost" id="etost"></div>
 
 <script>
-const GEMINI_MODEL='gemini-1.5-flash';
+const CLAUDE_MODEL='claude-sonnet-4-20250514';
 
 // ══════════════════════════════════════════════════════════
 // AI別評価ルール（個別保持・混合しない）
@@ -1232,12 +1232,12 @@ async function streamClaude(sys,user,boxId,maxTokens=4000){
     return await mockStream(mockText,boxId,6);
   }
   const box=document.getElementById(boxId);box.innerHTML='<span class="scursor"></span>';
-  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:CLAUDE_MODEL,max_tokens:maxTokens,stream:true,system:sys,messages:[{role:'user',content:user}]})});
+  const res=await fetch('/api/gemini/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
   if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
   const reader=res.body.getReader();const dec=new TextDecoder();let full='',buf='';
   while(true){const{done,value}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();
     for(const line of lines){if(!line.startsWith('data: '))continue;const data=line.slice(6).trim();if(data==='[DONE]')continue;
-      try{const parsed=JSON.parse(data);if(parsed.type==='content_block_delta'&&parsed.delta?.type==='text_delta'){full+=parsed.delta.text;box.innerHTML=escH(full)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;}}catch{}}}
+      try{const parsed=JSON.parse(data);const text=parsed.candidates?.[0]?.content?.parts?.[0]?.text||'';if(text){full+=text;box.innerHTML=escH(full)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;}}catch{}}}
   box.classList.add('done');box.innerHTML=escH(full);return full;
 }
 async function callClaude(sys,user,maxTokens=3000,useWebSearch=false){
@@ -1246,9 +1246,7 @@ async function callClaude(sys,user,maxTokens=3000,useWebSearch=false){
     await sleep(1200);
     return MOCK_P3(S.keyword);
   }
-  const body={model:CLAUDE_MODEL,max_tokens:maxTokens,system:sys,messages:[{role:'user',content:user}]};
-  if(useWebSearch)body.tools=[{type:'web_search_20250305',name:'web_search'}];
-  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify(body)});
+  const res=await fetch('/api/gemini',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
   if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
   const data=await res.json();return data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
 }
