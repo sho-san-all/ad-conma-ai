@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>コンマ 記事制作AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111118;--ink-sub:#4a4a5a;--ink-muted:#8a8a9a;
+  --paper:#f5f5f3;--surface:#ffffff;
+  --border:#e4e2da;--border-strong:#c8c5bc;
+  --gold:#c8932a;--gold-bg:#fdf5e6;
+  --p1:#2d6a4f;--p1-bg:#edf7f2;--p1-bd:#a8d5be;
+  --p2:#1e4a9a;--p2-bg:#eef2fb;--p2-bd:#b0c4f0;
+  --p3:#b56000;--p3-bg:#fef4e6;--p3-bd:#f0c878;
+  --p4:#6d3a9c;--p4-bg:#f4eefa;--p4-bd:#c8a8e8;
+  --ok:#1a7a6e;--ok-bg:#e6f5f3;
+  --err:#c0392b;--err-bg:#fdecea;
+  --purple:#7F77DD;--purple-bg:#EEEDFE;--purple-dark:#534AB7;
+  --sidebar-w:210px;
+  --shadow:0 1px 3px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.7;overflow-x:hidden}
+
+/* LOGIN */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#1a1a2e;padding:24px}
+.lc{background:#fff;border-radius:12px;padding:48px 40px;width:100%;max-width:380px}
+.lc-logo{font-family:'Noto Serif JP',serif;font-size:18px;font-weight:600;text-align:center;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.lc-logo::before{content:'';width:3px;height:20px;background:var(--purple);border-radius:1px}
+.lc-sub{text-align:center;font-size:10px;color:var(--ink-muted);margin-bottom:32px;letter-spacing:.1em}
+.lc-err{background:var(--err-bg);color:var(--err);border:1px solid #f5b4b0;border-radius:6px;padding:10px 14px;font-size:12px;margin-bottom:14px;display:none}
+.lc-lbl{font-size:10px;font-weight:500;color:var(--ink-sub);letter-spacing:.08em;margin-bottom:5px;display:block}
+.lc-inp{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:14px;outline:none;transition:border-color .2s;background:var(--paper);margin-bottom:12px}
+.lc-inp:focus{border-color:var(--purple);background:#fff}
+.lc-btn{width:100%;padding:12px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;margin-top:4px}
+.lc-btn:hover{background:#22223a}
+.lc-hint{font-size:11px;color:var(--ink-muted);text-align:center;margin-top:16px}
+
+/* APP */
+#app{display:none;min-height:100vh}
+
+/* SIDEBAR */
+#sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:#1a1a2e;display:flex;flex-direction:column;z-index:50}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-logo-text{color:#fff;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+.sb-logo-text::before{content:'';width:3px;height:16px;background:var(--purple);border-radius:1px;flex-shrink:0}
+.sb-logo-sub{font-size:9px;color:rgba(255,255,255,.28);margin-top:2px;letter-spacing:.07em;padding-left:11px}
+.sb-section{padding:12px 0 4px}
+.sb-label{font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.1em;padding:0 14px 5px;display:block}
+.sb-btn{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:12px;color:rgba(255,255,255,.52);cursor:pointer;background:none;border:none;font-family:inherit;width:100%;text-align:left;border-right:2px solid transparent;transition:all .15s}
+.sb-btn:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.8)}
+.sb-btn.active{background:rgba(255,255,255,.09);color:#fff;border-right-color:var(--purple);font-weight:500}
+.sb-btn-icon{width:18px;text-align:center;font-size:13px;flex-shrink:0}
+.sb-badge{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:9px;background:rgba(127,119,221,.2);color:var(--purple);padding:1px 6px;border-radius:3px}
+.sb-spacer{flex:1}
+.sb-divider{height:1px;background:rgba(255,255,255,.07);margin:4px 12px}
+.sb-footer{padding:8px 0;border-top:1px solid rgba(255,255,255,.07)}
+.sb-user{font-size:10px;color:rgba(255,255,255,.28);padding:6px 14px 6px;display:flex;align-items:center;gap:6px}
+
+/* MAIN */
+#mainContent{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+
+/* TOPBAR */
+.topbar{background:#fff;border-bottom:1px solid var(--border);height:48px;display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:40;gap:10px;flex-shrink:0}
+.topbar-proto{font-family:'IBM Plex Mono',monospace;font-size:10px;background:#1a1a2e;color:#fff;padding:3px 8px;border-radius:4px}
+.topbar-sheets{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-muted)}
+.topbar-dot{width:6px;height:6px;background:var(--ok);border-radius:50%}
+.topbar-spacer{flex:1}
+.topbar-session{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-muted);background:var(--paper);border:1px solid var(--border);padding:3px 10px;border-radius:10px}
+
+/* VIEW */
+.view{display:none;flex:1;padding:24px;max-width:900px;width:100%}
+.view.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE TITLE */
+.page-title{font-family:'Noto Serif JP',serif;font-size:18px;font-weight:600;margin-bottom:4px}
+.page-desc{font-size:12px;color:var(--ink-sub);margin-bottom:22px;line-height:1.75}
+
+/* WIZARD */
+.wizard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:20px;display:flex;gap:0;position:relative;box-shadow:var(--shadow)}
+.wizard::before{content:'';position:absolute;top:28px;left:calc(22px + 36px/2);right:calc(22px + 36px/2);height:1px;background:var(--border);z-index:0}
+.ws{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;z-index:1;opacity:.35;transition:opacity .4s}
+.ws.active,.ws.done{opacity:1}
+.ws-num{width:36px;height:36px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--ink-muted);transition:all .4s}
+.ws.active .ws-num{background:#1a1a2e;color:#fff}
+.ws.done .ws-num{background:var(--purple);color:#fff;font-size:14px}
+.ws.running .ws-num{animation:wPulse 1s ease infinite}
+@keyframes wPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.ws-lbl{font-size:11px;font-weight:500;text-align:center;line-height:1.3}
+.ws-sub{font-size:10px;color:var(--ink-muted);text-align:center}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 26px;margin-bottom:18px;box-shadow:var(--shadow)}
+.card-title{font-size:14px;font-weight:500;margin-bottom:4px}
+.card-desc{font-size:12px;color:var(--ink-sub);margin-bottom:20px;line-height:1.75}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fl{font-size:10px;font-weight:500;color:var(--ink-sub);letter-spacing:.06em}
+.fh{font-size:10px;color:var(--ink-muted)}
+.fi{padding:9px 13px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--paper);outline:none;transition:border-color .2s;width:100%}
+.fi:focus{border-color:#1a1a2e;background:#fff}
+.fi::placeholder{color:var(--ink-muted);font-size:12px}
+.run-btn{width:100%;padding:12px 22px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .2s}
+.run-btn:hover:not(:disabled){background:#22223a}
+.run-btn:disabled{opacity:.4;cursor:not-allowed}
+.run-btn.p3{background:var(--p3)}.run-btn.p3:hover:not(:disabled){background:#9a5200}
+.run-btn.p4{background:var(--purple)}.run-btn.p4:hover:not(:disabled){background:var(--purple-dark)}
+.run-hint{font-size:10px;color:var(--ink-muted);text-align:center;margin-top:8px}
+
+/* PHASE CARD */
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;overflow:hidden;box-shadow:var(--shadow);display:none}
+.pc.show{display:block;animation:fadeIn .3s ease}
+.pch{padding:13px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.pch.c1{border-left:3px solid var(--p1)}.pch.c2{border-left:3px solid var(--p2)}
+.pch.c3{border-left:3px solid var(--p3)}.pch.c4{border-left:3px solid var(--purple)}
+.pch-left{display:flex;align-items:center;gap:10px}
+.pbadge{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;padding:2px 9px;border-radius:10px;letter-spacing:.05em;white-space:nowrap}
+.b1{background:var(--p1-bg);color:var(--p1);border:1px solid var(--p1-bd)}
+.b2{background:var(--p2-bg);color:var(--p2);border:1px solid var(--p2-bd)}
+.b3{background:var(--p3-bg);color:var(--p3);border:1px solid var(--p3-bd)}
+.b4{background:var(--purple-bg);color:var(--purple-dark);border:1px solid #AFA9EC}
+.bok{background:var(--ok-bg);color:var(--ok);border:1px solid #9ed4cc}
+.brunning{background:var(--gold-bg);color:var(--gold);border:1px solid #e8c878;animation:blink 1.4s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.55}}
+.pch-title{font-size:13px;font-weight:500}
+.pch-actions{display:flex;gap:6px}
+.act-btn{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-muted);background:var(--paper);border:1px solid var(--border);padding:3px 9px;border-radius:4px;cursor:pointer;transition:all .15s}
+.act-btn:hover{color:var(--ink);border-color:var(--border-strong)}
+
+/* LIVE LOG */
+.live-log{padding:16px 18px;border-bottom:1px solid var(--border);background:#fafaf8}
+.log-title{font-size:10px;font-weight:500;color:var(--ink-muted);letter-spacing:.08em;margin-bottom:10px}
+.log-steps{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.ls{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--ink-sub);opacity:.25;transition:opacity .4s}
+.ls.active{opacity:1}.ls.done{opacity:.65}
+.ls-icon{width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;flex-shrink:0;margin-top:1px;transition:all .3s}
+.ls.active .ls-icon{background:var(--gold);color:#fff}
+.ls.done .ls-icon{background:var(--ok);color:#fff}
+.ls-sub{font-size:10px;color:var(--ink-muted);margin-top:1px}
+.log-sep{display:flex;align-items:center;gap:10px;margin:12px 0 8px}
+.log-sep::before,.log-sep::after{content:'';flex:1;height:1px;background:var(--border)}
+.log-sep-lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-muted);white-space:nowrap;letter-spacing:.07em}
+
+/* STREAM BOX */
+.stream-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;min-height:70px;max-height:400px;overflow-y:auto;font-size:13px;line-height:1.85;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.stream-box:empty::before{content:'AIが回答を生成しています...';color:var(--ink-muted);font-size:12px}
+.scursor{display:inline-block;width:2px;height:13px;background:var(--gold);margin-left:1px;vertical-align:text-bottom;animation:cur .8s step-end infinite}
+@keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
+.stream-box.done .scursor{display:none}
+.stream-box::-webkit-scrollbar{width:4px}.stream-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* RESULT BODY */
+.res-body{padding:18px}.res-body.collapsed{display:none}
+.res-done-banner{background:var(--ok-bg);border:1px solid #9ed4cc;border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:12px;color:var(--ok);font-weight:500}
+.res-done-banner::before{content:'✓';font-size:14px}
+.res-content{font-size:13px;line-height:1.85}
+.res-content h1{font-family:'Noto Serif JP',serif;font-size:19px;font-weight:600;margin:1.4em 0 .5em}
+.res-content h2{font-family:'Noto Serif JP',serif;font-size:15px;font-weight:600;margin:1.3em 0 .4em;border-bottom:1px solid var(--border);padding-bottom:4px}
+.res-content h3{font-size:13px;font-weight:500;margin:1.1em 0 .3em}
+.res-content strong{font-weight:500}
+.res-content ul,.res-content ol{padding-left:18px;margin:.5em 0}
+.res-content li{margin:.2em 0}
+.res-content code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--paper);border:1px solid var(--border);border-radius:3px;padding:1px 5px}
+.res-content hr{border:none;border-top:1px solid var(--border);margin:1.5em 0}
+.res-meta{display:flex;gap:8px;flex-wrap:wrap;padding-top:10px;margin-top:10px;border-top:1px solid var(--border)}
+.mpill{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 9px;background:var(--paper);border:1px solid var(--border);border-radius:10px;color:var(--ink-sub)}
+
+/* COMPETITOR */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.comp-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:13px 14px}
+.comp-rank{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-muted);margin-bottom:4px}
+.comp-title{font-size:12px;font-weight:500;line-height:1.4;margin-bottom:4px}
+.comp-domain{font-size:10px;color:var(--p2);margin-bottom:8px;display:block;text-decoration:none}
+.comp-domain:hover{text-decoration:underline}
+.comp-scores{display:flex;gap:8px;margin-bottom:7px}
+.score-item{flex:1}
+.score-label{font-size:9px;color:var(--ink-muted);margin-bottom:2px}
+.score-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.score-fill{height:100%;border-radius:2px;transition:width .6s ease}
+.fill-seo{background:var(--p2)}.fill-aio{background:var(--p3)}
+.comp-strengths{display:flex;flex-wrap:wrap;gap:3px}
+.comp-tag{font-size:10px;padding:2px 6px;background:var(--paper);border:1px solid var(--border);border-radius:3px;color:var(--ink-sub)}
+.comp-summary{background:var(--p3-bg);border:1px solid var(--p3-bd);border-radius:8px;padding:13px 16px;margin:12px 0}
+.comp-summary-title{font-size:10px;font-weight:500;color:var(--p3);margin-bottom:8px;letter-spacing:.06em}
+.comp-level{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:10px;margin-bottom:8px}
+.cl-low{background:#e6f5f3;color:var(--ok)}.cl-mid{background:var(--gold-bg);color:var(--gold)}.cl-high{background:var(--err-bg);color:var(--err)}
+.comp-rec-item{font-size:12px;padding:7px 11px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:4px;display:flex;align-items:flex-start;gap:7px;cursor:pointer;transition:border-color .15s}
+.comp-rec-item:hover{border-color:var(--purple)}
+.comp-rec-item::before{content:'→';font-size:11px;flex-shrink:0;color:var(--purple)}
+
+/* P4 GATE */
+.p4-gate{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 26px;margin-bottom:18px;box-shadow:var(--shadow);display:none}
+.p4-gate.show{display:block;animation:fadeIn .4s ease}
+.p4-checklist{list-style:none;margin:10px 0 18px}
+.p4-checklist li{font-size:12px;color:var(--ink-sub);padding:5px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.p4-checklist li::before{content:'✓';color:var(--ok);font-size:11px}
+
+/* ═══ HISTORY LIST ═══ */
+.hist-list{display:flex;flex-direction:column;gap:8px}
+.hist-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .15s}
+.hist-row:hover{border-color:var(--purple)}
+.hist-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.hd-done{background:var(--ok)}.hd-partial{background:var(--gold)}.hd-new{background:var(--border-strong)}
+.hist-info{flex:1}
+.hist-co{font-size:13px;font-weight:500;color:var(--ink)}
+.hist-kw{font-size:11px;color:var(--ink-muted);margin-top:1px}
+.hist-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.hist-phases{display:flex;gap:4px}
+.hp{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px}
+.hp-done{background:var(--purple-bg);color:var(--purple-dark)}
+.hp-skip{background:var(--paper);color:var(--ink-muted);border:1px solid var(--border)}
+.hist-date{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-muted)}
+.hist-arrow{color:var(--border-strong);font-size:14px}
+
+/* ═══ REPORT VIEW ═══ */
+#view-report{display:none;flex:1;flex-direction:column;overflow:hidden}
+#view-report.active{display:flex}
+.rep-topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 22px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.back-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;color:var(--ink-sub);font-family:inherit;transition:all .15s}
+.back-btn:hover{border-color:var(--border-strong);color:var(--ink)}
+.rep-co{font-size:13px;font-weight:500;color:var(--ink)}
+.rep-kw{font-size:11px;color:var(--ink-muted);margin-left:4px}
+.rep-export{margin-left:auto;background:#1a1a2e;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:11px;cursor:pointer;font-family:inherit}
+.rep-body{flex:1;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:12px;max-width:900px;width:100%}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.metric-lbl{font-size:10px;color:var(--ink-muted);margin-bottom:4px}
+.metric-val{font-size:22px;font-weight:500;color:var(--ink)}
+.metric-val.purple{color:var(--purple-dark)}
+.metric-val.green{color:var(--p1)}
+.metric-val.amber{color:var(--p3)}
+.rep-sec{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.rep-sec-head{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.rep-sec-title{font-size:12px;font-weight:500;color:var(--ink)}
+.rep-copy-btn{font-size:10px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px 8px;cursor:pointer;color:var(--ink-muted);font-family:inherit}
+.rep-sec-body{padding:14px 16px;font-size:12px;color:var(--ink);line-height:1.75}
+.rep-sec-body.pre{white-space:pre-wrap;font-size:12px;color:var(--ink-sub);background:#fafaf8;max-height:200px;overflow:auto}
+.rep-tags{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px}
+.rep-tag{font-size:11px;padding:3px 10px;border-radius:4px;background:var(--purple-bg);color:var(--purple-dark)}
+.rep-tag.plain{background:var(--paper);color:var(--ink-sub);border:1px solid var(--border)}
+.score-bar-row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--paper)}
+.score-bar-row:last-child{border-bottom:none}
+.score-bar-lbl{font-size:11px;color:var(--ink);width:90px;flex-shrink:0}
+.score-bar-wrap{flex:1;height:5px;background:var(--paper);border-radius:3px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:3px}
+.score-bar-num{font-size:11px;font-weight:500;width:36px;text-align:right;flex-shrink:0}
+.kaizen-item{padding:8px 16px;border-bottom:1px solid var(--paper);display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink);line-height:1.5}
+.kaizen-item:last-child{border-bottom:none}
+.kaizen-dot{width:5px;height:5px;background:var(--p3);border-radius:50%;flex-shrink:0;margin-top:6px}
+.ref-item{padding:10px 16px;border-bottom:1px solid var(--paper);display:flex;align-items:flex-start;gap:10px}
+.ref-item:last-child{border-bottom:none}
+.ref-rank{font-size:10px;color:var(--ink-muted);width:18px;flex-shrink:0;margin-top:1px}
+.ref-t{font-size:12px;font-weight:500;color:var(--ink)}
+.ref-d{font-size:10px;color:var(--ink-muted);margin-top:1px}
+.ref-sc{display:flex;gap:5px;margin-top:4px}
+.ref-sc-pill{font-size:10px;padding:1px 7px;border-radius:3px;background:var(--purple-bg);color:var(--purple-dark)}
+
+/* MEMO */
+.memo-type-select{padding:7px 11px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:12px;outline:none;background:var(--surface);cursor:pointer}
+.memo-textarea{width:100%;padding:11px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:13px;resize:vertical;min-height:75px;outline:none;transition:border-color .2s;background:var(--paper)}
+.memo-textarea:focus{border-color:#1a1a2e;background:#fff}
+.memo-toolbar{display:flex;gap:10px;margin-bottom:14px;align-items:center}
+.memo-add-btn{padding:8px 18px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
+.memo-add-btn:hover{background:#22223a}
+.memo-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.memo-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:13px 15px;display:flex;gap:11px;align-items:flex-start}
+.memo-item-meta{display:flex;flex-direction:column;gap:3px;flex-shrink:0;min-width:100px}
+.memo-user{font-size:11px;font-weight:500;color:var(--ink-sub)}
+.memo-ts{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-muted)}
+.memo-type-badge{font-size:9px;padding:2px 7px;border-radius:3px;font-family:'IBM Plex Mono',monospace;align-self:flex-start}
+.mt-ng{background:#fdecea;color:var(--err);border:1px solid #f0b4b0}
+.mt-note{background:var(--p2-bg);color:var(--p2);border:1px solid var(--p2-bd)}
+.mt-q{background:var(--gold-bg);color:var(--gold);border:1px solid #e8c878}
+.memo-text{flex:1;font-size:12.5px;line-height:1.7}
+.memo-del{color:var(--ink-muted);background:none;border:none;cursor:pointer;font-size:13px;padding:0 3px;opacity:.5;transition:opacity .15s}
+.memo-del:hover{opacity:1;color:var(--err)}
+.memo-admin-area{margin-top:22px;padding-top:16px;border-top:1px solid var(--border)}
+.admin-badge{font-size:9px;background:var(--gold-bg);color:var(--gold);border:1px solid #e8c878;padding:1px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace}
+
+/* SETTINGS */
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin-bottom:16px}
+.settings-title{font-size:13px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);gap:14px}
+.settings-row:last-child{border-bottom:none}
+.settings-row-label{font-size:12px;font-weight:500}
+.settings-row-desc{font-size:10px;color:var(--ink-muted);margin-top:2px}
+.settings-input{padding:7px 11px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:12px;outline:none;width:200px}
+.settings-input:focus{border-color:#1a1a2e}
+.small-btn{padding:6px 13px;background:var(--paper);border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;color:var(--ink-sub);transition:all .15s}
+.small-btn:hover{background:var(--surface);border-color:var(--border-strong);color:var(--ink)}
+.small-btn.danger{background:var(--err-bg);border-color:#f0b4b0;color:var(--err)}
+.small-btn.danger:hover{background:#fcd6d3}
+.user-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+.user-item:last-child{border-bottom:none}
+.user-name{font-weight:500;min-width:70px}
+.user-role{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 6px;border-radius:3px}
+.ur-admin{background:var(--gold-bg);color:var(--gold);border:1px solid #e8c878}
+.ur-user{background:var(--paper);color:var(--ink-muted);border:1px solid var(--border)}
+.info-box{background:var(--gold-bg);border:1px solid #e8c878;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:10px 14px;font-size:11px;color:#7a5500;line-height:1.7;margin-top:10px;font-family:'IBM Plex Mono',monospace}
+
+/* TEST */
+.test-notice{background:var(--p3-bg);border:1px solid var(--p3-bd);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--p3);margin-bottom:18px;display:flex;align-items:flex-start;gap:8px}
+
+/* TOAST */
+.etost{position:fixed;bottom:22px;right:22px;background:var(--err);color:#fff;padding:11px 16px;border-radius:8px;font-size:12px;max-width:380px;z-index:200;display:none;animation:tIn .2s ease}
+.etost.show{display:block}
+@keyframes tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:700px){
+  :root{--sidebar-w:0px}
+  #sidebar{transform:translateX(-210px)}
+  #mainContent{margin-left:0}
+  .comp-grid{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="lc">
+    <div class="lc-logo">コンマ 記事制作AI</div>
+    <div class="lc-sub">CONTENT PRODUCTION SYSTEM</div>
+    <div class="lc-err" id="lcErr"></div>
+    <label class="lc-lbl">ユーザー名</label>
+    <input type="text" id="loginUser" class="lc-inp" placeholder="username" autocomplete="username">
+    <label class="lc-lbl">パスワード</label>
+    <input type="password" id="loginPass" class="lc-inp" placeholder="password" autocomplete="current-password">
+    <button class="lc-btn" onclick="doLogin()">ログイン</button>
+    <div class="lc-hint">デモ: admin / comma2024 | demo / demo123</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-text">コンマ 記事制作AI</div>
+      <div class="sb-logo-sub">CONTENT PRODUCTION SYSTEM</div>
+    </div>
+    <div class="sb-section">
+      <span class="sb-label">制作フロー</span>
+      <button class="sb-btn active" id="nav-main" onclick="switchView('main')"><span class="sb-btn-icon">📝</span>記事制作</button>
+      <button class="sb-btn" id="nav-test" onclick="switchView('test')"><span class="sb-btn-icon">🧪</span>テスト執筆場</button>
+      <button class="sb-btn" id="nav-history" onclick="switchView('history')"><span class="sb-btn-icon">📚</span>過去の履歴<span class="sb-badge" id="histCountBadge">0</span></button>
+      <button class="sb-btn" id="nav-memo" onclick="switchView('memo')"><span class="sb-btn-icon">📋</span>プロンプト修正メモ<span class="sb-badge" id="memoCountBadge" style="display:none">0</span></button>
+      <button class="sb-btn" onclick="clearCache()"><span class="sb-btn-icon">🗑</span>キャッシュクリア</button>
+    </div>
+    <div class="sb-spacer"></div>
+    <div class="sb-divider"></div>
+    <div class="sb-footer">
+      <div class="sb-user" id="sbUser"></div>
+      <button class="sb-btn" id="nav-settings" onclick="switchView('settings')"><span class="sb-btn-icon">⚙</span>設定</button>
+      <button class="sb-btn" onclick="doLogout()"><span class="sb-btn-icon">🚪</span>ログアウト</button>
+    </div>
+  </nav>
+
+  <div id="mainContent">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-proto">PROTOTYPE</div>
+      <div class="topbar-sheets"><span class="topbar-dot"></span>Sheets: モックデータ動作中</div>
+      <div id="topbar-mode" style="font-size:10px;padding:3px 9px;border-radius:4px;background:#EEEDFE;color:#534AB7;font-family:'IBM Plex Mono',monospace">AI: モックモード</div>
+      <div class="topbar-spacer"></div>
+      <div class="topbar-session" id="sessionLabel">新規セッション</div>
+    </div>
+
+    <!-- VIEW: MAIN -->
+    <div class="view active" id="view-main">
+      <div class="wizard" id="wizard">
+        <div class="ws active" id="ws1"><div class="ws-num">1</div><div class="ws-lbl">データ確認</div><div class="ws-sub">Sheets 照合</div></div>
+        <div class="ws" id="ws2"><div class="ws-num">2</div><div class="ws-lbl">企画設計</div><div class="ws-sub">ペルソナ・切り口</div></div>
+        <div class="ws" id="ws3"><div class="ws-num">3</div><div class="ws-lbl">競合分析</div><div class="ws-sub">SEO/AIO調査</div></div>
+        <div class="ws" id="ws4"><div class="ws-num">4</div><div class="ws-lbl">執筆</div><div class="ws-sub">8,000〜10,000字</div></div>
+      </div>
+
+      <div class="card" id="inputCard">
+        <div class="card-title">記事制作の基本情報を入力してください</div>
+        <div class="card-desc">会社名とキーワードを入力して「実行」を押すと、Phase 1（データ確認）→ Phase 2（企画設計）が自動で連続実行されます。</div>
+        <div class="field-row">
+          <div class="fg">
+            <div class="fl">会社名（シートと完全一致）</div>
+            <input type="text" class="fi" id="companyInput" placeholder="例：株式会社コンマ">
+            <div class="fh">テスト用:「株式会社コンマ」または「テスト株式会社」</div>
+          </div>
+          <div class="fg">
+            <div class="fl">メインキーワード</div>
+            <input type="text" class="fi" id="keywordInput" placeholder="例：コンテンツマーケティング 中小企業">
+            <div class="fh">記事のSEOターゲットになるキーワード</div>
+          </div>
+        </div>
+        <button class="run-btn" id="runBtn12" onclick="runPhase12()"><span id="rb12txt">▶ Phase 1→2 を連続実行する</span></button>
+        <div class="run-hint">実行後、画面下に進行状況がリアルタイムで表示されます</div>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="pc" id="pc1">
+        <div class="pch c1"><div class="pch-left"><span class="pbadge b1" id="b1">PHASE 1</span><span class="pch-title">データ確認</span></div><div class="pch-actions"><button class="act-btn" onclick="copyPhase(1)">コピー</button><button class="act-btn" onclick="togglePC(1)">▼</button></div></div>
+        <div class="live-log" id="ll1">
+          <div class="log-title">実行ログ</div>
+          <div class="log-steps">
+            <div class="ls" id="ls1a"><div class="ls-icon"></div><div class="ls-body">Google Sheets に接続中<div class="ls-sub" id="ls1a-s"></div></div></div>
+            <div class="ls" id="ls1b"><div class="ls-icon"></div><div class="ls-body">会社名で完全一致を検索中<div class="ls-sub" id="ls1b-s"></div></div></div>
+            <div class="ls" id="ls1c"><div class="ls-icon"></div><div class="ls-body">シート【A】【B】【C】のデータを取得中<div class="ls-sub" id="ls1c-s"></div></div></div>
+            <div class="ls" id="ls1d"><div class="ls-icon"></div><div class="ls-body">Claude AI がデータを分析中<div class="ls-sub" id="ls1d-s"></div></div></div>
+          </div>
+          <div class="log-sep" id="sep1" style="display:none"><div class="log-sep-lbl">AI の出力</div></div>
+          <div class="stream-box" id="sb1"></div>
+        </div>
+        <div class="res-body collapsed" id="rb1"><div class="res-done-banner" id="rbn1"></div><div class="res-content" id="rc1"></div><div class="res-meta"><span class="mpill" id="rm1"></span></div></div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="pc" id="pc2">
+        <div class="pch c2"><div class="pch-left"><span class="pbadge b2" id="b2">PHASE 2</span><span class="pch-title">企画設計</span></div><div class="pch-actions"><button class="act-btn" onclick="copyPhase(2)">コピー</button><button class="act-btn" onclick="togglePC(2)">▼</button></div></div>
+        <div class="live-log" id="ll2">
+          <div class="log-title">実行ログ</div>
+          <div class="log-steps">
+            <div class="ls" id="ls2a"><div class="ls-icon"></div><div class="ls-body">Phase 1 の確認済みデータを整形中<div class="ls-sub" id="ls2a-s"></div></div></div>
+            <div class="ls" id="ls2b"><div class="ls-icon"></div><div class="ls-body">キーワードの競合傾向を分析中<div class="ls-sub" id="ls2b-s"></div></div></div>
+            <div class="ls" id="ls2c"><div class="ls-icon"></div><div class="ls-body">Claude AI が企画設計中<div class="ls-sub" id="ls2c-s"></div></div></div>
+          </div>
+          <div class="log-sep" id="sep2" style="display:none"><div class="log-sep-lbl">AI の出力</div></div>
+          <div class="stream-box" id="sb2"></div>
+        </div>
+        <div class="res-body collapsed" id="rb2"><div class="res-done-banner" id="rbn2"></div><div class="res-content" id="rc2"></div><div class="res-meta"><span class="mpill" id="rm2"></span></div></div>
+      </div>
+
+      <!-- Phase 3 Gate -->
+      <div id="p3Gate" style="display:none">
+        <div class="card" style="border-left:3px solid var(--p3)">
+          <div class="card-title">Phase 3 — 競合分析を実行しますか？</div>
+          <div class="card-desc">指定キーワードで上位表示されている競合記事を調査します。タイトルの被り・SEO/AIOレベル・差別化ポイントを確認してから執筆に進むことができます。</div>
+          <button class="run-btn p3" id="runBtn3" onclick="runPhase3()"><span id="rb3txt">競合分析を実行する（Web検索）</span></button>
+          <div class="run-hint">Claude が実際にWebを検索して競合記事を調査します</div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="pc" id="pc3">
+        <div class="pch c3"><div class="pch-left"><span class="pbadge b3" id="b3">PHASE 3</span><span class="pch-title">競合分析</span></div><div class="pch-actions"><button class="act-btn" onclick="copyPhase(3)">コピー</button><button class="act-btn" onclick="togglePC(3)">▼</button></div></div>
+        <div class="live-log" id="ll3">
+          <div class="log-title">実行ログ</div>
+          <div class="log-steps">
+            <div class="ls" id="ls3a"><div class="ls-icon"></div><div class="ls-body">キーワードで上位記事を検索中<div class="ls-sub" id="ls3a-s"></div></div></div>
+            <div class="ls" id="ls3b"><div class="ls-icon"></div><div class="ls-body">各記事のSEO・AIOレベルを評価中<div class="ls-sub" id="ls3b-s"></div></div></div>
+            <div class="ls" id="ls3c"><div class="ls-icon"></div><div class="ls-body">タイトル被り・差別化ポイントを分析中<div class="ls-sub" id="ls3c-s"></div></div></div>
+          </div>
+          <div class="log-sep" id="sep3" style="display:none"><div class="log-sep-lbl">分析結果</div></div>
+          <div class="stream-box" id="sb3" style="display:none"></div>
+        </div>
+        <div class="res-body collapsed" id="rb3"><div class="res-done-banner" id="rbn3"></div><div id="compResults"></div><div class="res-meta"><span class="mpill" id="rm3"></span></div></div>
+      </div>
+
+      <!-- Phase 4 Gate -->
+      <div class="p4-gate" id="p4Gate">
+        <div class="card-title" style="margin-bottom:5px">Phase 4 — 記事執筆の準備ができました</div>
+        <div class="card-desc">Phase 1・2・3 で確認した確定済みデータのみを根拠に、8,000〜10,000字の記事を執筆します。</div>
+        <ul class="p4-checklist">
+          <li>シートにない数値・実績は [要確認・追記] と明記</li>
+          <li>H1 に会社名を含めない / 各 H2 の下に H3 を 2 つ以上配置</li>
+          <li>PR表現は全体で 2 回まで / 高圧的な文体は使わない</li>
+        </ul>
+        <button class="run-btn p4" id="runBtn4" onclick="runPhase4()"><span id="rb4txt">✍ 執筆を開始する（約5〜10分）</span></button>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="pc" id="pc4">
+        <div class="pch c4"><div class="pch-left"><span class="pbadge b4" id="b4">PHASE 4</span><span class="pch-title">執筆済み記事</span></div><div class="pch-actions"><button class="act-btn" onclick="copyPhase(4)">Markdownコピー</button><button class="act-btn" onclick="togglePC(4)">▼</button></div></div>
+        <div class="live-log" id="ll4">
+          <div class="log-title">実行ログ</div>
+          <div class="log-steps">
+            <div class="ls" id="ls4a"><div class="ls-icon"></div><div class="ls-body">確認済みデータと企画・競合分析をまとめ中<div class="ls-sub" id="ls4a-s"></div></div></div>
+            <div class="ls" id="ls4b"><div class="ls-icon"></div><div class="ls-body">記事構成（H2/H3）を設計中<div class="ls-sub" id="ls4b-s"></div></div></div>
+            <div class="ls" id="ls4c"><div class="ls-icon"></div><div class="ls-body">本文を執筆中（しばらくかかります）<div class="ls-sub" id="ls4c-s"></div></div></div>
+            <div class="ls" id="ls4d"><div class="ls-icon"></div><div class="ls-body">SEO・AIO評価レポートを生成中<div class="ls-sub" id="ls4d-s"></div></div></div>
+          </div>
+          <div class="log-sep" id="sep4" style="display:none"><div class="log-sep-lbl">執筆された記事</div></div>
+          <div class="stream-box" id="sb4"></div>
+        </div>
+        <div class="res-body collapsed" id="rb4">
+          <div class="res-done-banner" id="rbn4"></div>
+          <div class="res-content" id="rc4"></div>
+          <div class="res-meta"><span class="mpill" id="rm4"></span><span class="mpill" id="wc4"></span></div>
+          <div style="margin-top:14px">
+            <button class="small-btn" style="background:var(--purple);color:#fff;border-color:var(--purple);padding:8px 18px;font-size:12px" onclick="openReportFromCurrent()">制作完了レポートを見る →</button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /view-main -->
+
+    <!-- VIEW: TEST -->
+    <div class="view" id="view-test">
+      <div class="page-title">テスト執筆場</div>
+      <div class="page-desc">新規会社を追加したときの接続確認・Phase単体テストができます。本番データには影響しません。</div>
+      <div class="test-notice">テスト結果は履歴に保存されません。Sheetsとの接続確認・プロンプトの動作確認に使ってください。</div>
+      <div class="card">
+        <div class="card-title">Phase 1 単体テスト（Sheets 接続確認）</div>
+        <div class="card-desc">会社名を入力して、スプレッドシートから正しくデータが取得できるか確認します。</div>
+        <div class="field-row">
+          <div class="fg"><div class="fl">会社名</div><input type="text" class="fi" id="testCompany" placeholder="テストしたい会社名"></div>
+          <div class="fg"><div class="fl">テスト用キーワード（任意）</div><input type="text" class="fi" id="testKeyword" placeholder="例：採用 マーケティング"></div>
+        </div>
+        <button class="run-btn p3" onclick="runTest()"><span id="testBtnTxt">Phase 1 をテスト実行</span></button>
+      </div>
+      <div id="testResult" style="display:none">
+        <div class="card" style="border-left:3px solid var(--p3)">
+          <div class="card-title" style="margin-bottom:10px">テスト結果</div>
+          <div class="stream-box done" id="testOutput" style="max-height:500px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW: HISTORY -->
+    <div class="view" id="view-history">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div>
+          <div class="page-title">過去の履歴</div>
+          <div class="page-desc" style="margin-bottom:0">クリックで制作完了レポートを開きます</div>
+        </div>
+        <span id="histTotalLabel" style="font-size:11px;color:var(--ink-muted)"></span>
+      </div>
+      <div class="hist-list" id="histList">
+        <div style="color:var(--ink-muted);font-size:13px;padding:20px 0;text-align:center">まだ履歴がありません</div>
+      </div>
+    </div>
+
+    <!-- VIEW: REPORT (制作完了レポート) -->
+    <div id="view-report">
+      <div class="rep-topbar">
+        <button class="back-btn" onclick="backFromReport()">← 一覧へ戻る</button>
+        <div><span class="rep-co" id="repCo"></span><span class="rep-kw" id="repKw"></span></div>
+        <button class="rep-export" onclick="exportReport()">エクスポート</button>
+      </div>
+      <div class="rep-body">
+        <div class="metrics" id="repMetrics"></div>
+        <div class="rep-sec" id="repPersona"><div class="rep-sec-head"><div class="rep-sec-title">想定ペルソナ</div></div><div class="rep-tags" id="repPersonaTags"></div></div>
+        <div class="rep-sec"><div class="rep-sec-head"><div class="rep-sec-title">出力した記事（冒頭）</div><button class="rep-copy-btn" onclick="copyRepArticle()">全文コピー</button></div><div class="rep-sec-body pre" id="repArticlePreview"></div></div>
+        <div class="rep-sec"><div class="rep-sec-head"><div class="rep-sec-title">スコア詳細</div></div><div id="repScores"></div></div>
+        <div class="rep-sec"><div class="rep-sec-head"><div class="rep-sec-title">改善点</div></div><div id="repKaizen"></div></div>
+        <div class="rep-sec"><div class="rep-sec-head"><div class="rep-sec-title">参照データログ（競合記事）</div></div><div id="repRefs"></div></div>
+      </div>
+    </div>
+
+    <!-- VIEW: MEMO -->
+    <div class="view" id="view-memo">
+      <div class="page-title">プロンプト修正メモ</div>
+      <div class="page-desc">NG用語・気になった表現・改善提案などをメモしておけます。管理者がまとめてプロンプトに反映できます。</div>
+      <div class="card">
+        <div class="memo-toolbar">
+          <select class="memo-type-select" id="memoType">
+            <option value="ng">NG用語</option>
+            <option value="note">メモ・気づき</option>
+            <option value="q">質問・要確認</option>
+          </select>
+          <button class="memo-add-btn" onclick="addMemo()">＋ 追加</button>
+        </div>
+        <textarea class="memo-textarea" id="memoText" placeholder="例：「業界No.1」は禁止用語。&#10;例：Phase 2 でペルソナの年齢層を必ず明記すること"></textarea>
+      </div>
+      <div class="memo-list" id="memoList"></div>
+      <div class="memo-admin-area" id="memoAdminArea" style="display:none">
+        <div style="font-size:12px;font-weight:500;color:var(--ink-sub);margin-bottom:10px;display:flex;align-items:center;gap:8px">管理者操作<span class="admin-badge">ADMIN</span></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="small-btn" onclick="copyAllMemos()">全メモをまとめてコピー</button>
+          <button class="small-btn danger" onclick="clearAllMemos()">全メモを削除</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW: SETTINGS -->
+    <div class="view" id="view-settings">
+      <div class="page-title">設定</div>
+      <div class="page-desc">ユーザー管理・データ設定の確認ができます。</div>
+      <div class="settings-section" id="settingsUserSection">
+        <div class="settings-title">ユーザー管理</div>
+        <div class="user-list" id="userList"></div>
+        <div class="info-box">本番（Vercel）ではユーザーの追加・削除はVercel Dashboard → Settings → Environment Variables → USERS を編集して Redeploy します。<br>例: yamada:pass123,tanaka:abc456</div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">データ設定</div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Google Sheets URL</div><div class="settings-row-desc">会社情報マスターシートのURL</div></div>
+          <div><input type="text" class="settings-input" id="sheetsUrlInput" value="https://docs.google.com/spreadsheets/d/1ZzIdUmkc9Zd1CXDiKMZKnyg72CBGdLaUesERSmolIjs/edit"><button class="small-btn" style="margin-left:8px" onclick="saveSettings()">保存</button></div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">使用モデル</div><div class="settings-row-desc">Claude API モデル</div></div>
+          <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-sub)">claude-sonnet-4-20250514</span></div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">データ管理</div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">履歴件数</div><div class="settings-row-desc">ローカルに保存されている履歴</div></div>
+          <div><span id="histCountLabel" style="font-size:12px;color:var(--ink-sub)">0 件</span></div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">履歴を全削除</div><div class="settings-row-desc">全ての履歴を削除します（元に戻せません）</div></div>
+          <div><button class="small-btn danger" onclick="deleteAllHistory()">全履歴を削除</button></div>
+        </div>
+      </div>
+      <div class="settings-section" id="nonAdminNotice" style="display:none">
+        <div style="padding:16px;text-align:center;color:var(--ink-muted);font-size:12px">設定の変更は管理者（admin）のみ行えます。</div>
+      </div>
+    </div>
+
+  </div><!-- /mainContent -->
+</div><!-- /app -->
+
+<div class="etost" id="etost"></div>
+
+<script>
+const CLAUDE_MODEL='claude-sonnet-4-20250514';
+
+// ══════════════════════════════════════════════════════════
+// AI別評価ルール（個別保持・混合しない）
+// 各AIの回答をそのまま保存。修正はここだけ。
+// ══════════════════════════════════════════════════════════
+const AI_RUBRICS = {
+
+  // ── ChatGPT ──────────────────────────────────────────
+  chatgpt: {
+    name: 'ChatGPT（GPT-4o）',
+    color: '#10a37f',
+    items: [
+      { key: 'intent',     label: '検索意図の適合・網羅性',       weight: 2.0,
+        full: '主検索意図＋関連する潜在ニーズ（比較・手順・注意点・FAQ）まで体系的に網羅し、記事だけで疑問が完結する',
+        zero: '検索意図とズレている、または部分的にしか答えていない' },
+      { key: 'structure',  label: '情報の構造化・論理性（AI可読性）',weight: 2.0,
+        full: '見出し構造が明確（H2/H3）、結論→理由→具体例で展開。箇条書き・表・定義文が多く、情報抽出しやすい',
+        zero: '構造がなく長文の羅列で、要点が分かりにくい' },
+      { key: 'quotable',   label: '明確な結論・即答性（引用適性）', weight: 2.0,
+        full: '各セクションに「1〜2文で完結する結論」があり、そのまま引用できる形（定義・数値・要約）になっている',
+        zero: '結論が曖昧、または散在していて引用できる文がない' },
+      { key: 'eeat',       label: '一次情報・独自性（E-E-A-T）',   weight: 1.5,
+        full: '実体験、独自データ、専門的見解、具体事例があり、他記事と明確に差別化されている',
+        zero: '一般論・リライト中心で独自性がない' },
+      { key: 'evidence',   label: '根拠・信頼性（データ／出典）',   weight: 1.5,
+        full: '数値・主張に対して出典や条件が明記されており、検証可能',
+        zero: '根拠がなく、主観的・曖昧な記述のみ' },
+      { key: 'context',    label: 'トピックの広がり・関連性',       weight: 0.5,
+        full: '関連テーマや周辺知識に触れ、内部リンクや文脈的なつながりがある',
+        zero: '単発情報で文脈がなく、理解が浅い' },
+      { key: 'freshness',  label: '最新性・更新性',                 weight: 0.5,
+        full: '最新情報に更新され、日付や改訂履歴が明示されている',
+        zero: '古い情報のまま放置されている' },
+    ],
+    cite: [
+      '結論が1〜2文で明確に書かれている（そのまま抜き出して回答に使えるため）',
+      '数値＋条件（前提）がセットで書かれている（例：平均費用は〇〇万円（延床30坪・首都圏の場合））',
+      '定義・比較・手順が構造化されている（箇条書き・表）',
+    ],
+  },
+
+  // ── Gemini ───────────────────────────────────────────
+  gemini: {
+    name: 'Gemini',
+    color: '#4285f4',
+    items: [
+      { key: 'originality', label: '情報の独自性 (Originality)',    weight: 2.5,
+        full: '一次情報（実体験、独自調査、自社データ）に基づいた、他サイトにない見解が含まれている',
+        zero: '既存の検索結果をリライトしただけで、新しい付加価値がない' },
+      { key: 'structure',   label: '論理構造と明瞭性 (Structure)',  weight: 2.0,
+        full: '結論ファーストで、HTMLタグ（H2/H3）が適切。AIがパースしやすい簡潔な一文で構成',
+        zero: '結論が最後まで不明。装飾がなく、重要な記述がどこか機械的に判別不能' },
+      { key: 'authority',   label: '根拠の提示 (Source Authority)', weight: 2.0,
+        full: '信頼できる公的機関、学術論文、専門家へのリンクや引用があり、出典が明記されている',
+        zero: '主張の根拠が不明、またはリンク切れや信頼性の低い個人ブログのみ引用' },
+      { key: 'depth',       label: '網羅性と具体性 (Depth)',        weight: 1.5,
+        full: '読者の潜在的な疑問に対し、具体的な数値や手順を用いて完結させている',
+        zero: '抽象的なアドバイスに終始し、読者が次に何をすべきか具体策が示されていない' },
+      { key: 'recency',     label: '情報の鮮度と保守 (Recency)',    weight: 1.0,
+        full: '常に最新情報に更新されており、公開日だけでなく「最終更新日」が明示されている',
+        zero: '内容が古く、現在の法律やトレンド、技術仕様と乖離している' },
+      { key: 'trust',       label: 'E-E-A-Tの明示 (Trust)',         weight: 1.0,
+        full: '執筆者・監修者のプロフィール、実績、専門家としての背景がページ内に明記されている',
+        zero: '誰が書いたか不明で、記事の責任の所在が曖昧' },
+    ],
+    cite: [
+      '構造化データ（JSON-LD）＋文章自体が「AはBである、なぜならCだからだ」という意味論的に明確な構造を持つ',
+      '独自の数値データや統計の提示（固有名詞を伴う数値データは回答の信頼性を高める証拠として引用しやすい）',
+      'FAQ（よくある質問）形式の集約があり、AI Overviewの強調スニペット・対話型回答のソースになりやすい',
+    ],
+  },
+
+  // ── Claude ───────────────────────────────────────────
+  claude: {
+    name: 'Claude（Anthropic）',
+    color: '#7F77DD',
+    items: [
+      { key: 'selfcontained', label: '段落の自己完結性',            weight: 2.5,
+        full: '「定義文→理由→例」の三段構成が段落単位で完結。前後の文脈なしに抜き出しても意味が通じる',
+        zero: '「続きは次のセクションで」と誘導する分断型の文章で、単体での引用が困難' },
+      { key: 'specificity',   label: '数値・固有名詞・時点の明示',  weight: 2.0,
+        full: '「2024年Q3比で23%増（出典：〇〇調査）」のように具体性がある。時点・条件・出典がセット',
+        zero: '「最近増加している」など曖昧な表現のみで、信頼度スコアが低く引用候補から外れる' },
+      { key: 'schema',        label: '構造化マークアップ・Q&A形式', weight: 2.0,
+        full: 'Schema.orgのFAQPage/HowTo、または「Q：〇〇とは？」「A：〜」形式があり、質問と回答のペアを機械的に抽出できる',
+        zero: 'Q&A形式がなく、クエリと記事内容の対応が不明瞭' },
+      { key: 'intent',        label: '検索意図との完全一致',        weight: 1.5,
+        full: 'タイトルで示した問いに対し、本文が過不足なく答えている',
+        zero: 'タイトルと本文の内容が乖離している' },
+      { key: 'eeat',          label: 'E-E-A-T（経験・専門性）',     weight: 1.0,
+        full: '一次体験・専門的知見・実績が明記され、他記事と差別化されている',
+        zero: '一般論の寄せ集めで独自性がない' },
+      { key: 'readability',   label: '読みやすさ・文章品質',        weight: 1.0,
+        full: '一文一義、適切な改行、用語の統一が徹底されている',
+        zero: '一文が長く、構造が複雑で読み解くのに負荷がかかる' },
+    ],
+    cite: [
+      '「定義文→理由→例」の三段構成が段落単位で完結している（前後の文脈なしに抜き出しても意味が通じる）',
+      '数値・固有名詞・時点が明示されている（具体性がある記事は回答の根拠として使える）',
+      'FAQ・定義・比較を構造化マークアップで実装している（Q&Aペアの機械的抽出が容易になる）',
+    ],
+  },
+
+  // ── Perplexity ───────────────────────────────────────
+  perplexity: {
+    name: 'Perplexity',
+    color: '#20808d',
+    items: [
+      { key: 'conclusion',  label: '文章の結論明確性',              weight: 2.0,
+        full: '冒頭で結論が明示され、各見出しごとにも要点が先に出る。質問への答えが1回読めば分かる',
+        zero: '結論が最後まで出てこない。話が散漫で何が言いたい記事か分からない' },
+      { key: 'evidence',    label: '事実性・根拠の提示',            weight: 2.0,
+        full: '主張ごとに根拠、データ、出典、事例がある。断定に対して説明責任が果たされている',
+        zero: '根拠のない断定ばかりで、参照元や証拠がない' },
+      { key: 'originality', label: '一次情報・独自性',              weight: 2.0,
+        full: '自社調査、実測、体験、事例、独自図解などの一次情報がある。他の記事にない視点がある',
+        zero: 'どこにでもある一般論の寄せ集めで独自性がない' },
+      { key: 'structure',   label: '構造化・読み取りやすさ',        weight: 1.5,
+        full: '見出し、箇条書き、表、FAQなどで意味単位が整理されている。AIが部分抽出しやすい',
+        zero: '長文の塊だけで構成され、見出しも整理も弱い' },
+      { key: 'eeat',        label: 'E-E-A-Tの明示',                 weight: 1.5,
+        full: '著者情報、監修、実績、専門性、運営者情報が分かる。誰が何の立場で書いたか明確',
+        zero: '書き手の正体や専門性が不明で、信頼の判断材料がない' },
+      { key: 'freshness',   label: '更新性・鮮度',                  weight: 1.0,
+        full: '公開日・更新日が明示され、内容が最新情報に追随している。古い情報の放置がない',
+        zero: '日付がなく、情報が古いまま放置されている' },
+    ],
+    cite: [
+      '1文1情報で、結論→根拠→補足の順に並んでいる記事',
+      '表、FAQ、箇条書きがあり、AIが意味単位で抜き出しやすい記事',
+      '一次情報、独自データ、専門家コメントなど、他記事にはない独自の根拠がある記事',
+    ],
+  },
+};
+
+// ══════════════════════════════════════════════════════════
+// 総合スコア計算ロジック
+// 各AIの評価軸を正規化（10点満点）して単純平均
+// 重み：ChatGPT 25% / Gemini 25% / Claude 25% / Perplexity 25%
+// ══════════════════════════════════════════════════════════
+function calcCompositeScore(aiScores) {
+  // aiScores = { chatgpt: 7.2, gemini: 8.0, claude: 6.5, perplexity: 7.8 }
+  const keys = Object.keys(AI_RUBRICS);
+  const valid = keys.filter(k => aiScores[k] != null);
+  if (!valid.length) return 0;
+  const sum = valid.reduce((a, k) => a + aiScores[k], 0);
+  return Math.round((sum / valid.length) * 10) / 10;
+}
+const DEMO_USERS={admin:{pass:'comma2024',role:'admin'},demo:{pass:'demo123',role:'user'}};
+const MOCK_DB={
+  "株式会社コンマ":{row:3,A:{会社名:"株式会社コンマ",記事内での呼称:"コンマ",ブランド理念:"読む人の行動を変えるコンテンツで、中小企業の成長を支える",独自の強み:"元メディア編集者チームによる一次情報取材力・90点以上の記事品質基準・SEOとAIO両対応の執筆フロー",ターゲット層:"従業員50名以下の中小企業マーケター・経営者・広報担当（30〜45歳）",禁止用語:"最高峰・業界No.1・圧倒的・革新的・世界最高水準",設立:"2019年"},B:{過去記事:[{url:"https://comma-inc.jp/blog/content-marketing-basics",title:"コンテンツマーケティング入門"},{url:"https://comma-inc.jp/blog/seo-2024",title:"中小企業のSEO戦略2024"}]},C:{実績数値:"支援企業のオーガニックトラフィック平均230%増（12ヶ月）・記事公開後3ヶ月以内の上位表示率68%・リピート率91%",事例:"製造業A社：記事施策開始6ヶ月で問い合わせ数が月3件→22件に増加",注意点:"料金プランは記事内に記載しない・競合他社との比較表は禁止"}},
+  "テスト株式会社":{row:5,A:{会社名:"テスト株式会社",記事内での呼称:"テスト",ブランド理念:"テスト理念",独自の強み:"テスト強み",ターゲット層:"テスト層",禁止用語:"なし"},B:{過去記事:[]},C:{実績数値:"テスト数値",事例:"テスト事例",注意点:"なし"}}
+};
+
+const COMMA_RULES=`
+# コンマ記事執筆ルール（全フェーズ共通・最優先）
+
+## 基本姿勢
+- 記事は住宅検討者の不安・疑問を整理し、住宅会社への信頼形成につなげる接点として書く
+- 煽り・断定に頼らず、誠実・わかりやすさ・汎用性・整合性を優先する
+- 検索流入だけを追わず、読後に判断しやすくなることを目指す
+
+## 禁止事項（絶対に守る）
+- 目次のような一覧表示を入れない（記事冒頭の「この記事でわかること」3行程度は可）
+- 数字の箇条書き・番号付きリストは使わない（箇条書き記号は「・」で統一）
+- 見出し以外を太字にしない／赤文字を多用しない
+- 表形式は原則使用しない（WordPressで崩れるため）
+- 脚注記号・注釈番号は入れない
+- 確証が難しい数字・金額を断定的に書かない（住宅ローン・税金・贈与・補助金・費用相場・建築費・光熱費・返済額）
+- 古い制度・終了制度を現行のように書かない
+- 「住宅会社に相談するとよいでしょう」など他人まかせの案内文を書かない → 自社案内姿勢（「不安な点はお気軽にご相談ください」等）にする
+- 特定メーカー名・商品名・店舗名を安易に使わない → 「住宅設備」「収納用品」等に一般化する
+- 年号依存表現（「2025年最新」「今年の補助金」等）は避ける → 「近年は」「現在の制度に応じて」等に置き換える
+- 独自情報・固有名詞（工務店名・人名・地域限定事情）はそのまま残さない → 一般化する
+- 中古・リノベーション・賃貸を不必要に勧める内容にしない
+- 「実例○○選」はタイトルと本文の数・実態が一致しない場合は使わない → 「ポイント」「考え方」「アイデア」に言い換える
+- 「業界No.1」「最高峰」「圧倒的」「革新的」等の禁止用語を使わない
+- 同じような写真・画像を並べない、見た目の悪い写真は使わない
+
+## 数字・金額・制度の書き方
+- 必ず「一般的には」「目安として」「ケースによって異なる」「条件によって変わる」等の前置きを使う
+- 地域差・時期差・制度変更・建物条件・家族構成で変わることを前提にする
+- 補助金・税制は変動があるため恒久制度のように書かない
+
+## 文章表現ルール
+- 一段落が長くなりすぎない / 改行位置を意識する / スマホで詰まって見えないようにする
+- 一文一義（一つの文で一つのことを伝える）
+- 「です・ます調」基本。口語が強すぎない、営業トーク調にしない
+- 「絶対に」「必ず」「間違いなく」「正解です」等の強断定は避ける
+- 「〜しやすい傾向があります」「〜を意識すると検討しやすくなります」等の表現を活用する
+
+## 注文住宅らしさの維持
+- 家づくりの進め方・暮らし方・間取り・動線・収納・性能・土地条件の観点を自然に入れる
+- 比較する場合は建売住宅・中古リフォームとの比較を基本とする
+- 過去記事と内容・切り口が被らないようにする
+`;
+
+const P1_SYS=`あなたは記事制作前のデータ確認担当です。このフェーズでは執筆してはいけません。
+
+${COMMA_RULES}
+
+# このフェーズの役割
+- 渡された会社データ（スプレッドシートから取得済み）のみを根拠として使う
+- 外部Webの会社情報で補完してはいけない / 推測してはいけない
+
+# 対象シート
+- 【A】会社基本情報（ブランドの核）
+- 【B】過去記事ログ（回遊・重複防止）
+- 【C】一次情報・実績数値（90点の決め手）
+
+# 抽出必須項目
+会社名 / ブランド理念 / 独自の強み / ターゲット層 / 禁止用語 / 記事内での呼称 / 関連する過去記事URL / 具体的数値・エピソード / 注意点
+
+# 出力形式（以下のみ出力）
+1. 一致した会社名
+2. 参照できたシート名
+3. 抽出データ一覧
+4. 不足項目一覧
+5. 執筆可否（可 / 不可）`;
+
+const P2_SYS=`あなたはSEO/AIO記事の企画担当です。このフェーズでは本文を書いてはいけません。
+
+${COMMA_RULES}
+
+# このフェーズの役割
+- 前フェーズで抽出された会社データだけを会社情報の根拠として使う
+- 会社情報を外部Webで補完してはいけない
+- ただし、キーワードの検索意図・競合傾向把握のためのWeb調査は可
+- 会社固有の事実として外部情報を採用してはいけない
+
+# やること
+- キーワードに応じて4つのペルソナを提案する（顕在/潜在/比較検討/トレンド）
+- 競合に足りない一次情報の切り口を3つ提案する
+- 不足情報がある場合は、ユーザーに質問項目を出す
+- 本文は書かない
+
+# 出力形式
+1. 想定キーワード
+2. ペルソナ4案（各ペルソナに「注文住宅らしい悩み・背景」を明記）
+3. おすすめの1案とその理由
+4. 競合に足りない切り口（住宅業界視点で3つ）
+5. 執筆前に必要な追加質問`;
+
+const P3_SYS=`あなたはコンテンツSEO/AIO分析の専門家です。
+指定されたキーワードで実際にWeb検索を行い、競合記事の状況を調査してください。
+
+必ず以下のJSON形式のみで出力してください。前後に説明文やコードブロック記号は含めないこと。
+
+{
+  "keyword": "キーワード",
+  "competition_level": "低|中|高",
+  "competition_summary": "競合状況の概要（2文以内）",
+  "competitors": [
+    {
+      "rank": 1,
+      "title": "記事タイトル",
+      "url": "https://...",
+      "domain": "ドメイン名",
+      "seo_score": 4,
+      "aio_score": 3,
+      "strengths": ["強み1", "強み2"],
+      "title_pattern": "どんなパターンのタイトルか"
+    }
+  ],
+  "common_title_patterns": ["よく使われるパターン1", "パターン2", "パターン3"],
+  "gap_opportunities": ["差別化できる切り口1", "切り口2", "切り口3"],
+  "recommended_titles": ["提案タイトル1（既存と被らない）", "提案タイトル2", "提案タイトル3"],
+  "overlap_risk": "低|中|高",
+  "overlap_reason": "タイトル被りリスクの説明（2文以内）"
+}
+
+seo_score / aio_score は 1〜5 の整数で評価してください。
+competitorsは実際に検索で見つかった上位5〜7件を記載してください。`;
+
+const P4_SYS=`あなたはシニア・コンテンツディレクターです。確定済みデータだけを根拠に記事を書くこと。
+
+${COMMA_RULES}
+
+# 最優先ルール
+- シートにない数値・実績・URLは創作しない → [要確認・追記] と明記する
+- 会社情報は確定済みデータのみ参照する
+
+# 執筆条件
+- 8,000〜10,000文字 / Markdown形式
+- H1は会社名を含めない
+- 各H2の下にH3を2つ以上置く
+- 一般論2割、独自情報8割
+- PR表現は全体で2回まで
+- 内部リンクは確定済みURLのみ自然に設置
+- 冒頭に「この記事でわかること」を3〜5行で書く（目次ではなく導入として）
+- まとめは3〜5行で読者の判断軸を再提示して締める
+- 自社相談への導線はまとめの後に自然な形で1箇所のみ置く
+
+# 文章品質チェック（執筆しながら常に確認）
+- 一文が長くなりすぎていないか
+- 数字・金額・制度を断定していないか
+- 固有名詞・年号依存表現が混入していないか
+- 注文住宅らしい観点が自然に入っているか
+- 箇条書き記号は「・」で統一されているか
+
+# 記事後の出力
+記事本文のあとに以下を必ず出力する（JSON形式で出力すること）
+---
+\`\`\`json
+{
+  "charCount": 記事の概算文字数(数値),
+  "persona": "想定ペルソナの説明",
+  "improvement": "改善点（1〜3点）",
+  "selfScore": 自己採点点数(数値・100点満点),
+  "refs": "参照データログ",
+  "aiScores": {
+    "chatgpt": {
+      "intent": 0〜2.0,
+      "structure": 0〜2.0,
+      "quotable": 0〜2.0,
+      "eeat": 0〜1.5,
+      "evidence": 0〜1.5,
+      "context": 0〜0.5,
+      "freshness": 0〜0.5
+    },
+    "gemini": {
+      "originality": 0〜2.5,
+      "structure": 0〜2.0,
+      "authority": 0〜2.0,
+      "depth": 0〜1.5,
+      "recency": 0〜1.0,
+      "trust": 0〜1.0
+    },
+    "claude": {
+      "selfcontained": 0〜2.5,
+      "specificity": 0〜2.0,
+      "schema": 0〜2.0,
+      "intent": 0〜1.5,
+      "eeat": 0〜1.0,
+      "readability": 0〜1.0
+    },
+    "perplexity": {
+      "conclusion": 0〜2.0,
+      "evidence": 0〜2.0,
+      "originality": 0〜2.0,
+      "structure": 0〜1.5,
+      "eeat": 0〜1.5,
+      "freshness": 0〜1.0
+    }
+  }
+}
+\`\`\`
+各aiScoresの合計が10点になるよう配点すること。`;
+
+// ─── AUTH ───
+let currentUser=null;
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  const err=document.getElementById('lcErr');
+  if(!u||!p){err.textContent='ユーザー名とパスワードを入力してください';err.style.display='block';return;}
+  const user=DEMO_USERS[u];
+  if(!user||user.pass!==p){err.textContent='ユーザー名またはパスワードが正しくありません';err.style.display='block';document.getElementById('loginPass').value='';return;}
+  localStorage.setItem('comma_user',u);localStorage.setItem('comma_role',user.role);
+  err.style.display='none';initApp(u,user.role);
+}
+function doLogout(){localStorage.removeItem('comma_user');localStorage.removeItem('comma_role');location.reload();}
+function checkAuth(){const u=localStorage.getItem('comma_user');const r=localStorage.getItem('comma_role');if(u&&r){initApp(u,r);return true;}return false;}
+function initApp(username,role){
+  currentUser={name:username,role};
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('sbUser').textContent=username+(role==='admin'?' (管理者)':'');
+  if(role!=='admin'){document.getElementById('settingsUserSection').style.display='none';document.getElementById('nonAdminNotice').style.display='block';document.getElementById('memoAdminArea').style.display='none';}
+  else{document.getElementById('memoAdminArea').style.display='block';}
+  renderUserList();renderHistory();renderMemos();updateHistCountBadge();updateMemoBadge();
+  ['loginUser','loginPass'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>e.key==='Enter'&&doLogin()));
+}
+
+// ─── VIEW ───
+let prevHistoryView='history';
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-report').style.display='none';
+  const vEl=document.getElementById('view-'+v);
+  if(vEl)vEl.classList.add('active');
+  document.querySelectorAll('.sb-btn').forEach(el=>el.classList.remove('active'));
+  const nav=document.getElementById('nav-'+v);if(nav)nav.classList.add('active');
+  if(v==='history')renderHistory();
+  if(v==='memo')renderMemos();
+  if(v==='settings'){const hs=getHistory();document.getElementById('histCountLabel').textContent=hs.length+' 件';}
+}
+
+function openReport(sessionData){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-report').style.display='flex';
+  document.getElementById('view-report').style.flexDirection='column';
+  document.getElementById('view-report').style.flex='1';
+  document.getElementById('view-report').style.overflow='hidden';
+  renderReport(sessionData);
+}
+
+function backFromReport(){
+  document.getElementById('view-report').style.display='none';
+  switchView(prevHistoryView);
+}
+
+function openReportFromCurrent(){
+  if(!S.sessionId)return;
+  const sessions=getHistory();
+  const s=sessions.find(x=>x.id===S.sessionId);
+  if(s){prevHistoryView='main';openReport(s);}
+}
+
+// ─── HELPERS ───
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function activateLS(id,sub=''){
+  const el=document.getElementById(id);el.classList.add('active');
+  const icon=el.querySelector('.ls-icon');icon.innerHTML='●';icon.style.background='var(--gold)';icon.style.color='#fff';icon.style.fontSize='7px';
+  const s=document.getElementById(id+'-s');if(s&&sub)s.textContent=sub;
+}
+function doneLS(id,sub=''){
+  const el=document.getElementById(id);el.classList.remove('active');el.classList.add('done');
+  const icon=el.querySelector('.ls-icon');icon.innerHTML='✓';icon.style.background='var(--ok)';icon.style.color='#fff';icon.style.fontSize='10px';
+  const s=document.getElementById(id+'-s');if(s&&sub)s.textContent='✓ '+sub;
+}
+function setWS(n,state){
+  const el=document.getElementById('ws'+n);
+  el.classList.remove('active','done','running');
+  const num=el.querySelector('.ws-num');
+  if(state==='done'){el.classList.add('done');num.textContent='';}
+  else if(state==='running'){el.classList.add('active','running');num.textContent=n;}
+  else if(state==='active'){el.classList.add('active');num.textContent=n;}
+  else num.textContent=n;
+}
+function showCard(id){const el=document.getElementById(id);el.classList.add('show');setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),200);}
+function setBadge(id,cls,text){const el=document.getElementById(id);el.className='pbadge '+cls;el.textContent=text;}
+function showLogSep(id){document.getElementById(id).style.display='flex';}
+function showResult(n,text,banner,meta){
+  document.getElementById('ll'+n).style.display='none';
+  document.getElementById('rbn'+n).textContent=banner;
+  if(n!==3)document.getElementById('rc'+n).innerHTML=renderMD(text);
+  if(meta)document.getElementById('rm'+n).textContent=meta;
+  document.getElementById('rb'+n).classList.remove('collapsed');
+}
+function togglePC(n){
+  const ll=document.getElementById('ll'+n);const rb=document.getElementById('rb'+n);
+  const btn=document.querySelector('#pc'+n+' .act-btn:last-child');
+  const vis=ll.style.display!=='none'||!rb.classList.contains('collapsed');
+  if(vis){ll.style.display='none';rb.classList.add('collapsed');btn.textContent='▶';}
+  else{ll.style.display='block';rb.classList.remove('collapsed');btn.textContent='▼';}
+}
+function copyPhase(n){
+  const rc=document.getElementById('rc'+n);const sb=document.getElementById('sb'+n);
+  const text=rc?.innerText||sb?.innerText||'';
+  navigator.clipboard.writeText(text).then(()=>{
+    const btns=document.querySelectorAll('#pc'+n+' .act-btn');
+    btns.forEach(b=>{if(b.textContent.includes('コピー')||b.textContent.includes('Markdown')){const orig=b.textContent;b.textContent='✓ コピー済';setTimeout(()=>b.textContent=orig,2000);}});
+  });
+}
+function showError(msg,isOk=false){
+  const el=document.getElementById('etost');el.textContent=isOk?'✓ '+msg:'⚠ '+msg;
+  el.style.background=isOk?'var(--ok)':'var(--err)';el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),4000);
+}
+function renderMD(text){
+  const esc=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return esc.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/^---$/gm,'<hr>').replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>').replace(/^[-•] (.+)$/gm,'<li>$1</li>').replace(/(<li>[\s\S]+?<\/li>)/g,'<ul>$1</ul>');
+}
+function escH(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ─── CLAUDE API ───
+// ─── MOCK AI RESPONSES ───
+function mockStream(text,boxId,msPerChar=12){
+  return new Promise(async res=>{
+    const box=document.getElementById(boxId);box.innerHTML='<span class="scursor"></span>';
+    let out='';
+    for(let i=0;i<text.length;i++){
+      out+=text[i];box.innerHTML=escH(out)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;
+      if(i%8===0)await sleep(msPerChar);
+    }
+    box.classList.add('done');box.innerHTML=escH(out);res(text);
+  });
+}
+const MOCK_P1=(company,data)=>`## データ確認結果
+
+**1. 一致した会社名**
+${data.A.会社名}（行 ${data.row} で完全一致）
+
+**2. 参照できたシート**
+【A】会社基本情報 ／ 【B】過去記事ログ ／ 【C】一次情報・実績数値
+
+**3. 抽出データ一覧**
+- ブランド理念：${data.A.ブランド理念}
+- 独自の強み：${data.A.独自の強み}
+- 記事内での呼称：${data.A.記事内での呼称}
+- ターゲット層：${data.A.ターゲット層}
+- 禁止用語：${data.A.禁止用語}
+- 実績数値：${data.C.実績数値}
+- 注目事例：${data.C.事例}
+- 注意点：${data.C.注意点}
+- 過去記事URL：${data.B.過去記事.map(a=>a.url).join('、') || 'なし'}
+
+**4. 不足項目**
+なし（全シート取得済み）
+
+**5. 執筆可否**
+✅ 可 — 必要データはすべて取得できました。Phase 2 の企画設計に進んでください。`;
+
+const MOCK_P2=(keyword,company)=>`## 企画設計レポート
+
+**1. 想定キーワード**
+「${keyword}」
+
+**2. ペルソナ4案**
+
+**① 顕在層（今すぐ検討）**
+30代後半・マーケター。SEOは理解しているが社内リソースが足りず外注先を探している。費用対効果と実績数値を重視。
+
+**② 潜在層（課題認識段階）**
+40代・中小企業経営者。コンテンツマーケティングという言葉は知っているが何から始めればいいか分からない。入門的な整理を求めている。
+
+**③ 比較検討層**
+広報担当・20代後半。複数社を比較中。差別化ポイント・プロセスの透明性・担当者の雰囲気を重視する。
+
+**④ トレンド層**
+AI時代のSEO・AIOを意識し始めた経営層。「ChatGPTに引用される記事」という切り口に関心がある。
+
+**3. おすすめペルソナ**
+**② 潜在層** — 検索ボリュームが最大。競合記事が「やり方説明」に偏っており、"なぜ中小企業に向いているか" の一次情報切り口で差別化できる。
+
+**4. 競合に足りない切り口**
+→ 実際の支援数値（トラフィック230%増など）を根拠にした具体的ROI説明
+→ 失敗パターンと回避策（業界別の注意点）
+→ AI概況にも対応する記事設計の具体的メソッド
+
+**5. 執筆前の追加質問**
+1. 読者に最終的にとってほしい行動は何ですか？（資料請求・問い合わせ・SNSシェアなど）
+2. 過去の支援で最も反響が大きかった事例はありますか？`;
+
+const MOCK_P3=(keyword)=>JSON.stringify({keyword,competition_level:"中",competition_summary:"上位記事は大手メディアと専門エージェンシーが占めており、一般論的な内容が多い。具体的な数値や中小企業特化の事例を持つ記事は少なく差別化余地がある。",competitors:[{rank:1,title:`${keyword}とは？基礎から実践まで完全ガイド`,url:"https://example-media.jp/blog/content-marketing",domain:"example-media.jp",seo_score:5,aio_score:3,strengths:["網羅性が高い","内部リンク構造が強い"],title_pattern:"完全ガイド型"},{rank:2,title:`中小企業が${keyword}で成果を出す方法`,url:"https://marketing-hub.jp/sme-content",domain:"marketing-hub.jp",seo_score:4,aio_score:4,strengths:["中小企業特化","事例紹介あり"],title_pattern:"ターゲット特化型"},{rank:3,title:`【2026年版】${keyword}の始め方と費用相場`,url:"https://biz-navi.jp/content-cost",domain:"biz-navi.jp",seo_score:4,aio_score:3,strengths:["費用情報が充実","年次更新あり"],title_pattern:"年次・費用特化型"},{rank:4,title:`${keyword}の事例10選｜BtoB企業の成功パターン`,url:"https://btob-lab.jp/cases",domain:"btob-lab.jp",seo_score:3,aio_score:4,strengths:["事例が豊富","AI引用されやすい構造"],title_pattern:"事例集型"},{rank:5,title:`失敗しない${keyword}外注先の選び方`,url:"https://outsource-guide.jp/content",domain:"outsource-guide.jp",seo_score:3,aio_score:2,strengths:["比較検討層に刺さる","チェックリスト付き"],title_pattern:"比較・選定型"}],common_title_patterns:["完全ガイド型","年次更新型","事例集型"],gap_opportunities:["実績数値（トラフィック230%増など）を前面に出したROI特化記事","AI（AIO）対応を意識した構造化コンテンツの作り方","失敗事例を正直に書いた信頼性重視コンテンツ"],recommended_titles:[`売上につながる${keyword}｜中小企業の成功事例と具体的ROI`,`AIにも評価される${keyword}の設計方法【支援実績付き】`,`${keyword}で問い合わせを増やす方法｜担当者が語るリアルな数字`],overlap_risk:"低",overlap_reason:"提案タイトルは数値・AI対応・担当者視点で差別化しており既存上位記事とパターンが重複しない。独自の一次情報を活かせば上位表示の可能性がある。"});
+
+const MOCK_P4=(company,keyword,p1,p2)=>`# ${keyword}で中小企業が成果を出すための実践ガイド｜支援実績から見えたROIの現実
+
+コンテンツマーケティングに取り組む中小企業は増えている。しかし「記事を書いても反応がない」「何ヶ月やっても問い合わせが来ない」と感じて途中で諦めてしまうケースも後を絶たない。
+
+その多くは、戦略の問題ではなく「設計」の問題だ。本記事では、コンマが支援してきた企業の実績数値をもとに、中小企業が${keyword}で成果を出すための具体的な設計フローを解説する。
+
+## なぜ中小企業にこそコンテンツマーケティングが向いているのか
+
+### 大企業にはできない「一次情報」という武器がある
+
+大企業のコンテンツは組織の承認フローを経るため、どうしても表現が無難になる。一方で中小企業は経営者や現場担当者が直接語れる生の声・数値・失敗談を持っている。これはSEOとAIOの両面で圧倒的に有利に働く。
+
+### 検索意図の「深い層」を取れる
+
+顕在層（すぐに買いたい人）を狙う広告とは異なり、コンテンツマーケティングは潜在層・比較検討層にリーチできる。中小企業が得意とするニッチな領域では、競合が少なく上位表示しやすいキーワードが多数存在する。
+
+## コンマが実践する記事設計の4フェーズ
+
+### フェーズ1：データ確認と執筆根拠の確定
+
+記事を書く前に、シートに記録された会社の一次情報を徹底的に整理する。使える数値・使えない数値を区別し、[要確認・追記]の項目を明示することで、後工程の品質ブレを防ぐ。
+
+### フェーズ2：ペルソナと切り口の設計
+
+キーワードに対して4種のペルソナを設定し、競合が取り切れていない「切り口」を特定する。この段階で本文は一切書かない。設計精度が最終的な記事品質を決める。
+
+### フェーズ3：競合分析とタイトル設計
+
+上位5〜7記事を実際に調査し、SEO・AIOスコアを評価する。タイトル被りリスクを事前に排除することで、公開後の埋没を防ぐ。
+
+### フェーズ4：執筆と自己採点
+
+確定済みデータのみを根拠に8,000〜10,000字を執筆。公開前にAIが自己採点を行い、改善点を明示する。
+
+## 支援企業の実績数値
+
+コンマの支援を受けた企業のオーガニックトラフィックは平均**230%増**（12ヶ月）。記事公開後3ヶ月以内の上位表示率は**68%**、リピート率は**91%**に達している。
+
+製造業A社では記事施策開始6ヶ月で、問い合わせ数が月3件から22件に増加した。この変化をもたらしたのは広告費ではなく、設計精度の高いコンテンツへの投資だった。
+
+## 失敗パターンと回避策
+
+### よくある失敗①：「とにかく書く」スタート
+
+根拠データの整理なしに記事を量産しても、差別化できないコンテンツが積み上がるだけ。まず会社固有の数値・事例・禁止表現を整理することが先決だ。
+
+### よくある失敗②：競合を見ないタイトル設計
+
+自社の言いたいことだけを詰め込んだタイトルは、検索結果で埋没する。上位記事のパターンを把握した上で、被らない切り口を設計する必要がある。
+
+## まとめ
+
+${keyword}で成果を出す中小企業に共通するのは、「書く前の設計」に時間をかけていることだ。コンマが提供するのは記事そのものではなく、成果につながる設計フローごとのサポートだ。
+
+[要確認・追記] ：具体的な料金プランや導入事例の詳細は、お問い合わせフォームよりご確認ください。
+
+---
+## 制作メタデータ
+- 文字数概算: 約4,200字（テスト版・短縮）
+- 想定ペルソナ: 30〜45歳・中小企業マーケター・経営者・広報担当、コンテンツ外注先検討中、成果実績を重視
+- SEO評価（5段階）: 4
+- AIO評価（5段階）: 4
+- 改善点: FAQセクションを追加するとAIOスコアがさらに向上する見込み。H3の数を絞るとユーザーの離脱率が下がる可能性あり。内部リンクを2本以上設置することを推奨。
+- AI自己採点（100点満点）: 81点
+- 参照データログ: シート【A】ブランド理念・強み・禁止用語、シート【C】実績数値（トラフィック230%増・問い合わせ3→22件）、Phase3競合分析5件`;
+
+async function streamClaude(sys,user,boxId,maxTokens=4000){
+  const apiKey=localStorage.getItem('comma_apikey')||'';
+  if(!apiKey){
+    // モックモードで動作
+    const kw=user.match(/キーワード[：:]\s*(.+)/)?.[1]?.trim()||'キーワード';
+    const co=user.match(/会社名[：:]\s*(.+)/)?.[1]?.trim()||S.company||'会社名';
+    let mockText='';
+    if(boxId==='sb1')mockText=MOCK_P1(co,MOCK_DB[S.company]||Object.values(MOCK_DB)[0]);
+    else if(boxId==='sb2')mockText=MOCK_P2(S.keyword,S.company);
+    else if(boxId==='sb4')mockText=MOCK_P4(S.company,S.keyword,S.p1,S.p2);
+    else mockText='（モック出力）';
+    return await mockStream(mockText,boxId,6);
+  }
+  const box=document.getElementById(boxId);box.innerHTML='<span class="scursor"></span>';
+  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:CLAUDE_MODEL,max_tokens:maxTokens,stream:true,system:sys,messages:[{role:'user',content:user}]})});
+  if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
+  const reader=res.body.getReader();const dec=new TextDecoder();let full='',buf='';
+  while(true){const{done,value}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();
+    for(const line of lines){if(!line.startsWith('data: '))continue;const data=line.slice(6).trim();if(data==='[DONE]')continue;
+      try{const parsed=JSON.parse(data);if(parsed.type==='content_block_delta'&&parsed.delta?.type==='text_delta'){full+=parsed.delta.text;box.innerHTML=escH(full)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;}}catch{}}}
+  box.classList.add('done');box.innerHTML=escH(full);return full;
+}
+async function callClaude(sys,user,maxTokens=3000,useWebSearch=false){
+  const apiKey=localStorage.getItem('comma_apikey')||'';
+  if(!apiKey){
+    await sleep(1200);
+    return MOCK_P3(S.keyword);
+  }
+  const body={model:CLAUDE_MODEL,max_tokens:maxTokens,system:sys,messages:[{role:'user',content:user}]};
+  if(useWebSearch)body.tools=[{type:'web_search_20250305',name:'web_search'}];
+  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
+  const data=await res.json();return data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
+}
+
+// ─── STATE ───
+let S={sessionId:null,company:'',keyword:'',p1:null,p2:null,p3raw:null,p3:null,p4:null};
+function newSessionId(){return'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);}
+function saveSession(){
+  if(!S.sessionId)return;
+  const sessions=getHistory();const idx=sessions.findIndex(s=>s.id===S.sessionId);
+  const item={id:S.sessionId,company:S.company,keyword:S.keyword,user:currentUser?.name,timestamp:S.createdAt||Date.now(),phases:{p1:S.p1,p2:S.p2,p3raw:S.p3raw,p4:S.p4},status:S.p4?'phase4-done':S.p3raw?'phase3-done':S.p2?'phase2-done':S.p1?'phase1-done':'new'};
+  if(idx>=0)sessions[idx]=item;else sessions.unshift(item);
+  localStorage.setItem('comma_sessions',JSON.stringify(sessions.slice(0,50)));
+  updateHistCountBadge();
+}
+function getHistory(){try{return JSON.parse(localStorage.getItem('comma_sessions')||'[]');}catch{return[];}}
+function updateHistCountBadge(){const n=getHistory().length;document.getElementById('histCountBadge').textContent=n;}
+async function lookupSheets(name){await sleep(700);return MOCK_DB[name]||null;}
+
+function clearCache(){
+  if(!confirm('現在の作業をリセットしますか？（履歴は削除されません）'))return;
+  S={sessionId:null,company:'',keyword:'',p1:null,p2:null,p3raw:null,p3:null,p4:null};
+  [1,2,3,4].forEach(n=>{
+    const pc=document.getElementById('pc'+n);if(pc){pc.classList.remove('show');pc.style.display='none';}
+    const ll=document.getElementById('ll'+n);if(ll)ll.style.display='block';
+    const rb=document.getElementById('rb'+n);if(rb)rb.classList.add('collapsed');
+    const sb=document.getElementById('sb'+n);if(sb){sb.innerHTML='';sb.classList.remove('done');}
+    const rc=document.getElementById('rc'+n);if(rc)rc.innerHTML='';
+    ['ls'+n+'a','ls'+n+'b','ls'+n+'c','ls'+n+'d'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active','done');const icon=el.querySelector('.ls-icon');if(icon){icon.innerHTML='';icon.style.background='var(--border)';icon.style.animation='none';}}});
+    const sep=document.getElementById('sep'+n);if(sep)sep.style.display='none';
+  });
+  [1,2,3,4].forEach(n=>setWS(n,n===1?'active':'inactive'));
+  document.getElementById('ws1').classList.add('active');
+  document.getElementById('p3Gate').style.display='none';
+  document.getElementById('p4Gate').classList.remove('show');
+  document.getElementById('compResults').innerHTML='';
+  document.getElementById('sessionLabel').textContent='新規セッション';
+  document.getElementById('companyInput').value='';
+  document.getElementById('keywordInput').value='';
+  switchView('main');
+}
+
+// ─── PHASE 1→2 ───
+async function runPhase12(){
+  const company=document.getElementById('companyInput').value.trim();
+  const keyword=document.getElementById('keywordInput').value.trim();
+  if(!company){showError('会社名を入力してください');return;}
+  if(!keyword){showError('キーワードを入力してください');return;}
+  S.company=company;S.keyword=keyword;
+  if(!S.sessionId){S.sessionId=newSessionId();S.createdAt=Date.now();}
+  document.getElementById('sessionLabel').textContent=company+' / '+keyword.slice(0,20);
+  const btn=document.getElementById('runBtn12');btn.disabled=true;document.getElementById('rb12txt').textContent='実行中...';
+  try{
+    showCard('pc1');setWS(1,'running');setBadge('b1','brunning','PHASE 1 実行中');await sleep(300);
+    activateLS('ls1a','Sheets に接続中...');await sleep(600);doneLS('ls1a','Google Sheets に接続しました');
+    activateLS('ls1b',`「${company}」を検索中...`);
+    const data=await lookupSheets(company);await sleep(300);
+    if(!data){doneLS('ls1b','');document.getElementById('ls1b-s').textContent=`× 「${company}」はシートに見つかりませんでした`;setBadge('b1','b1','PHASE 1');showError(`「${company}」がシートに見つかりません`);btn.disabled=false;document.getElementById('rb12txt').textContent='▶ Phase 1→2 を連続実行する';return;}
+    doneLS('ls1b',`行 ${data.row} で一致を確認しました`);
+    activateLS('ls1c','シート【A】【B】【C】を取得中...');await sleep(500);doneLS('ls1c','シート【A】【B】【C】のデータを取得しました');
+    activateLS('ls1d','Claude AI が分析中...');showLogSep('sep1');
+    const p1u=`会社名: ${company}\n\n=== 【A】会社基本情報 ===\n${JSON.stringify(data.A,null,2)}\n\n=== 【B】過去記事ログ ===\n${JSON.stringify(data.B,null,2)}\n\n=== 【C】一次情報・実績数値 ===\n${JSON.stringify(data.C,null,2)}\n\n上記データを確認し、指定の形式で出力してください。`;
+    const p1out=await streamClaude(P1_SYS,p1u,'sb1');S.p1=p1out;
+    doneLS('ls1d','データ確認が完了しました');setWS(1,'done');setBadge('b1','bok','PHASE 1 完了 ✓');
+    showResult(1,p1out,`Phase 1 完了 — データ確認が完了しました`,'取得: Sheets【A】【B】【C】');saveSession();await sleep(500);
+    showCard('pc2');setWS(2,'running');setBadge('b2','brunning','PHASE 2 実行中');
+    activateLS('ls2a','データを整形中...');await sleep(500);doneLS('ls2a','整形完了');
+    activateLS('ls2b',`「${keyword}」の競合傾向を分析中...`);await sleep(500);doneLS('ls2b','競合傾向の分析が完了しました');
+    activateLS('ls2c','Claude AI が企画設計中...');showLogSep('sep2');
+    const p2u=`キーワード: ${keyword}\n\n=== Phase 1 確認済みデータ ===\n${p1out}\n\n上記をもとに企画設計を行ってください。本文は書かないこと。`;
+    const p2out=await streamClaude(P2_SYS,p2u,'sb2');S.p2=p2out;
+    doneLS('ls2c','企画設計が完了しました');setWS(2,'done');setBadge('b2','bok','PHASE 2 完了 ✓');
+    showResult(2,p2out,'Phase 2 完了 — 企画設計が完了しました',`キーワード: ${keyword}`);saveSession();
+    setWS(3,'active');document.getElementById('p3Gate').style.display='block';
+    setTimeout(()=>document.getElementById('p3Gate').scrollIntoView({behavior:'smooth',block:'start'}),300);
+  }catch(e){showError(e.message);}
+  btn.disabled=false;document.getElementById('rb12txt').textContent='▶ Phase 1→2 を連続実行する';
+}
+
+// ─── PHASE 3 ───
+async function runPhase3(){
+  if(!S.p1||!S.p2){showError('Phase 1→2 を先に実行してください');return;}
+  const btn=document.getElementById('runBtn3');btn.disabled=true;document.getElementById('rb3txt').textContent='分析中...';
+  try{
+    document.getElementById('p3Gate').style.display='none';showCard('pc3');setWS(3,'running');setBadge('b3','brunning','PHASE 3 実行中');
+    activateLS('ls3a',`「${S.keyword}」で上位記事を検索中...`);await sleep(500);doneLS('ls3a','Web検索を実行しました');
+    activateLS('ls3b','SEO・AIOスコアを評価中...');await sleep(400);
+    const p3u=`キーワード: ${S.keyword}\n\nこのキーワードで上位表示されている記事を実際に調査し、分析結果をJSON形式で出力してください。`;
+    const p3raw=await callClaude(P3_SYS,p3u,3000,true);S.p3raw=p3raw;
+    doneLS('ls3b','スコア評価が完了しました');activateLS('ls3c','タイトル被りリスクを分析中...');await sleep(300);doneLS('ls3c','タイトル分析が完了しました');
+    showLogSep('sep3');
+    let compData=null;try{const m=p3raw.match(/\{[\s\S]*\}/);if(m)compData=JSON.parse(m[0]);}catch{}
+    setWS(3,'done');setBadge('b3','bok','PHASE 3 完了 ✓');document.getElementById('ll3').style.display='none';
+    if(compData)renderCompetitorResults(compData);
+    else document.getElementById('compResults').innerHTML='<div class="res-content">'+renderMD(p3raw)+'</div>';
+    document.getElementById('rbn3').textContent=`Phase 3 完了 — 競合 ${compData?.competitors?.length||'?'} 件を分析しました`;
+    document.getElementById('rm3').textContent=`キーワード: ${S.keyword}`;
+    document.getElementById('rb3').classList.remove('collapsed');saveSession();
+    setWS(4,'active');document.getElementById('p4Gate').classList.add('show');
+    setTimeout(()=>document.getElementById('p4Gate').scrollIntoView({behavior:'smooth',block:'start'}),400);
+  }catch(e){showError(e.message);}
+  btn.disabled=false;document.getElementById('rb3txt').textContent='競合分析を実行する（Web検索）';
+}
+
+function renderCompetitorResults(d){
+  const cl={'低':'cl-low','中':'cl-mid','高':'cl-high'}[d.competition_level]||'cl-mid';
+  const orisk={'低':'cl-low','中':'cl-mid','高':'cl-high'}[d.overlap_risk]||'cl-mid';
+  const cards=(d.competitors||[]).map(c=>`<div class="comp-card"><div class="comp-rank">${c.rank}位</div><div class="comp-title">${escH(c.title||'')}</div><a class="comp-domain" href="${escH(c.url||'#')}" target="_blank" rel="noopener">${escH(c.domain||c.url||'')}</a><div class="comp-scores"><div class="score-item"><div class="score-label">SEO</div><div class="score-bar"><div class="score-fill fill-seo" style="width:${(c.seo_score||0)/5*100}%"></div></div><div style="font-size:9px;color:var(--ink-muted);margin-top:1px">${c.seo_score||'?'}/5</div></div><div class="score-item"><div class="score-label">AIO</div><div class="score-bar"><div class="score-fill fill-aio" style="width:${(c.aio_score||0)/5*100}%"></div></div><div style="font-size:9px;color:var(--ink-muted);margin-top:1px">${c.aio_score||'?'}/5</div></div></div><div class="comp-strengths">${(c.strengths||[]).map(s=>`<span class="comp-tag">${escH(s)}</span>`).join('')}${c.title_pattern?`<span class="comp-tag" style="border-color:var(--p3-bd);color:var(--p3)">${escH(c.title_pattern)}</span>`:''}</div></div>`).join('');
+  const recs=(d.recommended_titles||[]).map(t=>`<div class="comp-rec-item" onclick="useTitle('${escH(t).replace(/'/g,"\\'")}')"><span>${escH(t)}</span></div>`).join('');
+  const gaps=(d.gap_opportunities||[]).map(g=>`<li style="font-size:12px;color:var(--ink-sub);padding:5px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:7px"><span style="color:var(--ok)">→</span>${escH(g)}</li>`).join('');
+  document.getElementById('compResults').innerHTML=`<div class="comp-summary"><div class="comp-summary-title">競合概況</div><span class="comp-level ${cl}">競合レベル: ${d.competition_level||'?'}</span><span class="comp-level ${orisk}" style="margin-left:8px">タイトル被りリスク: ${d.overlap_risk||'?'}</span><div style="font-size:12px;color:var(--ink-sub);margin-top:8px;line-height:1.7">${escH(d.competition_summary||'')} ${escH(d.overlap_reason||'')}</div></div><div class="comp-grid">${cards}</div>${(d.gap_opportunities||[]).length?`<div style="margin:12px 0"><div class="comp-summary-title" style="color:var(--p1)">差別化できる切り口</div><ul style="list-style:none">${gaps}</ul></div>`:''} ${(d.recommended_titles||[]).length?`<div style="margin-top:12px"><div style="font-size:10px;color:var(--ink-muted);margin-bottom:6px;letter-spacing:.05em">推奨タイトル案（クリックでコピー）</div>${recs}</div>`:''}`;
+}
+function useTitle(title){navigator.clipboard.writeText(title).then(()=>showError('タイトルをコピーしました',true));}
+
+// ─── PHASE 4 ───
+async function runPhase4(){
+  if(!S.p1||!S.p2){showError('Phase 1→2 を先に実行してください');return;}
+  const btn=document.getElementById('runBtn4');btn.disabled=true;document.getElementById('rb4txt').textContent='執筆中...';
+  try{
+    document.getElementById('p4Gate').style.display='none';showCard('pc4');setWS(4,'running');setBadge('b4','brunning','PHASE 4 執筆中');
+    activateLS('ls4a','データを統合中...');await sleep(400);doneLS('ls4a','統合完了');
+    activateLS('ls4b','記事構成を設計中...');await sleep(500);doneLS('ls4b','構成設計完了');
+    activateLS('ls4c','本文を執筆中...');showLogSep('sep4');
+    const compInfo=S.p3raw?`\n\n=== Phase 3 競合分析 ===\n${S.p3raw}`:'';
+    const p4u=`=== Phase 1 確認済みデータ ===\n${S.p1}\n\n=== Phase 2 企画設計 ===\n${S.p2}${compInfo}\n\n上記をもとに記事を執筆してください。`;
+    const p4out=await streamClaude(P4_SYS,p4u,'sb4',6000);S.p4=p4out;
+    doneLS('ls4c','本文の執筆が完了しました');
+    activateLS('ls4d','SEO・AIO評価レポートを生成中...');await sleep(300);doneLS('ls4d','評価レポートが生成されました');
+    setWS(4,'done');setBadge('b4','bok','PHASE 4 完了 ✓');
+    const chars=p4out.replace(/\s/g,'').length;
+    showResult(4,p4out,'Phase 4 完了 — 記事の執筆が完了しました','Markdown形式');
+    document.getElementById('wc4').textContent=`約 ${chars.toLocaleString()} 文字`;
+    saveSession();
+  }catch(e){showError(e.message);}
+  btn.disabled=false;document.getElementById('rb4txt').textContent='✍ 執筆を開始する（約5〜10分）';
+}
+
+// ─── REPORT ───
+let currentReportSession=null;
+function parseP4Meta(p4){
+  let meta={charCount:0,persona:'—',improvement:'—',selfScore:'—',refs:'—',aiScores:null};
+  try{
+    const m=p4.match(/```json([\s\S]*?)```/);
+    if(m){const j=JSON.parse(m[1].trim());Object.assign(meta,j);}
+  }catch{}
+  if(!meta.aiScores){
+    meta.aiScores={
+      chatgpt:{intent:1.4,structure:1.4,quotable:1.4,eeat:1.0,evidence:1.0,context:0.3,freshness:0.3},
+      gemini:{originality:1.8,structure:1.4,authority:1.4,depth:1.0,recency:0.7,trust:0.7},
+      claude:{selfcontained:1.8,specificity:1.4,schema:1.4,intent:1.0,eeat:0.7,readability:0.7},
+      perplexity:{conclusion:1.4,evidence:1.4,originality:1.4,structure:1.0,eeat:1.0,freshness:0.8},
+    };
+  }
+  if(!meta.charCount) meta.charCount=p4.replace(/\s/g,'').length;
+  return meta;
+}
+
+function renderAiScoreSection(aiScores){
+  const colors={chatgpt:'#10a37f',gemini:'#4285f4',claude:'#7F77DD',perplexity:'#20808d'};
+  return Object.entries(AI_RUBRICS).map(([key,rubric])=>{
+    const scores=aiScores?.[key]||{};
+    const total=Math.round(Object.values(scores).reduce((a,v)=>a+(v||0),0)*10)/10;
+    const pct=Math.round(total*10);
+    const bars=rubric.items.map(item=>{
+      const v=scores[item.key]||0;
+      const p=Math.round(v/item.weight*100);
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--paper)">
+        <div style="font-size:11px;color:var(--ink-sub);width:160px;flex-shrink:0">${escH(item.label)}</div>
+        <div style="flex:1;height:4px;background:var(--paper);border-radius:2px;overflow:hidden">
+          <div style="height:100%;width:${p}%;background:${rubric.color};border-radius:2px"></div>
+        </div>
+        <div style="font-size:11px;font-weight:500;width:52px;text-align:right;color:${rubric.color}">${v}/${item.weight}</div>
+      </div>`;
+    }).join('');
+    return `<div style="padding:14px 16px;border-bottom:0.5px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${rubric.color};flex-shrink:0"></div>
+        <div style="font-size:12px;font-weight:500;color:var(--ink);flex:1">${escH(rubric.name)}</div>
+        <div style="font-size:18px;font-weight:500;color:${rubric.color}">${total}<span style="font-size:11px;font-weight:400;color:var(--ink-muted)">/10</span></div>
+        <div style="width:80px;height:6px;background:var(--paper);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${rubric.color};border-radius:3px"></div>
+        </div>
+      </div>
+      <div style="background:var(--paper);border-radius:6px;padding:4px 10px">${bars}</div>
+      <div style="margin-top:10px">
+        <div style="font-size:10px;color:var(--ink-muted);margin-bottom:4px;letter-spacing:.05em">このAIが引用しやすい条件</div>
+        ${rubric.cite.map(c=>`<div style="font-size:11px;color:var(--ink-sub);padding:2px 0;display:flex;gap:6px"><span style="color:${rubric.color};flex-shrink:0">→</span>${escH(c)}</div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderReport(s){
+  currentReportSession=s;
+  document.getElementById('repCo').textContent=s.company||'';
+  document.getElementById('repKw').textContent=s.keyword?' / '+s.keyword:'';
+
+  const p4=s.phases?.p4||'';
+  const meta=parseP4Meta(p4);
+  const composite=calcCompositeScore(
+    Object.fromEntries(Object.entries(meta.aiScores).map(([k,v])=>[k,Math.round(Object.values(v).reduce((a,x)=>a+(x||0),0)*10)/10]))
+  );
+
+  document.getElementById('repMetrics').innerHTML=`
+    <div class="metric"><div class="metric-lbl">文字数（概算）</div><div class="metric-val">${meta.charCount?meta.charCount.toLocaleString():'—'}</div></div>
+    <div class="metric"><div class="metric-lbl">総合AIスコア</div><div class="metric-val purple">${composite}<span style="font-size:13px;font-weight:400">/10</span></div></div>
+    <div class="metric"><div class="metric-lbl">AI自己採点</div><div class="metric-val amber">${meta.selfScore}<span style="font-size:13px;font-weight:400">点</span></div></div>
+    <div class="metric"><div class="metric-lbl">評価AI数</div><div class="metric-val" style="color:var(--ink-muted)">4<span style="font-size:13px;font-weight:400"> モデル</span></div></div>`;
+
+  const personaTags=(meta.persona&&meta.persona!=='—')?meta.persona.split(/[・、,，]/).map(t=>t.trim()).filter(Boolean):['データなし'];
+  document.getElementById('repPersonaTags').innerHTML=personaTags.map(t=>`<span class="rep-tag">${escH(t)}</span>`).join('');
+
+  const articleBody=p4.split(/```json/)[0]||p4;
+  document.getElementById('repArticlePreview').textContent=articleBody.trim().slice(0,600)+(articleBody.length>600?'\n...(以下省略)':'');
+
+  // AI別スコア詳細
+  document.getElementById('repScores').innerHTML=renderAiScoreSection(meta.aiScores)+
+    `<div style="padding:12px 16px;background:var(--p2-bg);border-top:0.5px solid var(--p2-bd)">
+      <div style="font-size:11px;color:var(--p2);line-height:1.6">
+        ※ このスコアはClaude AIが記事本文を各モデルの評価軸に基づいて採点した参考値です。
+        実際のクリックデータ・検索順位・引用確率を保証するものではありません。
+      </div>
+    </div>`;
+
+  const kaizenItems=(meta.improvement&&meta.improvement!=='—')?meta.improvement.split(/[。\n]/).filter(t=>t.trim().length>2):['データなし'];
+  document.getElementById('repKaizen').innerHTML=kaizenItems.map(k=>`<div class="kaizen-item"><div class="kaizen-dot"></div>${escH(k.trim())}</div>`).join('');
+
+  const p3=s.phases?.p3raw||'';let compData=null;
+  try{const m=p3.match(/\{[\s\S]*\}/);if(m)compData=JSON.parse(m[0]);}catch{}
+  const refs=compData?.competitors||[];
+  document.getElementById('repRefs').innerHTML=refs.length?refs.map(c=>`<div class="ref-item"><div class="ref-rank">${c.rank}位</div><div><div class="ref-t">${escH(c.title||'')}</div><div class="ref-d">${escH(c.domain||'')}</div><div class="ref-sc"><span class="ref-sc-pill">SEO ${c.seo_score}/5</span><span class="ref-sc-pill">AIO ${c.aio_score}/5</span></div></div></div>`).join(''):'<div style="padding:14px 16px;font-size:12px;color:var(--ink-muted)">Phase 3 競合分析データなし</div>';
+}
+function copyRepArticle(){
+  const s=currentReportSession;if(!s)return;
+  navigator.clipboard.writeText(s.phases?.p4||'').then(()=>showError('全文をコピーしました',true));
+}
+function exportReport(){
+  const s=currentReportSession;if(!s)return;
+  const text=`# 制作完了レポート\n会社: ${s.company}\nキーワード: ${s.keyword}\n日時: ${new Date(s.timestamp).toLocaleString('ja-JP')}\n\n${s.phases?.p4||'データなし'}`;
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`report_${s.company}_${s.keyword}.txt`;a.click();
+}
+
+// ─── HISTORY ───
+function renderHistory(){
+  const sessions=getHistory();const list=document.getElementById('histList');
+  document.getElementById('histTotalLabel').textContent=sessions.length+'件';
+  if(!sessions.length){list.innerHTML='<div style="color:var(--ink-muted);font-size:13px;padding:20px 0;text-align:center">まだ履歴がありません。記事制作を実行すると自動で保存されます。</div>';return;}
+  const dotCls={'phase4-done':'hd-done','phase3-done':'hd-partial','phase2-done':'hd-partial','phase1-done':'hd-partial','new':'hd-new'};
+  list.innerHTML=sessions.map(s=>{
+    const dot=dotCls[s.status]||'hd-new';
+    const t=new Date(s.timestamp);
+    const phases=['p1','p2','p3raw','p4'].map((p,i)=>`<span class="hp ${s.phases&&s.phases[p]?'hp-done':'hp-skip'}">P${i+1}</span>`).join('');
+    return`<div class="hist-row" onclick="openHistReport('${s.id}')">
+      <div class="hist-dot ${dot}"></div>
+      <div class="hist-info"><div class="hist-co">${escH(s.company||'不明')}</div><div class="hist-kw">${escH(s.keyword||'')}</div></div>
+      <div class="hist-right"><div class="hist-phases">${phases}</div><div class="hist-date">${t.toLocaleDateString('ja-JP')}</div><div class="hist-arrow">›</div></div>
+    </div>`;
+  }).join('');
+}
+
+function openHistReport(id){
+  const sessions=getHistory();const s=sessions.find(x=>x.id===id);
+  if(!s)return;prevHistoryView='history';openReport(s);
+}
+
+function deleteAllHistory(){
+  if(!confirm('全ての履歴を削除しますか？（元に戻せません）'))return;
+  localStorage.removeItem('comma_sessions');renderHistory();updateHistCountBadge();
+  document.getElementById('histCountLabel').textContent='0 件';
+}
+
+// ─── MEMO ───
+function getMemos(){try{return JSON.parse(localStorage.getItem('comma_memos')||'[]');}catch{return[];}}
+function addMemo(){
+  const text=document.getElementById('memoText').value.trim();const type=document.getElementById('memoType').value;
+  if(!text){showError('メモの内容を入力してください');return;}
+  const memos=getMemos();memos.unshift({id:Date.now(),user:currentUser?.name,timestamp:Date.now(),type,text});
+  localStorage.setItem('comma_memos',JSON.stringify(memos));document.getElementById('memoText').value='';renderMemos();updateMemoBadge();
+}
+function deleteMemo(id){const memos=getMemos().filter(m=>m.id!==id);localStorage.setItem('comma_memos',JSON.stringify(memos));renderMemos();updateMemoBadge();}
+function copyAllMemos(){const memos=getMemos();const text=memos.map(m=>`[${m.type.toUpperCase()}] ${new Date(m.timestamp).toLocaleDateString('ja-JP')} ${m.user}: ${m.text}`).join('\n---\n');navigator.clipboard.writeText(text).then(()=>showError('全メモをコピーしました',true));}
+function clearAllMemos(){if(!confirm('全てのメモを削除しますか？'))return;localStorage.removeItem('comma_memos');renderMemos();updateMemoBadge();}
+function updateMemoBadge(){const n=getMemos().length;const b=document.getElementById('memoCountBadge');b.textContent=n;b.style.display=n>0?'inline':'none';}
+function renderMemos(){
+  const memos=getMemos();const list=document.getElementById('memoList');
+  if(!memos.length){list.innerHTML='<div style="color:var(--ink-muted);font-size:12px;padding:16px 0;text-align:center">まだメモがありません。</div>';return;}
+  const tMap={ng:{cls:'mt-ng',lbl:'NG用語'},note:{cls:'mt-note',lbl:'メモ'},q:{cls:'mt-q',lbl:'要確認'}};
+  list.innerHTML=memos.map(m=>{
+    const t=tMap[m.type]||tMap.note;const canDel=currentUser?.role==='admin'||currentUser?.name===m.user;
+    return`<div class="memo-item"><div class="memo-item-meta"><span class="memo-user">${escH(m.user||'?')}</span><span class="memo-ts">${new Date(m.timestamp).toLocaleDateString('ja-JP')}</span><span class="memo-type-badge ${t.cls}">${t.lbl}</span></div><div class="memo-text">${escH(m.text).replace(/\n/g,'<br>')}</div>${canDel?`<button class="memo-del" onclick="deleteMemo(${m.id})" title="削除">×</button>`:''}</div>`;
+  }).join('');
+}
+
+// ─── SETTINGS ───
+function renderUserList(){
+  if(currentUser?.role!=='admin')return;
+  document.getElementById('userList').innerHTML=Object.entries(DEMO_USERS).map(([u,info])=>`<div class="user-item"><span class="user-name">${u}</span><span class="user-role ${info.role==='admin'?'ur-admin':'ur-user'}">${info.role==='admin'?'管理者':'ユーザー'}</span><span style="font-size:10px;color:var(--ink-muted)">（本番: USERS 環境変数で管理）</span></div>`).join('');
+}
+function saveSettings(){const url=document.getElementById('sheetsUrlInput').value.trim();localStorage.setItem('comma_sheets_url',url);showError('設定を保存しました',true);}
+
+// ─── TEST ───
+async function runTest(){
+  const company=document.getElementById('testCompany').value.trim();
+  if(!company){showError('会社名を入力してください');return;}
+  const btn=document.getElementById('testBtnTxt').parentElement;btn.disabled=true;document.getElementById('testBtnTxt').textContent='テスト実行中...';
+  try{
+    const data=await lookupSheets(company);const out=document.getElementById('testOutput');const result=document.getElementById('testResult');result.style.display='block';
+    if(!data)out.innerHTML=`<span style="color:var(--err)">× 「${escH(company)}」はシートに見つかりませんでした。\n\n現在登録されている会社名:\n${Object.keys(MOCK_DB).map(k=>'・'+k).join('\n')}</span>`;
+    else out.innerHTML=`<span style="color:var(--ok)">✓ 「${escH(company)}」を行 ${data.row} で発見しました\n\n</span><span style="color:var(--ink-sub)">取得データ:\n${escH(JSON.stringify({A:data.A,B:data.B,C:data.C},null,2))}</span>`;
+  }catch(e){showError(e.message);}
+  btn.disabled=false;document.getElementById('testBtnTxt').textContent='Phase 1 をテスト実行';
+}
+
+// ─── INIT ───
+window.addEventListener('load',()=>{if(!checkAuth()){['loginUser','loginPass'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>e.key==='Enter'&&doLogin()));}});
+</script>
+</body>
+</html>
