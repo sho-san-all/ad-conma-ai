@@ -1,38 +1,4 @@
-// 実通信でCSV取得→構造化
-// gid=0から順に試す。連続3回失敗で打ち切り。
-async function fetchClientSheetDataRaw(client){
-  const sheetId=extractSheetId(client.url);
-  if(!sheetId)throw new Error('URLからスプレッドシートIDを取得できませんでした');
-
-  const sheets=[];
-  let fails=0;
-  for(let gid=0;gid<=10;gid++){
-    if(sheets.length>=4||fails>=3)break;
-    try{
-      const res=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`);
-      if(!res.ok){fails++;continue;}
-      const text=await res.text();
-      if(text.trim().length>10&&!text.trim().startsWith('<!')){
-        sheets.push({gid:String(gid),csv:text});
-        fails=0;
-      }else{fails++;}
-    }catch{fails++;}
-  }
-  if(!sheets.length)throw new Error('シートのデータを取得できませんでした。URLと公開設定（リンクを知っている全員が閲覧可）を確認してください。');
-
-  const data=parseCompanySheets(sheets);
-  const findVal=(obj,kws)=>{for(const k of Object.keys(obj)){if(kws.some(w=>k.includes(w)))return obj[k];}return '';};
-  return{
-    hyouki:client.hyouki,infoUrl:client.url,sheetId,tabCount:sheets.length,
-    A:{
-      会社名:client.name,記事内での呼称:client.hyouki,
-      ブランド理念:findVal(data.A,['理念','想い','コンセプト','テーマ']),
-      独自の強み:findVal(data.A,['強み','USP','差別化']),
-      ターゲット層:findVal(data.A,['ターゲット','対象','届ける']),
-      禁止用語:findVal(data.A,['禁止','NG','推奨']),
-      HP_URL:findVal(data.A,['HP','URL','サイト']),
-      施工エリア:findVal(data.A,['エリア','地域','施工']),
-      商品コンセプト:findVal(data.A,['商<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -118,13 +84,13 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .client-search-wrap{position:relative}
 .client-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;max-height:220px;overflow-y:auto;z-index:30;box-shadow:0 4px 12px rgba(0,0,0,.08);display:none}
 .client-dropdown.open{display:block}
-.client-opt{padding:9px 13px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:.5px solid var(--paper)}
+.client-opt{padding:9px 13px;font-size:13px;cursor:pointer;border-bottom:.5px solid var(--paper)}
 .client-opt:last-child{border-bottom:none}
 .client-opt:hover{background:var(--purple-bg)}
 .client-opt-name{font-weight:500;color:var(--ink)}
-.client-opt-hyouki{font-size:11px;color:var(--ink-muted)}
-.client-selected-badge{display:inline-flex;align-items:center;gap:6px;background:var(--purple-bg);color:var(--purple-dark);border:1px solid #c4bff0;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:500;margin-top:6px}
-.client-selected-badge button{background:none;border:none;cursor:pointer;color:var(--ink-muted);font-size:13px;line-height:1;padding:0 2px}
+.client-opt-sub{font-size:11px;color:var(--ink-muted)}
+.client-badge{display:inline-flex;align-items:center;gap:6px;background:var(--purple-bg);color:var(--purple-dark);border:1px solid #c4bff0;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:500;margin-top:6px}
+.client-badge button{background:none;border:none;cursor:pointer;color:var(--ink-muted);font-size:13px;line-height:1;padding:0 2px}
 .run-btn{width:100%;padding:12px 22px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .2s}
 .run-btn:hover:not(:disabled){background:#22223a}
 .run-btn:disabled{opacity:.4;cursor:not-allowed}
@@ -191,7 +157,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .score-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
 .score-fill{height:100%;border-radius:2px;transition:width .6s ease}
 .fill-seo{background:var(--p2)}.fill-aio{background:var(--p3)}
-.comp-tag{font-size:10px;padding:2px 6px;background:var(--paper);border:1px solid var(--border);border-radius:3px;color:var(--ink-sub)}
+.comp-tag{font-size:10px;padding:2px 6px;background:var(--paper);border:1px solid var(--border);border-radius:3px;color:var(--ink-sub);margin:1px}
 .comp-summary{background:var(--p3-bg);border:1px solid var(--p3-bd);border-radius:8px;padding:13px 16px;margin:12px 0}
 .comp-summary-title{font-size:10px;font-weight:500;color:var(--p3);margin-bottom:8px;letter-spacing:.06em}
 .comp-level{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:3px 10px;border-radius:10px;margin-bottom:8px}
@@ -286,7 +252,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .add-client-form.open{display:block;animation:fadeIn .2s ease}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .test-notice{background:var(--p3-bg);border:1px solid var(--p3-bd);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--p3);margin-bottom:18px}
-/* モーダル */
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
 .modal-box{background:#fff;border-radius:12px;padding:24px 28px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,.15)}
 .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -353,7 +318,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       <div class="topbar-session" id="sessionLabel">新規セッション</div>
     </div>
 
-    <!-- VIEW: MAIN -->
+    <!-- MAIN -->
     <div class="view active" id="view-main">
       <div class="wizard">
         <div class="ws active" id="ws1"><div class="ws-num">1</div><div class="ws-lbl">データ確認</div><div class="ws-sub">Sheets 照合</div></div>
@@ -372,7 +337,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
             <div class="client-dropdown" id="clientDropdown"></div>
           </div>
           <div id="clientSelectedBadge" style="display:none">
-            <span class="client-selected-badge" id="clientBadgeText">—<button onclick="clearClientSelection()">×</button></span>
+            <span class="client-badge" id="clientBadgeText">—<button onclick="clearClientSelection()">×</button></span>
           </div>
           <div class="fh">未登録の場合は「クライアント管理」から追加してください</div>
         </div>
@@ -480,10 +445,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       </div>
     </div>
 
-    <!-- VIEW: TEST -->
+    <!-- TEST -->
     <div class="view" id="view-test">
       <div class="page-title">テスト接続確認</div>
-      <div class="page-desc">登録済みクライアントのシート接続をテストします。本番データには影響しません。</div>
+      <div class="page-desc">登録済みクライアントのシート接続をテストします。</div>
       <div class="test-notice">テスト結果は履歴に保存されません。</div>
       <div class="card">
         <div class="card-title">シート接続テスト</div>
@@ -501,7 +466,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       </div>
     </div>
 
-    <!-- VIEW: HISTORY -->
+    <!-- HISTORY -->
     <div class="view" id="view-history">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div><div class="page-title">過去の履歴</div><div class="page-desc" style="margin-bottom:0">クリックで制作完了レポートを開きます</div></div>
@@ -510,7 +475,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       <div class="hist-list" id="histList"></div>
     </div>
 
-    <!-- VIEW: REPORT -->
+    <!-- REPORT -->
     <div id="view-report">
       <div class="rep-topbar">
         <button class="back-btn" onclick="backFromReport()">← 一覧へ戻る</button>
@@ -527,7 +492,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       </div>
     </div>
 
-    <!-- VIEW: MEMO -->
+    <!-- MEMO -->
     <div class="view" id="view-memo">
       <div class="page-title">プロンプト修正メモ</div>
       <div class="page-desc">NG用語・気になった表現・改善提案などをメモできます。</div>
@@ -552,7 +517,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       </div>
     </div>
 
-    <!-- VIEW: CLIENTS -->
+    <!-- CLIENTS -->
     <div class="view" id="view-clients">
       <div class="page-title">クライアント管理</div>
       <div class="page-desc">会社名・呼び名・情報シートURLを登録します。</div>
@@ -579,7 +544,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
           <div class="fg" style="margin-bottom:12px">
             <div class="fl">情報シートURL</div>
             <input type="text" class="fi" id="newClientUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
-            <div class="fh">共有URLをそのまま貼り付けてください。タブは自動で全取得します。</div>
+            <div class="fh">共有URLをそのまま貼り付けてください。タブは自動で全取得します（/api/sheets 経由）。</div>
           </div>
           <div style="display:flex;gap:8px">
             <button class="small-btn primary" id="saveClientBtn" onclick="addClient()">保存する</button>
@@ -594,17 +559,17 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
           <div id="clientEmptyMsg" style="text-align:center;padding:24px;font-size:13px;color:var(--ink-muted);display:none">クライアントが未登録です。「＋ 新規追加」から登録してください。</div>
         </div>
       </div>
-      <div class="info-box">シートは「リンクを知っている全員が閲覧可」に設定してください。<br>URLはブラウザのアドレスバーのURLをそのまま貼り付けてOKです。</div>
+      <div class="info-box">シートは「リンクを知っている全員が閲覧可（または編集可）」に設定してください。<br>URLはブラウザのアドレスバーのURLをそのまま貼り付けてOKです。</div>
     </div>
 
-    <!-- VIEW: SETTINGS -->
+    <!-- SETTINGS -->
     <div class="view" id="view-settings">
       <div class="page-title">設定</div>
       <div class="page-desc">ユーザー管理・データ管理の確認ができます。</div>
       <div class="settings-section" id="settingsUserSection">
         <div class="settings-title">ユーザー管理</div>
         <div id="userList"></div>
-        <div class="info-box">本番（Vercel）ではVercel Dashboard → Settings → Environment Variables → USERS を編集して Redeploy します。</div>
+        <div class="info-box">本番（Vercel）ではVercel Dashboard → Environment Variables → USERS を編集して Redeploy します。</div>
       </div>
       <div class="settings-section">
         <div class="settings-title">データ管理</div>
@@ -617,7 +582,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
           <div><button class="small-btn danger" onclick="deleteAllHistory()">全履歴を削除</button></div>
         </div>
         <div class="settings-row">
-          <div><div class="settings-row-label">クライアントデータを全削除</div><div class="settings-row-desc">登録済みクライアントとシートキャッシュを全て削除します</div></div>
+          <div><div class="settings-row-label">クライアントデータを全削除</div><div class="settings-row-desc">登録済みクライアントとキャッシュを全て削除</div></div>
           <div><button class="small-btn danger" onclick="deleteAllClients()">全クライアントを削除</button></div>
         </div>
       </div>
@@ -632,188 +597,146 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 <div class="etost" id="etost"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════
-// USERS
-// ══════════════════════════════════════════════════════════
 const DEMO_USERS={admin:{pass:'comma2024',role:'admin'},demo:{pass:'demo123',role:'user'}};
 let currentUser=null;
 
-// ══════════════════════════════════════════════════════════
-// シートキャッシュ — 登録時に1回取得、手動更新のみ、期限なし
-// ══════════════════════════════════════════════════════════
-function getCachedSheet(clientId){
-  try{
-    const raw=localStorage.getItem('comma_sheet_cache_'+clientId);
-    if(!raw)return null;
-    return JSON.parse(raw).data||null;
-  }catch{return null;}
+// ── キャッシュ ──────────────────────────────────────────
+function getCachedSheet(id){
+  try{const r=localStorage.getItem('comma_sheet_cache_'+id);if(!r)return null;return JSON.parse(r).data||null;}catch{return null;}
 }
-function setCachedSheet(clientId,data){
-  try{
-    localStorage.setItem('comma_sheet_cache_'+clientId,JSON.stringify({savedAt:Date.now(),data}));
-  }catch(e){console.warn('キャッシュ保存失敗',e);}
+function setCachedSheet(id,data){
+  try{localStorage.setItem('comma_sheet_cache_'+id,JSON.stringify({savedAt:Date.now(),data}));}catch(e){console.warn(e);}
 }
-function clearCachedSheet(clientId){
-  localStorage.removeItem('comma_sheet_cache_'+clientId);
+function clearCachedSheet(id){localStorage.removeItem('comma_sheet_cache_'+id);}
+function getCacheSavedAt(id){
+  try{const r=localStorage.getItem('comma_sheet_cache_'+id);if(!r)return null;const t=JSON.parse(r).savedAt;return t?new Date(t).toLocaleDateString('ja-JP'):null;}catch{return null;}
 }
-function getCacheSavedAt(clientId){
-  try{
-    const raw=localStorage.getItem('comma_sheet_cache_'+clientId);
-    if(!raw)return null;
-    const t=JSON.parse(raw).savedAt;
-    return t?new Date(t).toLocaleDateString('ja-JP'):null;
-  }catch{return null;}
-}
-
-// キャッシュ優先でデータ取得（forceRefresh=trueで強制再取得）
 async function fetchClientSheetData(client,forceRefresh=false){
-  if(!forceRefresh){
-    const cached=getCachedSheet(client.id);
-    if(cached){console.log('[Sheet] キャッシュ使用:',client.name);return cached;}
-  }
-  console.log('[Sheet] 通信取得:',client.name);
+  if(!forceRefresh){const c=getCachedSheet(client.id);if(c)return c;}
   const data=await fetchClientSheetDataRaw(client);
   setCachedSheet(client.id,data);
   return data;
 }
 
-// 実通信でCSV取得→構造化（gid指定方式）
-async function fetchClientSheetDataRaw(client){
-  const sheetId=extractSheetId(client.url);
-  if(!sheetId)throw new Error('URLからスプレッドシートIDを取得できませんでした');
-  // gidsが登録されていればそれを使う、なければfallback
-  const gids=client.gids
-    ?[client.gids.A,client.gids.B,client.gids.C].filter(Boolean)
-    :await findAvailableGids(sheetId,client.url,4).then(s=>s.map(x=>x.gid));
+// ── シート取得（Vercel API経由 + フォールバック） ────────
+function extractSheetId(url){const m=url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);return m?m[1]:null;}
+function extractGid(url){const m=url.match(/[#?&]gid=(\d+)/);return m?m[1]:null;}
 
-  const sheets=[];
-  for(const gid of gids){
-    try{
-      const url=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
-      const res=await fetch(url);
-      if(!res.ok)continue;
-      const text=await res.text();
-      if(text.trim().length>10&&!text.trim().startsWith('<!'))sheets.push({gid,csv:text});
-    }catch{}
+function parseCSV(text){
+  const rows=[];let row=[],cell='',inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i],n=text[i+1];
+    if(c==='"'){if(inQ&&n==='"'){cell+='"';i++;}else inQ=!inQ;}
+    else if(c===','&&!inQ){row.push(cell);cell='';}
+    else if((c==='\n'||c==='\r')&&!inQ){if(c==='\r'&&n==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}
+    else cell+=c;
   }
-  if(!sheets.length)throw new Error('シートのデータを取得できませんでした。gidとURLを確認してください。');
+  if(cell.length>0||row.length>0){row.push(cell);rows.push(row);}
+  return rows;
+}
+
+async function fetchClientSheetDataRaw(client){
+  const sheetId=client.sheetId||extractSheetId(client.url||'');
+  if(!sheetId)throw new Error('スプレッドシートIDが取得できませんでした');
+  let sheets=[];
+
+  // Vercel APIルート経由（本番）
+  try{
+    const res=await fetch('/api/sheets?sheetId='+sheetId);
+    if(res.ok){
+      const json=await res.json();
+      if(json.tabs&&json.tabs.length)sheets=json.tabs;
+    }
+  }catch{}
+
+  // フォールバック（開発環境・ローカル）
+  if(!sheets.length){
+    const urlGid=extractGid(client.url||'');
+    const cands=urlGid?[urlGid,'0','1','2','3','4','5']:['0','1','2','3','4','5'];
+    let fails=0;
+    for(const gid of [...new Set(cands)]){
+      if(sheets.length>=4||fails>=3)break;
+      try{
+        const res=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`);
+        if(!res.ok){fails++;continue;}
+        const text=await res.text();
+        if(text.trim().length>10&&!text.trim().startsWith('<!')){sheets.push({gid,csv:text});fails=0;}
+        else fails++;
+      }catch{fails++;}
+    }
+  }
+
+  if(!sheets.length)throw new Error('シートのデータを取得できませんでした。URLと公開設定を確認してください。');
+
   const data=parseCompanySheets(sheets);
-  const findVal=(obj,kws)=>{for(const k of Object.keys(obj)){if(kws.some(w=>k.includes(w)))return obj[k];}return '';};
+  const fv=(obj,kws)=>{for(const k of Object.keys(obj)){if(kws.some(w=>k.includes(w)))return obj[k];}return '';};
   return{
-    hyouki:client.hyouki,infoUrl:client.url,sheetId,tabCount:sheets.length,
-    A:{
-      会社名:client.name,記事内での呼称:client.hyouki,
-      ブランド理念:findVal(data.A,['理念','想い','コンセプト','テーマ']),
-      独自の強み:findVal(data.A,['強み','USP','差別化']),
-      ターゲット層:findVal(data.A,['ターゲット','対象','届ける']),
-      禁止用語:findVal(data.A,['禁止','NG','推奨']),
-      HP_URL:findVal(data.A,['HP','URL','サイト']),
-      施工エリア:findVal(data.A,['エリア','地域','施工']),
-      商品コンセプト:findVal(data.A,['商品','WELL','コンセプト_説明']),
-      rawA:data.A,
-    },
+    hyouki:client.hyouki,sheetId,tabCount:sheets.length,
+    A:{会社名:client.name,記事内での呼称:client.hyouki,
+      ブランド理念:fv(data.A,['理念','想い','コンセプト','テーマ']),
+      独自の強み:fv(data.A,['強み','USP','差別化']),
+      ターゲット層:fv(data.A,['ターゲット','対象','届ける']),
+      禁止用語:fv(data.A,['禁止','NG','推奨']),
+      HP_URL:fv(data.A,['HP','URL','サイト']),
+      施工エリア:fv(data.A,['エリア','地域','施工']),
+      商品コンセプト:fv(data.A,['商品','WELL','コンセプト_説明']),
+      rawA:data.A},
     B:{過去記事:data.B.articles.filter(a=>a.url).slice(0,10),全記事数:data.B.articles.length},
-    C:{
-      施工事例:Object.entries(data.C).filter(([k])=>k.includes('施工')).map(([k,v])=>({key:k,value:v})),
+    C:{施工事例:Object.entries(data.C).filter(([k])=>k.includes('施工')).map(([k,v])=>({key:k,value:v})),
       お客様の声:Object.entries(data.C).filter(([k])=>k.includes('お客様')||k.includes('声')).map(([k,v])=>({key:k,value:v})),
       こだわり:Object.entries(data.C).filter(([k])=>k.includes('こだわり')||k.includes('現場')).map(([k,v])=>({key:k,value:v})),
-      実績数値:findVal(data.C,['実績','数値','成約']),
-      注意点:findVal(data.C,['注意','失敗']),
-      rawC:data.C,
-    },
+      実績数値:fv(data.C,['実績','数値','成約']),
+      注意点:fv(data.C,['注意','失敗']),
+      rawC:data.C},
   };
 }
 
-// ══════════════════════════════════════════════════════════
-// シート更新パネル（モーダル）
-// ══════════════════════════════════════════════════════════
-function openRefreshPanel(){
-  const clients=getClients();
-  if(!clients.length){showError('クライアントが登録されていません');return;}
-  const existing=document.getElementById('refreshPanel');
-  if(existing)existing.remove();
-
-  const rows=clients.map(c=>{
-    const saved=getCacheSavedAt(c.id);
-    const statusHtml=saved
-      ?`<span style="color:var(--ok)">✓ ${saved}</span>`
-      :`<span style="color:var(--err)">⚠ 未取得</span>`;
-    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:500">${escH(c.name)}</div>
-        <div style="font-size:10px;font-family:'IBM Plex Mono',monospace" id="rpStatus_${c.id}">${statusHtml}</div>
-      </div>
-      <button class="small-btn" onclick="refreshOneInPanel('${c.id}')">更新</button>
-    </div>`;
-  }).join('');
-
-  const panel=document.createElement('div');
-  panel.id='refreshPanel';
-  panel.className='modal-overlay';
-  panel.innerHTML=`
-    <div class="modal-box">
-      <div class="modal-head">
-        <div class="modal-title">シートデータ更新</div>
-        <button class="modal-close" onclick="document.getElementById('refreshPanel').remove()">×</button>
-      </div>
-      <div style="font-size:12px;color:var(--ink-sub);margin-bottom:14px;line-height:1.7">
-        シートを編集したクライアントだけ個別に更新できます。
-      </div>
-      <div style="margin-bottom:16px">${rows}</div>
-      <div style="display:flex;gap:8px">
-        <button class="small-btn primary" style="flex:1" onclick="refreshAllInPanel()">↻ 全件更新</button>
-        <button class="small-btn" onclick="document.getElementById('refreshPanel').remove()">閉じる</button>
-      </div>
-    </div>`;
-  document.body.appendChild(panel);
-}
-
-async function refreshOneInPanel(id){
-  const client=getClients().find(c=>c.id===id);
-  if(!client)return;
-  const el=document.getElementById('rpStatus_'+id);
-  if(el)el.innerHTML='<span style="color:var(--gold)">取得中...</span>';
-  try{
-    await fetchClientSheetData(client,true);
-    const saved=getCacheSavedAt(id);
-    if(el)el.innerHTML=`<span style="color:var(--ok)">✓ ${saved}</span>`;
-    const tb=document.getElementById('cacheStatus_'+id);
-    if(tb)tb.textContent='✓ '+saved;
-    showError('更新しました',true);
-  }catch(e){
-    if(el)el.innerHTML='<span style="color:var(--err)">❌ 失敗</span>';
-    showError(String(e?.message||e));
-  }
-}
-
-async function refreshAllInPanel(){
-  const clients=getClients();
-  for(const c of clients) await refreshOneInPanel(c.id);
-  showError('全件更新が完了しました',true);
-}
-
-async function refreshAllCaches(){
-  const clients=getClients();
-  if(!clients.length){showError('クライアントが登録されていません');return;}
-  let ok=0,ng=0;
-  for(const c of clients){
-    const el=document.getElementById('cacheStatus_'+c.id);
-    if(el)el.textContent='取得中...';
-    try{
-      await fetchClientSheetData(c,true);
-      if(el)el.textContent='✓ '+getCacheSavedAt(c.id);
-      ok++;
-    }catch{
-      if(el)el.textContent='❌ 失敗';
-      ng++;
+function parseCompanySheets(sheets){
+  const result={A:{},B:{articles:[]},C:{}};
+  sheets.forEach(({gid,csv},idx)=>{
+    const rows=parseCSV(csv);if(!rows.length)return;
+    const fc=String(rows[0]?.[0]||'').trim();
+    const isB=fc.includes('内部リンク')||fc.includes('過去記事')||fc.includes('記事');
+    const isC=fc.includes('一次情報')||fc.includes('実績')||fc.includes('心臓部')||fc.includes('事例');
+    let hi=-1;
+    for(let i=0;i<Math.min(rows.length,6);i++){
+      if(rows[i].some(c=>{const v=String(c||'').trim();return v==='項目名'||v==='項目名（ヘッダー）'||v==='会社名・屋号'||v==='記事タイトル'||v==='タイトル';})){hi=i;break;}
     }
-  }
-  showError(`更新完了: 成功${ok}件${ng?' / 失敗'+ng+'件':''}`,!ng);
+    if(isB||(idx===1&&!isC)){
+      const h=hi>=0?hi:2;
+      if(rows.length>h+1){
+        const hd=rows[h].map(x=>String(x||'').trim());
+        const ti=hd.findIndex(x=>x.includes('記事タイトル')||x.includes('タイトル'));
+        const ui=hd.findIndex(x=>x.includes('URL'));
+        const ci=hd.findIndex(x=>x.includes('カテゴリ')||x.includes('ジャンル'));
+        for(let i=h+1;i<rows.length;i++){
+          const r=rows[i];
+          const title=ti>=0?String(r[ti]||'').trim():'';
+          const url=ui>=0?String(r[ui]||'').trim():'';
+          const cat=ci>=0?String(r[ci]||'').trim():'';
+          if(title||url)result.B.articles.push({title,url,category:cat});
+        }
+      }
+    }else{
+      const target=(isC||(idx===2))?result.C:result.A;
+      const h=hi>=0?hi:2;
+      for(let i=h+1;i<rows.length;i++){
+        const r=rows[i];
+        const key=String(r[0]||'').trim();
+        const sub=String(r[1]||'').trim();
+        const val=String(r[2]||'').trim();
+        const uc=String(r[3]||'').trim();
+        if(!key&&!val)continue;
+        const fk=key+(sub?'_'+sub:'');
+        if(val)target[fk]=val;
+        if(uc&&uc.startsWith('http'))target[fk+'_URL']=uc;
+      }
+    }
+  });
+  return result;
 }
 
-// ══════════════════════════════════════════════════════════
-// クライアント管理
-// ══════════════════════════════════════════════════════════
+// ── クライアント管理 ─────────────────────────────────────
 function getClients(){try{return JSON.parse(localStorage.getItem('comma_clients')||'[]');}catch{return[];}}
 function saveClients(arr){localStorage.setItem('comma_clients',JSON.stringify(arr));}
 
@@ -854,7 +777,7 @@ function deleteClient(id){
 }
 
 function deleteAllClients(){
-  if(!confirm('全クライアントを削除しますか？（キャッシュも削除されます）'))return;
+  if(!confirm('全クライアントを削除しますか？'))return;
   getClients().forEach(c=>clearCachedSheet(c.id));
   localStorage.removeItem('comma_clients');
   renderClientTable();showError('全クライアントを削除しました',true);
@@ -877,13 +800,12 @@ function renderClientTable(){
   const isAdmin=currentUser?.role==='admin';
   tbody.innerHTML=clients.map(c=>{
     const saved=getCacheSavedAt(c.id);
-    const statusTxt=saved?'✓ '+saved:'⚠ 未取得';
     return`<tr>
       <td style="font-weight:500">${escH(c.name)}</td>
       <td style="color:var(--ink-sub)">${escH(c.hyouki)}</td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--p2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escH(c.url)}">${escH(c.url)}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--p2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escH(c.url||'')}">${escH(c.url||'')}</td>
       <td style="white-space:nowrap">
-        <span id="cacheStatus_${c.id}" style="font-size:10px;color:${saved?'var(--ok)':'var(--err)'};font-family:'IBM Plex Mono',monospace;margin-right:6px">${statusTxt}</span>
+        <span id="cacheStatus_${c.id}" style="font-size:10px;color:${saved?'var(--ok)':'var(--err)'};font-family:'IBM Plex Mono',monospace;margin-right:6px">${saved?'✓ '+saved:'⚠ 未取得'}</span>
         ${isAdmin?`<button class="small-btn" onclick="refreshOneCache('${c.id}')">更新</button>`:''}
       </td>
       <td>${isAdmin?`<button class="small-btn danger" onclick="deleteClient('${c.id}')">削除</button>`:''}</td>
@@ -908,11 +830,75 @@ async function refreshOneCache(id){
   }
 }
 
-// ══════════════════════════════════════════════════════════
-// クライアント検索UI
-// ══════════════════════════════════════════════════════════
-let selectedClient=null;
+async function refreshAllCaches(){
+  const clients=getClients();
+  if(!clients.length){showError('クライアントが登録されていません');return;}
+  let ok=0,ng=0;
+  for(const c of clients){
+    const el=document.getElementById('cacheStatus_'+c.id);
+    if(el){el.textContent='取得中...';el.style.color='var(--gold)';}
+    try{await fetchClientSheetData(c,true);if(el){el.textContent='✓ '+getCacheSavedAt(c.id);el.style.color='var(--ok)';}ok++;}
+    catch{if(el){el.textContent='❌ 失敗';el.style.color='var(--err)';}ng++;}
+  }
+  showError('更新完了: 成功'+ok+'件'+(ng?' / 失敗'+ng+'件':''),!ng);
+}
 
+// ── シート更新パネル ──────────────────────────────────────
+function openRefreshPanel(){
+  const clients=getClients();
+  if(!clients.length){showError('クライアントが登録されていません');return;}
+  const existing=document.getElementById('refreshPanel');
+  if(existing)existing.remove();
+  const rows=clients.map(c=>{
+    const saved=getCacheSavedAt(c.id);
+    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">${escH(c.name)}</div>
+        <div style="font-size:10px;font-family:'IBM Plex Mono',monospace" id="rpStatus_${c.id}">${saved?'<span style="color:var(--ok)">✓ '+saved+'</span>':'<span style="color:var(--err)">⚠ 未取得</span>'}</div>
+      </div>
+      <button class="small-btn" onclick="refreshOneInPanel('${c.id}')">更新</button>
+    </div>`;
+  }).join('');
+  const panel=document.createElement('div');
+  panel.id='refreshPanel';
+  panel.className='modal-overlay';
+  panel.innerHTML=`<div class="modal-box">
+    <div class="modal-head"><div class="modal-title">シートデータ更新</div><button class="modal-close" onclick="document.getElementById('refreshPanel').remove()">×</button></div>
+    <div style="font-size:12px;color:var(--ink-sub);margin-bottom:14px;line-height:1.7">シートを編集したクライアントだけ個別に更新できます。</div>
+    <div style="margin-bottom:16px">${rows}</div>
+    <div style="display:flex;gap:8px">
+      <button class="small-btn primary" style="flex:1" onclick="refreshAllInPanel()">↻ 全件更新</button>
+      <button class="small-btn" onclick="document.getElementById('refreshPanel').remove()">閉じる</button>
+    </div>
+  </div>`;
+  document.body.appendChild(panel);
+}
+
+async function refreshOneInPanel(id){
+  const client=getClients().find(c=>c.id===id);if(!client)return;
+  const el=document.getElementById('rpStatus_'+id);
+  if(el)el.innerHTML='<span style="color:var(--gold)">取得中...</span>';
+  try{
+    await fetchClientSheetData(client,true);
+    const saved=getCacheSavedAt(id);
+    if(el)el.innerHTML=`<span style="color:var(--ok)">✓ ${saved}</span>`;
+    const tb=document.getElementById('cacheStatus_'+id);
+    if(tb){tb.textContent='✓ '+saved;tb.style.color='var(--ok)';}
+    showError('更新しました',true);
+  }catch(e){
+    if(el)el.innerHTML='<span style="color:var(--err)">❌ 失敗</span>';
+    showError(String(e?.message||e));
+  }
+}
+
+async function refreshAllInPanel(){
+  const clients=getClients();
+  for(const c of clients)await refreshOneInPanel(c.id);
+  showError('全件更新が完了しました',true);
+}
+
+// ── クライアント検索UI ────────────────────────────────────
+let selectedClient=null;
 function filterClients(q){
   const clients=getClients();
   const dd=document.getElementById('clientDropdown');
@@ -920,49 +906,36 @@ function filterClients(q){
   if(!filtered.length){
     dd.innerHTML=`<div style="padding:10px 13px;font-size:12px;color:var(--ink-muted)">${clients.length?'一致するクライアントがありません':'クライアントが未登録です'}</div>`;
   }else{
-    dd.innerHTML=filtered.map(c=>`<div class="client-opt" onmousedown="selectClient('${c.id}')">
-      <div><div class="client-opt-name">${escH(c.name)}</div><div class="client-opt-hyouki">${escH(c.hyouki)}</div></div>
-    </div>`).join('');
+    dd.innerHTML=filtered.map(c=>`<div class="client-opt" onmousedown="selectClient('${c.id}')"><div class="client-opt-name">${escH(c.name)}</div><div class="client-opt-sub">${escH(c.hyouki)}</div></div>`).join('');
   }
   dd.classList.add('open');
 }
 function openClientDropdown(){filterClients(document.getElementById('clientSearchInput').value);}
 function closeClientDropdown(){document.getElementById('clientDropdown').classList.remove('open');}
-
 function selectClient(id){
-  const client=getClients().find(c=>c.id===id);
-  if(!client)return;
+  const client=getClients().find(c=>c.id===id);if(!client)return;
   selectedClient=client;
   document.getElementById('clientSearchInput').value='';
   document.getElementById('clientSearchInput').placeholder=client.name;
   const saved=getCacheSavedAt(client.id);
-  const note=saved
-    ?`<span style="font-size:10px;opacity:.65;font-weight:400"> データ: ${saved}</span>`
-    :`<span style="font-size:10px;color:var(--err);font-weight:400"> ⚠ シート未取得</span>`;
+  const note=saved?`<span style="font-size:10px;opacity:.65;font-weight:400"> データ: ${saved}</span>`:`<span style="font-size:10px;color:var(--err);font-weight:400"> ⚠ 未取得</span>`;
   document.getElementById('clientBadgeText').innerHTML=`✓ ${escH(client.name)}（${escH(client.hyouki)}）${note}<button onclick="clearClientSelection()">×</button>`;
   document.getElementById('clientSelectedBadge').style.display='block';
   document.getElementById('clientDropdown').classList.remove('open');
 }
-
 function clearClientSelection(){
   selectedClient=null;
   document.getElementById('clientSearchInput').value='';
   document.getElementById('clientSearchInput').placeholder='会社名・呼び名で検索...';
   document.getElementById('clientSelectedBadge').style.display='none';
 }
-
 function refreshTestSelect(){
-  const sel=document.getElementById('testClientSelect');
-  if(!sel)return;
+  const sel=document.getElementById('testClientSelect');if(!sel)return;
   const clients=getClients();
-  sel.innerHTML=clients.length
-    ?clients.map(c=>`<option value="${c.id}">${escH(c.name)}（${escH(c.hyouki)}）</option>`).join('')
-    :'<option value="">クライアントが登録されていません</option>';
+  sel.innerHTML=clients.length?clients.map(c=>`<option value="${c.id}">${escH(c.name)}（${escH(c.hyouki)}）</option>`).join(''):'<option value="">クライアントが登録されていません</option>';
 }
 
-// ══════════════════════════════════════════════════════════
-// AUTH
-// ══════════════════════════════════════════════════════════
+// ── AUTH ─────────────────────────────────────────────────
 function doLogin(){
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value;
@@ -984,17 +957,15 @@ function initApp(username,role){
     document.getElementById('settingsUserSection').style.display='none';
     document.getElementById('nonAdminNotice').style.display='block';
     document.getElementById('memoAdminArea').style.display='none';
-    const addBtn=document.getElementById('addClientBtn');if(addBtn)addBtn.style.display='none';
+    const ab=document.getElementById('addClientBtn');if(ab)ab.style.display='none';
   }else{
     document.getElementById('memoAdminArea').style.display='block';
+    renderUserList();
   }
   renderClientTable();renderHistory();renderMemos();updateHistCountBadge();updateMemoBadge();
-  if(role==='admin')renderUserList();
 }
 
-// ══════════════════════════════════════════════════════════
-// VIEW
-// ══════════════════════════════════════════════════════════
+// ── VIEW ─────────────────────────────────────────────────
 let prevHistoryView='history';
 function switchView(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
@@ -1021,9 +992,7 @@ function openReportFromCurrent(){
   if(s){prevHistoryView='main';openReport(s);}
 }
 
-// ══════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════
+// ── HELPERS ──────────────────────────────────────────────
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function activateLS(id,sub=''){
   const el=document.getElementById(id);if(!el)return;
@@ -1091,127 +1060,7 @@ function renderMD(text){
 }
 function escH(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-// ══════════════════════════════════════════════════════════
-// CSV / SHEETS
-// ══════════════════════════════════════════════════════════
-function parseCSV(text){
-  const rows=[];let row=[],cell='',inQ=false;
-  for(let i=0;i<text.length;i++){
-    const c=text[i],n=text[i+1];
-    if(c==='"'){if(inQ&&n==='"'){cell+='"';i++;}else inQ=!inQ;}
-    else if(c===','&&!inQ){row.push(cell);cell='';}
-    else if((c==='\n'||c==='\r')&&!inQ){if(c==='\r'&&n==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}
-    else cell+=c;
-  }
-  if(cell.length>0||row.length>0){row.push(cell);rows.push(row);}
-  return rows;
-}
-function extractSheetId(url){
-  const m=url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
-  return m?m[1]:null;
-}
-// Sheets API v4でgid一覧を自動取得（APIキー不要・公開シートのみ）
-async function getSheetGids(sheetId){
-  try{
-    const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?fields=sheets.properties(sheetId,title)&key=AIzaSyD-placeholder`);
-    // APIキーなしでも公開シートなら200が返る場合があるが、通常は403
-    // → フォールバックとして別手段を使う
-  }catch{}
-
-  // ★ 確実な方法: export?format=xlsx を使わず、各gidを順に試す
-  // ただしgidは連番ではないため、HTMLからスクレイプする
-  // CORSを回避できる唯一の公開エンドポイント: /export?format=csv&id=...
-  // gidリストを得る方法: spreadsheets/d/{id}/edit のHTMLを直接fetchするとCORSで弾かれる
-  // → 実用的な解決策: gid=0から始めて連続して試し、2回連続で失敗したら打ち切る
-  const found=[];
-  const tries=[0,1,2,3,4,5,6,7,8,9];
-  let consecutive_fail=0;
-  for(const gid of tries){
-    if(consecutive_fail>=3)break;
-    try{
-      const res=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`);
-      if(res.ok){
-        const text=await res.text();
-        if(text.trim().length>10&&!text.trim().startsWith('<!')){
-          found.push({gid:String(gid),csv:text});
-          consecutive_fail=0;
-          if(found.length>=4)break;
-        }else{consecutive_fail++;}
-      }else{consecutive_fail++;}
-    }catch{consecutive_fail++;}
-  }
-  return found;
-}
-
-async function findAvailableGids(sheetId, originalUrl, maxTabs=4){
-  // URLにgidが含まれる場合はそのgidから試す
-  const urlGid=originalUrl?.match(/[#&?]gid=(\d+)/)?.[1];
-  const candidateGids=urlGid?[urlGid,'0','1','2','3','4','5']:['0','1','2','3','4','5'];
-  const unique=[...new Set(candidateGids)];
-
-  const available=[];
-  let fails=0;
-  for(const gid of unique){
-    if(available.length>=maxTabs||fails>=3)break;
-    try{
-      const res=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`);
-      if(!res.ok){fails++;continue;}
-      const text=await res.text();
-      if(text.trim().length>10&&!text.trim().startsWith('<!')){
-        available.push({gid,csv:text});fails=0;
-      }else{fails++;}
-    }catch{fails++;}
-  }
-  return available;
-}
-function parseCompanySheets(sheets){
-  const result={A:{},B:{articles:[]},C:{}};
-  sheets.forEach(({gid,csv},idx)=>{
-    const rows=parseCSV(csv);if(!rows.length)return;
-    const firstCell=String(rows[0]?.[0]||'').trim();
-    const isTabB=firstCell.includes('内部リンク')||firstCell.includes('過去記事')||firstCell.includes('記事');
-    const isTabC=firstCell.includes('一次情報')||firstCell.includes('実績')||firstCell.includes('心臓部')||firstCell.includes('事例');
-    let headerIdx=-1;
-    for(let i=0;i<Math.min(rows.length,6);i++){
-      if(rows[i].some(c=>{const v=String(c||'').trim();return v==='項目名'||v==='項目名（ヘッダー）'||v==='会社名・屋号'||v==='記事タイトル'||v==='タイトル';})){headerIdx=i;break;}
-    }
-    if(isTabB||(idx===1&&!isTabC)){
-      const hIdx=headerIdx>=0?headerIdx:2;
-      if(rows.length>hIdx+1){
-        const headers=rows[hIdx].map(h=>String(h||'').trim());
-        const tIdx=headers.findIndex(h=>h.includes('記事タイトル')||h.includes('タイトル'));
-        const uIdx=headers.findIndex(h=>h.includes('URL'));
-        const cIdx=headers.findIndex(h=>h.includes('カテゴリ')||h.includes('ジャンル'));
-        for(let i=hIdx+1;i<rows.length;i++){
-          const row=rows[i];
-          const title=tIdx>=0?String(row[tIdx]||'').trim():'';
-          const url=uIdx>=0?String(row[uIdx]||'').trim():'';
-          const cat=cIdx>=0?String(row[cIdx]||'').trim():'';
-          if(title||url)result.B.articles.push({title,url,category:cat});
-        }
-      }
-    }else{
-      const target=(isTabC||(idx===2))?result.C:result.A;
-      const hIdx=headerIdx>=0?headerIdx:2;
-      for(let i=hIdx+1;i<rows.length;i++){
-        const row=rows[i];
-        const key=String(row[0]||'').trim();
-        const sub=String(row[1]||'').trim();
-        const val=String(row[2]||'').trim();
-        const urlCol=String(row[3]||'').trim();
-        if(!key&&!val)continue;
-        const fullKey=key+(sub?'_'+sub:'');
-        if(val)target[fullKey]=val;
-        if(urlCol&&urlCol.startsWith('http'))target[fullKey+'_URL']=urlCol;
-      }
-    }
-  });
-  return result;
-}
-
-// ══════════════════════════════════════════════════════════
-// PROMPTS
-// ══════════════════════════════════════════════════════════
+// ── PROMPTS ──────────────────────────────────────────────
 const COMMA_RULES=`# コンマ記事執筆ルール（最優先）
 ## 禁止事項
 - 目次のような一覧表示を入れない（この記事でわかること3行程度は可）
@@ -1221,42 +1070,36 @@ const COMMA_RULES=`# コンマ記事執筆ルール（最優先）
 - 「業界No.1」「最高峰」「圧倒的」等の禁止用語を使わない
 ## 文章ルール
 - 一文一義 / 「です・ます調」/ 営業トーク調にしない`;
-
 const P1_SYS=`あなたは記事制作前のデータ確認担当です。このフェーズでは執筆しないこと。\n${COMMA_RULES}\n渡された会社データのみを根拠として使う。外部Web情報で補完しないこと。\n\n# 出力形式\n1. 一致した会社名\n2. 参照できたシート数\n3. 抽出データ一覧\n4. 不足項目一覧\n5. 執筆可否（可 / 不可）`;
 const P2_SYS=`あなたはSEO/AIO記事の企画担当です。本文は書かないこと。\n${COMMA_RULES}\n\n# 出力形式\n1. 想定キーワード\n2. ペルソナ4案（顕在/潜在/比較検討/トレンド）\n3. おすすめの1案とその理由\n4. 競合に足りない切り口3つ\n5. 執筆前の追加質問`;
 const P3_SYS=`あなたはSEO/AIO分析専門家です。指定キーワードでWeb検索し競合記事を調査してください。\n必ず以下のJSON形式のみで出力。前後に説明文やコードブロック記号を含めないこと。\n{"keyword":"","competition_level":"低|中|高","competition_summary":"","competitors":[{"rank":1,"title":"","url":"","domain":"","seo_score":4,"aio_score":3,"strengths":[],"title_pattern":""}],"gap_opportunities":[],"recommended_titles":[],"overlap_risk":"低|中|高","overlap_reason":""}`;
 const P4_SYS=`あなたはシニア・コンテンツディレクターです。確定済みデータだけを根拠に記事を書くこと。\n${COMMA_RULES}\n\n# 最優先ルール\n- シートにない数値・実績・URLは創作しない → [要確認・追記] と明記\n\n# 執筆条件\n- 8,000〜10,000文字 / Markdown形式\n- H1は会社名を含めない\n- 各H2の下にH3を2つ以上置く\n- PR表現は全体で2回まで\n- 冒頭に「この記事でわかること」を3〜5行で書く\n\n# 記事後にJSON出力\n---\n\`\`\`json\n{"charCount":数値,"persona":"想定ペルソナ","improvement":"改善点","selfScore":数値,"refs":"参照データログ","aiScores":{"chatgpt":{"intent":0,"structure":0,"quotable":0,"eeat":0,"evidence":0,"context":0,"freshness":0},"gemini":{"originality":0,"structure":0,"authority":0,"depth":0,"recency":0,"trust":0},"claude":{"selfcontained":0,"specificity":0,"schema":0,"intent":0,"eeat":0,"readability":0},"perplexity":{"conclusion":0,"evidence":0,"originality":0,"structure":0,"eeat":0,"freshness":0}}}\n\`\`\`\n各aiScoresの合計が10点になるよう配点すること。`;
 
-// ══════════════════════════════════════════════════════════
-// API（モック）
-// ══════════════════════════════════════════════════════════
+// ── API ──────────────────────────────────────────────────
 function mockStream(text,boxId,ms=6){
   return new Promise(async res=>{
     const box=document.getElementById(boxId);
     box.innerHTML='<span class="scursor"></span>';let out='';
     for(let i=0;i<text.length;i++){
-      out+=text[i];
-      box.innerHTML=escH(out)+'<span class="scursor"></span>';
-      box.scrollTop=box.scrollHeight;
+      out+=text[i];box.innerHTML=escH(out)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;
       if(i%8===0)await sleep(ms);
     }
     box.classList.add('done');box.innerHTML=escH(out);res(text);
   });
 }
-const MOCK_P1=(c,d)=>`## データ確認結果\n\n**1. 一致した会社名**\n${d.A.会社名}\n\n**2. 参照シート数**\n${d.tabCount}タブ（過去記事: ${d.B.全記事数}件）\n\n**3. 抽出データ一覧**\n- ブランド理念：${d.A.ブランド理念||'（取得済み）'}\n- 独自の強み：${d.A.独自の強み||'（取得済み）'}\n- 記事内での呼称：${d.hyouki}\n- ターゲット層：${d.A.ターゲット層||'（取得済み）'}\n- 禁止用語：${d.A.禁止用語||'なし'}\n\n**4. 不足項目**\nなし\n\n**5. 執筆可否**\n✅ 可`;
-const MOCK_P2=(kw)=>`## 企画設計レポート\n\n**キーワード**：「${kw}」\n\n**ペルソナ4案**\n\n**① 顕在層** — 30代後半・マーケター。外注先を探している。\n**② 潜在層** — 40代・経営者。何から始めればいいか分からない。\n**③ 比較検討層** — 広報担当・20代後半。複数社を比較中。\n**④ トレンド層** — AIに引用される記事に関心がある経営層。\n\n**おすすめ**：**② 潜在層** — 競合が「やり方説明」に偏っており差別化できる。\n\n**競合に足りない切り口**\n→ 実績数値を根拠にしたROI説明\n→ 失敗パターンと回避策\n→ AI対応を意識した構造化記事の作り方`;
-const MOCK_P3=(kw)=>JSON.stringify({keyword:kw,competition_level:"中",competition_summary:"上位記事は大手メディアが占め一般論が多い。具体的事例や数値を持つ記事は少なく差別化余地がある。",competitors:[{rank:1,title:`${kw}とは？基礎から実践まで`,url:"https://example-media.jp/",domain:"example-media.jp",seo_score:5,aio_score:3,strengths:["網羅性が高い"],title_pattern:"完全ガイド型"},{rank:2,title:`中小企業が${kw}で成果を出す方法`,url:"https://marketing-hub.jp/",domain:"marketing-hub.jp",seo_score:4,aio_score:4,strengths:["事例紹介あり"],title_pattern:"ターゲット特化型"},{rank:3,title:`${kw}の始め方と費用相場`,url:"https://biz-navi.jp/",domain:"biz-navi.jp",seo_score:4,aio_score:3,strengths:["費用情報が充実"],title_pattern:"費用特化型"}],gap_opportunities:["実績数値を前面に出したROI特化記事","失敗事例を正直に書いた信頼性重視コンテンツ","AI対応を意識した構造化コンテンツ"],recommended_titles:[`売上につながる${kw}｜事例と具体的ROI`,`AIにも評価される${kw}の設計方法`],overlap_risk:"低",overlap_reason:"提案タイトルは数値・AI対応・担当者視点で差別化しており既存記事とパターンが重複しない。"});
-const MOCK_P4=(company,kw)=>`# ${kw}で成果を出すための実践ガイド\n\nこの記事でわかること：コンテンツ戦略の設計フロー、失敗パターンと回避策を整理します。\n\n## なぜ今コンテンツ戦略が重要なのか\n\n### 一次情報という差別化の武器\n\n大手メディアが提供できない生の声・現場の数値・失敗談を中小企業は持っている。\n\n### 潜在層へのアプローチ\n\n顕在層を狙う広告とは異なり、コンテンツマーケティングは潜在層・比較検討層にリーチできる。\n\n## 設計の4ステップ\n\n### ステップ1：データ確認と執筆根拠の確定\n\n記事を書く前に会社の一次情報を整理する。[要確認・追記]\n\n### ステップ2：ペルソナ設計\n\nキーワードに対して4種のペルソナを設定し差別化できる切り口を特定する。\n\n## まとめ\n\n成果を出す企業に共通するのは「書く前の設計」に時間をかけていることだ。\n\n---\n\`\`\`json\n{"charCount":1200,"persona":"30〜45歳・マーケター・経営者・広報担当","improvement":"FAQセクションの追加でAIOスコアが向上する見込み。内部リンクを2本以上設置推奨。","selfScore":76,"refs":"Phase3競合分析3件、シートデータ取得済み","aiScores":{"chatgpt":{"intent":1.6,"structure":1.5,"quotable":1.4,"eeat":1.0,"evidence":1.0,"context":0.3,"freshness":0.3},"gemini":{"originality":1.7,"structure":1.5,"authority":1.4,"depth":1.2,"recency":0.7,"trust":0.7},"claude":{"selfcontained":1.7,"specificity":1.4,"schema":1.3,"intent":1.1,"eeat":0.8,"readability":0.8},"perplexity":{"conclusion":1.5,"evidence":1.4,"originality":1.3,"structure":1.1,"eeat":1.1,"freshness":0.8}}}\n\`\`\``;
+const MOCK_P1=(c,d)=>`## データ確認結果\n\n**1. 会社名**\n${d.A.会社名}\n\n**2. 取得シート数**\n${d.tabCount}タブ（過去記事: ${d.B.全記事数}件）\n\n**3. 抽出データ**\n- ブランド理念：${d.A.ブランド理念||'（取得済み）'}\n- 独自の強み：${d.A.独自の強み||'（取得済み）'}\n- 記事内での呼称：${d.hyouki}\n- ターゲット層：${d.A.ターゲット層||'（取得済み）'}\n- 禁止用語：${d.A.禁止用語||'なし'}\n\n**4. 不足項目**\nなし\n\n**5. 執筆可否**\n✅ 可`;
+const MOCK_P2=(kw)=>`## 企画設計レポート\n\n**キーワード**：「${kw}」\n\n**ペルソナ4案**\n\n**① 顕在層** — 30代後半・マーケター。外注先を探している。\n**② 潜在層** — 40代・経営者。何から始めればいいか分からない。\n**③ 比較検討層** — 広報担当・20代後半。複数社を比較中。\n**④ トレンド層** — AIに引用される記事に関心がある経営層。\n\n**おすすめ**：**② 潜在層**\n\n**競合に足りない切り口**\n→ 実績数値を根拠にしたROI説明\n→ 失敗パターンと回避策\n→ AI対応を意識した構造化記事の作り方`;
+const MOCK_P3=(kw)=>JSON.stringify({keyword:kw,competition_level:"中",competition_summary:"上位記事は大手メディアが占め一般論が多い。差別化余地がある。",competitors:[{rank:1,title:`${kw}とは？基礎から実践まで`,url:"https://example-media.jp/",domain:"example-media.jp",seo_score:5,aio_score:3,strengths:["網羅性が高い"],title_pattern:"完全ガイド型"},{rank:2,title:`中小企業が${kw}で成果を出す方法`,url:"https://marketing-hub.jp/",domain:"marketing-hub.jp",seo_score:4,aio_score:4,strengths:["事例紹介あり"],title_pattern:"ターゲット特化型"}],gap_opportunities:["実績数値を前面に出したROI特化記事","失敗事例を正直に書いた信頼性重視コンテンツ"],recommended_titles:[`売上につながる${kw}｜事例と具体的ROI`],overlap_risk:"低",overlap_reason:"提案タイトルは差別化されており既存記事とパターンが重複しない。"});
+const MOCK_P4=(company,kw)=>`# ${kw}で成果を出すための実践ガイド\n\nこの記事でわかること：設計フロー、失敗パターンと回避策を整理します。\n\n## なぜ今コンテンツ戦略が重要なのか\n\n### 一次情報という差別化の武器\n\n大手メディアが提供できない生の声・現場の数値・失敗談を持っている。\n\n### 潜在層へのアプローチ\n\n顕在層を狙う広告とは異なり、潜在層・比較検討層にリーチできる。\n\n## 設計の4ステップ\n\n### ステップ1：データ確認\n記事を書く前に会社の一次情報を整理する。[要確認・追記]\n\n### ステップ2：ペルソナ設計\n4種のペルソナを設定し差別化できる切り口を特定する。\n\n## まとめ\n成果を出す企業に共通するのは「書く前の設計」に時間をかけていることだ。\n\n---\n\`\`\`json\n{"charCount":1200,"persona":"30〜45歳・マーケター・経営者","improvement":"FAQセクションの追加でAIOスコアが向上する見込み。","selfScore":76,"refs":"Phase3競合分析、シートデータ取得済み","aiScores":{"chatgpt":{"intent":1.6,"structure":1.5,"quotable":1.4,"eeat":1.0,"evidence":1.0,"context":0.3,"freshness":0.3},"gemini":{"originality":1.7,"structure":1.5,"authority":1.4,"depth":1.2,"recency":0.7,"trust":0.7},"claude":{"selfcontained":1.7,"specificity":1.4,"schema":1.3,"intent":1.1,"eeat":0.8,"readability":0.8},"perplexity":{"conclusion":1.5,"evidence":1.4,"originality":1.3,"structure":1.1,"eeat":1.1,"freshness":0.8}}}\n\`\`\``;
 
 async function streamClaude(sys,user,boxId,maxTokens=4000){
   const box=document.getElementById(boxId);
-  const apiKey=localStorage.getItem('comma_apikey')||'';
-  if(!apiKey){
-    let mockText='（モック出力）';
-    if(boxId==='sb1'){try{const d=await fetchClientSheetData(selectedClient);mockText=MOCK_P1(selectedClient,d);}catch(e){mockText='データ取得エラー: '+String(e?.message||e);}}
-    else if(boxId==='sb2')mockText=MOCK_P2(S.keyword);
-    else if(boxId==='sb4')mockText=MOCK_P4(selectedClient?.name,S.keyword);
-    return await mockStream(mockText,boxId);
+  if(!localStorage.getItem('comma_apikey')){
+    let mock='（モック）';
+    if(boxId==='sb1'){try{const d=await fetchClientSheetData(selectedClient);mock=MOCK_P1(selectedClient,d);}catch(e){mock='エラー: '+String(e?.message||e);}}
+    else if(boxId==='sb2')mock=MOCK_P2(S.keyword);
+    else if(boxId==='sb4')mock=MOCK_P4(selectedClient?.name,S.keyword);
+    return await mockStream(mock,boxId);
   }
   box.innerHTML='<span class="scursor"></span>';
   const res=await fetch('/api/gemini/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
@@ -1273,18 +1116,14 @@ async function streamClaude(sys,user,boxId,maxTokens=4000){
   }
   box.classList.add('done');box.innerHTML=escH(full);return full;
 }
-
 async function callClaude(sys,user,maxTokens=3000){
-  const apiKey=localStorage.getItem('comma_apikey')||'';
-  if(!apiKey){await sleep(1200);return MOCK_P3(S.keyword);}
+  if(!localStorage.getItem('comma_apikey')){await sleep(1200);return MOCK_P3(S.keyword);}
   const res=await fetch('/api/gemini',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
   if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
   const data=await res.json();return data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
 }
 
-// ══════════════════════════════════════════════════════════
-// STATE & NEW ARTICLE
-// ══════════════════════════════════════════════════════════
+// ── STATE ────────────────────────────────────────────────
 let S={sessionId:null,company:'',keyword:'',p1:null,p2:null,p3raw:null,p4:null,selectedPersona:null};
 function newSessionId(){return'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);}
 function saveSession(){
@@ -1298,7 +1137,6 @@ function saveSession(){
 function getHistory(){try{return JSON.parse(localStorage.getItem('comma_sessions')||'[]');}catch{return[];}}
 function updateHistCountBadge(){document.getElementById('histCountBadge').textContent=getHistory().length;}
 
-// 新規記事作成 — 作業画面のみリセット、シートキャッシュ・履歴・クライアントは触れない
 function newArticle(){
   S={sessionId:null,company:'',keyword:'',p1:null,p2:null,p3raw:null,p4:null,selectedPersona:null};
   selectedClient=null;clearClientSelection();
@@ -1324,9 +1162,7 @@ function newArticle(){
   switchView('main');
 }
 
-// ══════════════════════════════════════════════════════════
-// PHASE 1→2
-// ══════════════════════════════════════════════════════════
+// ── PHASE 1→2 ────────────────────────────────────────────
 async function runPhase12(){
   if(!selectedClient){showError('クライアントを選択してください');return;}
   const keyword=document.getElementById('keywordInput').value.trim();
@@ -1341,26 +1177,26 @@ async function runPhase12(){
     const data=await fetchClientSheetData(selectedClient);
     doneLS('ls1a','データ読み込み完了');
     activateLS('ls1b','シートデータを解析中...');await sleep(200);doneLS('ls1b',data.tabCount+'タブ取得済み');
-    activateLS('ls1c','【A】【B】【C】を確認中...');await sleep(200);doneLS('ls1c','過去記事 '+data.B.全記事数+' 件確認');
+    activateLS('ls1c','各タブを確認中...');await sleep(200);doneLS('ls1c','過去記事 '+data.B.全記事数+' 件確認');
     activateLS('ls1d','AI がデータを確認中...');showLogSep('sep1');
 
-    const internalLinks=data.B.過去記事.slice(0,5).map(a=>`  - ${a.title||'記事'}｜${a.url}`).join('\n');
+    const links=data.B.過去記事.slice(0,5).map(a=>`  - ${a.title||'記事'}｜${a.url}`).join('\n');
     const jirei=data.C.施工事例.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
     const koe=data.C.お客様の声.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
     const kodawari=data.C.こだわり.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
 
-    const p1u=`会社名: ${selectedClient.name}\n出力時の呼称: ${data.hyouki}\n\n=== 【A】会社基本情報 ===\nブランド理念: ${data.A.ブランド理念||'情報なし'}\n独自の強み: ${data.A.独自の強み||'情報なし'}\nターゲット層: ${data.A.ターゲット層||'情報なし'}\n禁止用語: ${data.A.禁止用語||'情報なし'}\n施工エリア: ${data.A.施工エリア||'情報なし'}\n商品コンセプト: ${data.A.商品コンセプト||'情報なし'}\nHP URL: ${data.A.HP_URL||'情報なし'}\n\n=== 【A】その他 ===\n${Object.entries(data.A.rawA||{}).map(([k,v])=>`${k}: ${v}`).join('\n')||'なし'}\n\n=== 【B】過去記事（全${data.B.全記事数}件・内部リンク候補） ===\n${internalLinks||'情報なし'}\n\n=== 【C】施工事例 ===\n${jirei}\n\n=== 【C】お客様の声 ===\n${koe}\n\n=== 【C】こだわり ===\n${kodawari}\n\n=== 【C】実績数値 ===\n${data.C.実績数値||'情報なし'}\n\n上記データを確認し指定の形式で出力してください。`;
+    const p1u=`会社名: ${selectedClient.name}\n出力時の呼称: ${data.hyouki}\n\n=== 【A】会社基本情報 ===\nブランド理念: ${data.A.ブランド理念||'情報なし'}\n独自の強み: ${data.A.独自の強み||'情報なし'}\nターゲット層: ${data.A.ターゲット層||'情報なし'}\n禁止用語: ${data.A.禁止用語||'情報なし'}\n施工エリア: ${data.A.施工エリア||'情報なし'}\n商品コンセプト: ${data.A.商品コンセプト||'情報なし'}\nHP URL: ${data.A.HP_URL||'情報なし'}\n\n=== 【A】その他 ===\n${Object.entries(data.A.rawA||{}).map(([k,v])=>`${k}: ${v}`).join('\n')||'なし'}\n\n=== 【B】過去記事（全${data.B.全記事数}件） ===\n${links||'情報なし'}\n\n=== 【C】施工事例 ===\n${jirei}\n\n=== 【C】お客様の声 ===\n${koe}\n\n=== 【C】こだわり ===\n${kodawari}\n\n=== 【C】実績数値 ===\n${data.C.実績数値||'情報なし'}\n\n上記データを確認し指定の形式で出力してください。`;
     const p1out=await streamClaude(P1_SYS,p1u,'sb1');S.p1=p1out;
     doneLS('ls1d','データ確認完了');setWS(1,'done');setBadge('b1','bok','PHASE 1 完了 ✓');
-    showResult(1,p1out,'Phase 1 完了 — データ確認が完了しました','キャッシュ使用 / Sheets '+data.tabCount+'タブ');
+    showResult(1,p1out,'Phase 1 完了 — データ確認が完了しました','キャッシュ使用 / '+data.tabCount+'タブ');
     saveSession();await sleep(500);
 
     showCard('pc2');setWS(2,'running');setBadge('b2','brunning','PHASE 2 実行中');
     activateLS('ls2a','データを整形中...');await sleep(300);doneLS('ls2a','整形完了');
     activateLS('ls2b','競合傾向を分析中...');await sleep(400);doneLS('ls2b','分析完了');
     activateLS('ls2c','AI が企画設計中...');showLogSep('sep2');
-    const p2u='キーワード: '+keyword+'\n\n=== Phase 1 確認済みデータ ===\n'+p1out+'\n\n上記をもとに企画設計を行ってください。本文は書かないこと。';
-    const p2out=await streamClaude(P2_SYS,p2u,'sb2');S.p2=p2out;
+    const p2out=await streamClaude(P2_SYS,'キーワード: '+keyword+'\n\n=== Phase 1 確認済みデータ ===\n'+p1out+'\n\n上記をもとに企画設計を行ってください。本文は書かないこと。','sb2');
+    S.p2=p2out;
     doneLS('ls2c','企画設計完了');setWS(2,'done');setBadge('b2','bok','PHASE 2 完了 ✓');
     showResult(2,p2out,'Phase 2 完了 — 企画設計が完了しました','キーワード: '+keyword);
     saveSession();renderPersonaOptions();
@@ -1369,8 +1205,8 @@ async function runPhase12(){
 }
 
 function renderPersonaOptions(){
-  const options=['顕在層（今すぐ検討）','潜在層（課題認識段階）','比較検討層','トレンド層'];
-  document.getElementById('personaOptions').innerHTML=options.map((label,idx)=>`<label style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;background:#fff;display:flex;align-items:center;gap:8px;font-size:13px"><input type="radio" name="personaChoice" value="${label}" ${idx===0?'checked':''}>${escH(label)}</label>`).join('');
+  const opts=['顕在層（今すぐ検討）','潜在層（課題認識段階）','比較検討層','トレンド層'];
+  document.getElementById('personaOptions').innerHTML=opts.map((label,idx)=>`<label style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;background:#fff;display:flex;align-items:center;gap:8px;font-size:13px"><input type="radio" name="personaChoice" value="${label}" ${idx===0?'checked':''}>${escH(label)}</label>`).join('');
   document.getElementById('personaSelectBox').style.display='block';
   setTimeout(()=>document.getElementById('personaSelectBox').scrollIntoView({behavior:'smooth',block:'start'}),300);
 }
@@ -1385,9 +1221,7 @@ function confirmPersonaSelection(){
   setTimeout(()=>document.getElementById('p3Gate').scrollIntoView({behavior:'smooth',block:'start'}),300);
 }
 
-// ══════════════════════════════════════════════════════════
-// PHASE 3
-// ══════════════════════════════════════════════════════════
+// ── PHASE 3 ──────────────────────────────────────────────
 async function runPhase3(){
   if(!S.p1||!S.p2){showError('Phase 1→2 を先に実行してください');return;}
   const btn=document.getElementById('runBtn3');btn.disabled=true;document.getElementById('rb3txt').textContent='分析中...';
@@ -1419,15 +1253,13 @@ async function runPhase3(){
 function renderCompetitorResults(d){
   const cl={'低':'cl-low','中':'cl-mid','高':'cl-high'}[d.competition_level]||'cl-mid';
   const or={'低':'cl-low','中':'cl-mid','高':'cl-high'}[d.overlap_risk]||'cl-mid';
-  const cards=(d.competitors||[]).map(c=>`<div class="comp-card"><div class="comp-rank">${c.rank}位</div><div class="comp-title">${escH(c.title||'')}</div><a class="comp-domain" href="${escH(c.url||'#')}" target="_blank" rel="noopener">${escH(c.domain||'')}</a><div class="comp-scores"><div class="score-item"><div class="score-label">SEO</div><div class="score-bar"><div class="score-fill fill-seo" style="width:${(c.seo_score||0)*20}%"></div></div></div><div class="score-item"><div class="score-label">AIO</div><div class="score-bar"><div class="score-fill fill-aio" style="width:${(c.aio_score||0)*20}%"></div></div></div></div><div style="display:flex;flex-wrap:wrap;gap:3px">${(c.strengths||[]).map(s=>`<span class="comp-tag">${escH(s)}</span>`).join('')}</div></div>`).join('');
+  const cards=(d.competitors||[]).map(c=>`<div class="comp-card"><div class="comp-rank">${c.rank}位</div><div class="comp-title">${escH(c.title||'')}</div><a class="comp-domain" href="${escH(c.url||'#')}" target="_blank" rel="noopener">${escH(c.domain||'')}</a><div class="comp-scores"><div class="score-item"><div class="score-label">SEO</div><div class="score-bar"><div class="score-fill fill-seo" style="width:${(c.seo_score||0)*20}%"></div></div></div><div class="score-item"><div class="score-label">AIO</div><div class="score-bar"><div class="score-fill fill-aio" style="width:${(c.aio_score||0)*20}%"></div></div></div></div><div style="display:flex;flex-wrap:wrap">${(c.strengths||[]).map(s=>`<span class="comp-tag">${escH(s)}</span>`).join('')}</div></div>`).join('');
   const recs=(d.recommended_titles||[]).map(t=>`<div class="comp-rec-item" onclick="navigator.clipboard.writeText('${escH(t).replace(/'/g,"\\'")}').then(()=>showError('コピーしました',true))"><span>${escH(t)}</span></div>`).join('');
   const gaps=(d.gap_opportunities||[]).map(g=>`<li style="font-size:12px;color:var(--ink-sub);padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:7px"><span style="color:var(--ok)">→</span>${escH(g)}</li>`).join('');
   document.getElementById('compResults').innerHTML=`<div class="comp-summary"><div class="comp-summary-title">競合概況</div><span class="comp-level ${cl}">競合レベル: ${d.competition_level||'?'}</span><span class="comp-level ${or}" style="margin-left:8px">タイトル被りリスク: ${d.overlap_risk||'?'}</span><div style="font-size:12px;color:var(--ink-sub);margin-top:8px;line-height:1.7">${escH(d.competition_summary||'')} ${escH(d.overlap_reason||'')}</div></div><div class="comp-grid">${cards}</div>${gaps?`<div style="margin:12px 0"><div class="comp-summary-title" style="color:var(--p1)">差別化できる切り口</div><ul style="list-style:none">${gaps}</ul></div>`:''} ${recs?`<div style="margin-top:12px"><div style="font-size:10px;color:var(--ink-muted);margin-bottom:6px">推奨タイトル案（クリックでコピー）</div>${recs}</div>`:''}`;
 }
 
-// ══════════════════════════════════════════════════════════
-// PHASE 4
-// ══════════════════════════════════════════════════════════
+// ── PHASE 4 ──────────────────────────────────────────────
 async function runPhase4(){
   if(!S.p1||!S.p2){showError('Phase 1→2 を先に実行してください');return;}
   const btn=document.getElementById('runBtn4');btn.disabled=true;document.getElementById('rb4txt').textContent='執筆中...';
@@ -1438,8 +1270,8 @@ async function runPhase4(){
     activateLS('ls4b','構成を設計中...');await sleep(500);doneLS('ls4b','構成設計完了');
     activateLS('ls4c','本文を執筆中...');showLogSep('sep4');
     const compInfo=S.p3raw?'\n\n=== Phase 3 競合分析 ===\n'+S.p3raw:'';
-    const p4u='=== Phase 1 確認済みデータ ===\n'+S.p1+'\n\n=== Phase 2 企画設計 ===\n'+S.p2+compInfo+'\n\n上記をもとに記事を執筆してください。';
-    const p4out=await streamClaude(P4_SYS,p4u,'sb4',6000);S.p4=p4out;
+    const p4out=await streamClaude(P4_SYS,'=== Phase 1 確認済みデータ ===\n'+S.p1+'\n\n=== Phase 2 企画設計 ===\n'+S.p2+compInfo+'\n\n上記をもとに記事を執筆してください。','sb4',6000);
+    S.p4=p4out;
     doneLS('ls4c','執筆完了');activateLS('ls4d','評価レポートを生成中...');await sleep(300);doneLS('ls4d','完了');
     setWS(4,'done');setBadge('b4','bok','PHASE 4 完了 ✓');
     const chars=p4out.replace(/\s/g,'').length;
@@ -1450,9 +1282,7 @@ async function runPhase4(){
   btn.disabled=false;document.getElementById('rb4txt').textContent='✍ 執筆を開始する（約5〜10分）';
 }
 
-// ══════════════════════════════════════════════════════════
-// REPORT
-// ══════════════════════════════════════════════════════════
+// ── REPORT ───────────────────────────────────────────────
 const AI_RUBRICS={
   chatgpt:{name:'ChatGPT（GPT-4o）',color:'#10a37f',items:[{key:'intent',w:2.0},{key:'structure',w:2.0},{key:'quotable',w:2.0},{key:'eeat',w:1.5},{key:'evidence',w:1.5},{key:'context',w:0.5},{key:'freshness',w:0.5}]},
   gemini:{name:'Gemini',color:'#4285f4',items:[{key:'originality',w:2.5},{key:'structure',w:2.0},{key:'authority',w:2.0},{key:'depth',w:1.5},{key:'recency',w:1.0},{key:'trust',w:1.0}]},
@@ -1496,9 +1326,7 @@ function exportReport(){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['# 制作完了レポート\n会社: '+s.company+'\nキーワード: '+s.keyword+'\n\n'+(s.phases?.p4||'')],{type:'text/plain;charset=utf-8'}));a.download='report_'+s.company+'_'+s.keyword+'.txt';a.click();
 }
 
-// ══════════════════════════════════════════════════════════
-// HISTORY
-// ══════════════════════════════════════════════════════════
+// ── HISTORY ──────────────────────────────────────────────
 function renderHistory(){
   const sessions=getHistory();
   document.getElementById('histTotalLabel').textContent=sessions.length+'件';
@@ -1514,9 +1342,7 @@ function renderHistory(){
 function openHistReport(id){const s=getHistory().find(x=>x.id===id);if(!s)return;prevHistoryView='history';openReport(s);}
 function deleteAllHistory(){if(!confirm('全ての履歴を削除しますか？'))return;localStorage.removeItem('comma_sessions');renderHistory();updateHistCountBadge();}
 
-// ══════════════════════════════════════════════════════════
-// MEMO
-// ══════════════════════════════════════════════════════════
+// ── MEMO ─────────────────────────────────────────────────
 function getMemos(){try{return JSON.parse(localStorage.getItem('comma_memos')||'[]');}catch{return[];}}
 function addMemo(){
   const text=document.getElementById('memoText').value.trim();const type=document.getElementById('memoType').value;
@@ -1535,16 +1361,12 @@ function renderMemos(){
   list.innerHTML=memos.map(m=>{const t=tMap[m.type]||tMap.note;const canDel=currentUser?.role==='admin'||currentUser?.name===m.user;return`<div class="memo-item"><div class="memo-item-meta"><span class="memo-user">${escH(m.user||'?')}</span><span class="memo-ts">${new Date(m.timestamp).toLocaleDateString('ja-JP')}</span><span class="memo-type-badge ${t.cls}">${t.lbl}</span></div><div class="memo-text">${escH(m.text).replace(/\n/g,'<br>')}</div>${canDel?`<button class="memo-del" onclick="deleteMemo(${m.id})">×</button>`:''}</div>`;}).join('');
 }
 
-// ══════════════════════════════════════════════════════════
-// SETTINGS
-// ══════════════════════════════════════════════════════════
+// ── SETTINGS ─────────────────────────────────────────────
 function renderUserList(){
   document.getElementById('userList').innerHTML=Object.entries(DEMO_USERS).map(([u,info])=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="font-weight:500;min-width:70px">${u}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 6px;border-radius:3px;background:${info.role==='admin'?'var(--gold-bg)':'var(--paper)'};color:${info.role==='admin'?'var(--gold)':'var(--ink-muted)'};border:1px solid ${info.role==='admin'?'#e8c878':'var(--border)'}">${info.role==='admin'?'管理者':'ユーザー'}</span></div>`).join('');
 }
 
-// ══════════════════════════════════════════════════════════
-// TEST
-// ══════════════════════════════════════════════════════════
+// ── TEST ─────────────────────────────────────────────────
 async function runTest(){
   const sel=document.getElementById('testClientSelect');
   if(!sel||!sel.value){showError('クライアントを選択してください');return;}
@@ -1557,7 +1379,7 @@ async function runTest(){
   out.textContent='接続中...';
   try{
     const data=await fetchClientSheetData(client,true);
-    out.innerHTML=`<span style="color:var(--ok)">✓ 接続成功\n\n会社名: ${escH(client.name)}\n呼称: ${escH(client.hyouki)}\nURL: ${escH(client.url)}\n取得タブ数: ${data.tabCount}\n過去記事数: ${data.B.全記事数}件\n\n</span><span style="color:var(--ink-sub)">データサンプル:\n${escH(JSON.stringify({A:{ブランド理念:data.A.ブランド理念,独自の強み:data.A.独自の強み,ターゲット層:data.A.ターゲット層},B:{全記事数:data.B.全記事数,過去記事:data.B.過去記事.slice(0,2)},C:{施工事例数:data.C.施工事例.length}},null,2))}</span>`;
+    out.innerHTML=`<span style="color:var(--ok)">✓ 接続成功\n\n会社名: ${escH(client.name)}\n呼称: ${escH(client.hyouki)}\nURL: ${escH(client.url||'')}\n取得タブ数: ${data.tabCount}\n過去記事数: ${data.B.全記事数}件\n\n</span><span style="color:var(--ink-sub)">データサンプル:\n${escH(JSON.stringify({A:{ブランド理念:data.A.ブランド理念,独自の強み:data.A.独自の強み,ターゲット層:data.A.ターゲット層},B:{全記事数:data.B.全記事数,過去記事:data.B.過去記事.slice(0,2)},C:{施工事例数:data.C.施工事例.length}},null,2))}</span>`;
     showError('接続テスト成功',true);
   }catch(e){
     out.innerHTML=`<span style="color:var(--err)">❌ 接続失敗\n\n${escH(String(e?.message||e))}\n\n確認事項:\n・シートURLが正しいか\n・「リンクを知っている全員が閲覧可」に設定されているか</span>`;
@@ -1566,9 +1388,7 @@ async function runTest(){
   btn.disabled=false;document.getElementById('testBtnTxt').textContent='接続テストを実行';
 }
 
-// ══════════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════════
+// ── INIT ─────────────────────────────────────────────────
 window.addEventListener('load',()=>{
   if(!checkAuth()){
     ['loginUser','loginPass'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>e.key==='Enter'&&doLogin()));
