@@ -1144,34 +1144,59 @@ ${COMMA_RULES}
 
 function renderPersonaOptions(){
   const box=document.getElementById('personaOptions');
-  // Phase2の出力からペルソナ部分を抽出して表示
-  // S.p2テキストからペルソナ①〜④を取り出す
   const text=S.p2||'';
   const lines=text.split('\n');
   const personas=[];
+
   lines.forEach(line=>{
-    // 「①」「②」「③」「④」または「**①**」などにマッチ
     if(/[①②③④]/.test(line)){
       const cleaned=line.replace(/\*\*/g,'').replace(/^[\s\-\*#]+/,'').trim();
       if(cleaned.length>5)personas.push(cleaned);
     }
   });
-  // 抽出できなかった場合のフォールバック
-　const opts=personas.length>=2?personas:[];
-  box.innerHTML=opts.map((label,idx)=>`
-    <label style="
-      border:1px solid var(--border);border-radius:8px;padding:12px 14px;
-      cursor:pointer;background:#fff;display:flex;align-items:flex-start;gap:10px;
-      font-size:12px;line-height:1.6;transition:border-color .15s;
-    " onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor=this.querySelector('input').checked?'var(--purple)':'var(--border)'">
-      <input type="radio" name="personaChoice" value="${escH(label)}" ${idx===0?'checked':''} style="margin-top:3px;flex-shrink:0" onchange="document.querySelectorAll('#personaOptions label').forEach(l=>l.style.borderColor='var(--border)');this.closest('label').style.borderColor='var(--purple)'">
-      <span>${escH(label)}</span>
-    </label>
-  `).join('');
+
+  if(!personas.length){
+    box.innerHTML='<div style="color:var(--ink-muted);font-size:12px">ペルソナを取得できませんでした</div>';
+    document.getElementById('personaSelectBox').style.display='block';
+    return;
+  }
+
+  // 15文字以内のタイトルを抽出（①の後の最初の区切りまで）
+  const shortTitle=(str)=>{
+    // 「①」の後のテキストを取得
+    const body=str.replace(/^[①②③④]\s*/,'');
+    // 「。」「、」「(」「（」「—」「－」で区切る
+    const m=body.match(/^([^。、\(（—－\n]{1,20})/);
+    const title=m?m[1].trim():body.slice(0,15);
+    return title.length>15?title.slice(0,15)+'…':title;
+  };
+
+  box.innerHTML=personas.map((label,idx)=>{
+    const num=['①','②','③','④'][idx]||'';
+    const title=shortTitle(label);
+    const full=label.replace(/^[①②③④]\s*/,'');
+    return`<label style="
+      border:1px solid var(--border);border-radius:10px;
+      cursor:pointer;background:#fff;display:flex;flex-direction:column;gap:6px;
+      padding:14px 16px;transition:border-color .15s;
+    " onmouseover="this.style.borderColor='var(--purple)'"
+      onmouseout="this.style.borderColor=this.querySelector('input').checked?'var(--purple)':'var(--border)'">
+      <div style="display:flex;align-items:center;gap:10px">
+        <input type="radio" name="personaChoice" value="${escH(label)}"
+          ${idx===0?'checked':''}
+          style="flex-shrink:0"
+          onchange="document.querySelectorAll('#personaOptions label').forEach(l=>l.style.borderColor='var(--border)');this.closest('label').style.borderColor='var(--purple)'">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--purple-dark);font-weight:500">${num}</span>
+        <span style="font-size:13px;font-weight:500;color:var(--ink)">${escH(title)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--ink-sub);line-height:1.6;padding-left:30px">${escH(full)}</div>
+    </label>`;
+  }).join('');
 
   document.getElementById('personaSelectBox').style.display='block';
   setTimeout(()=>document.getElementById('personaSelectBox').scrollIntoView({behavior:'smooth',block:'start'}),300);
 }
+
 const P3_SYS=`あなたはSEO/AIO分析専門家です。指定キーワードでWeb検索し競合記事を調査してください。\n必ず以下のJSON形式のみで出力。前後に説明文やコードブロック記号を含めないこと。\n{"keyword":"","competition_level":"低|中|高","competition_summary":"","competitors":[{"rank":1,"title":"","url":"","domain":"","seo_score":4,"aio_score":3,"strengths":[],"title_pattern":""}],"gap_opportunities":[],"recommended_titles":[],"overlap_risk":"低|中|高","overlap_reason":""}`;
 const P4_SYS=`あなたはシニア・コンテンツディレクターです。確定済みデータだけを根拠に記事を書くこと。\n${COMMA_RULES}\n\n# 最優先ルール\n- シートにない数値・実績・URLは創作しない → [要確認・追記] と明記\n\n# 執筆条件\n- 8,000〜10,000文字 / Markdown形式\n- H1は会社名を含めない\n- 各H2の下にH3を2つ以上置く\n- PR表現は全体で2回まで\n- 冒頭に「この記事でわかること」を3〜5行で書く\n\n# 記事後にJSON出力\n---\n\`\`\`json\n{"charCount":数値,"persona":"想定ペルソナ","improvement":"改善点","selfScore":数値,"refs":"参照データログ","aiScores":{"chatgpt":{"intent":0,"structure":0,"quotable":0,"eeat":0,"evidence":0,"context":0,"freshness":0},"gemini":{"originality":0,"structure":0,"authority":0,"depth":0,"recency":0,"trust":0},"claude":{"selfcontained":0,"specificity":0,"schema":0,"intent":0,"eeat":0,"readability":0},"perplexity":{"conclusion":0,"evidence":0,"originality":0,"structure":0,"eeat":0,"freshness":0}}}\n\`\`\`\n各aiScoresの合計が10点になるよう配点すること。`;
 
