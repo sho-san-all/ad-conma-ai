@@ -1,25 +1,9 @@
 {
   "functions": {
     "api/claude.js": { "maxDuration": 60 },
-    "api/claude/stream.js": { "maxDuration": 60 }
+    "api/claude/stream.js": { "maxDuration": 60 },
+    "api/gemini/index.js": { "maxDuration": 60 },
+    "api/gemini/stream.js": { "maxDuration": 60 },
+    "api/sheets.js": { "maxDuration": 30 }
   }
 }
-```
-
----
-
-**④ index.html のAPI URLを2箇所変更**
-
-今の index.html 内の：
-```
-https://api.anthropic.com/v1/messages
-```
-を全部 → `/api/claude` に変更（streamの方は `/api/claude/stream`）
-
----
-
-**⑤ Vercel環境変数を追加**
-
-Vercel Dashboard → プロジェクト → Settings → Environment Variables
-```
-ANTHROPIC_API_KEY = sk-ant-...
