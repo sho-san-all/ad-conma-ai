@@ -33,7 +33,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .lc-inp:focus{border-color:var(--purple);background:#fff}
 .lc-btn{width:100%;padding:12px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;margin-top:4px}
 .lc-btn:hover{background:#22223a}
-.lc-hint{font-size:11px;color:var(--ink-muted);text-align:center;margin-top:16px}
 #app{display:none;min-height:100vh}
 #sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:#1a1a2e;display:flex;flex-direction:column;z-index:50}
 .sb-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
@@ -277,7 +276,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
     <div class="lc-sub">CONTENT PRODUCTION SYSTEM</div>
     <div class="lc-err" id="lcErr"></div>
     <label class="lc-lbl">ユーザー名</label>
-   <input type="text" id="loginUser" class="lc-inp" placeholder="username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    <input type="text" id="loginUser" class="lc-inp" placeholder="username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
     <label class="lc-lbl">パスワード</label>
     <input type="password" id="loginPass" class="lc-inp" placeholder="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="lc-btn" onclick="doLogin()">ログイン</button>
@@ -316,7 +315,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       <div class="topbar-spacer"></div>
       <div class="topbar-session" id="sessionLabel">新規セッション</div>
     </div>
-
     <!-- MAIN -->
     <div class="view active" id="view-main">
       <div class="wizard">
@@ -358,4 +356,1222 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
             <div class="ls" id="ls1c"><div class="ls-icon"></div><div class="ls-body">【A】【B】【C】タブを確認中<div class="ls-sub" id="ls1c-s"></div></div></div>
             <div class="ls" id="ls1d"><div class="ls-icon"></div><div class="ls-body">AI がデータを確認中<div class="ls-sub" id="ls1d-s"></div></div></div>
           </div>
-          <div class="log-sep
+          <div class="log-sep" id="sep1"><div class="log-sep-lbl">AI の出力</div></div>
+          <div class="stream-box" id="sb1"></div>
+        </div>
+        <div class="res-body collapsed" id="rb1"><div class="res-done-banner" id="rbn1"></div><div class="res-content" id="rc1"></div><div class="res-meta"><span class="mpill" id="rm1"></span></div></div>
+      </div>
+
+      <div class="pc" id="pc2">
+        <div class="pch c2"><div class="pch-left"><span class="pbadge b2" id="b2">PHASE 2</span><span class="pch-title">企画設計</span></div><div class="pch-actions"><button class="act-btn" onclick="copyPhase(2)">コピー</button><button class="act-btn" onclick="togglePC(2)">▼</button></div></div>
+        <div class="live-log" id="ll2">
+          <div class="log-title">実行ログ</div>
+          <div class="log-steps">
+            <div class="ls" id="ls2a"><div class="ls-icon"></div><div class="ls-body">Phase 1 データを整形中<div class="ls-sub" id="ls2a-s"></div></div></div>
+            <div class="ls" id="ls2b"><div class="ls-icon"></div><div class="ls-body">キーワードの競合傾向を分析中<div class="ls-sub" id="ls2b-s"></div></div></div>
+            <div class="ls" id="ls2c"><div class="ls-icon"></div><div class="ls-body">AI が企画設計中<div class="ls-sub" id="ls2c-s"></div></div></div>
+          </div>
+          <div class="log-sep" id="sep2"><div class="log-sep-lbl">AI の出力</div></div>
+          <div class="stream-box" id="sb2"></div>
+        </div>
+        <div class="res-body collapsed" id="rb2"><div class="res-done-banner" id="rbn2"></div><div class="res-content" id="rc2"></div><div class="res-meta"><span class="mpill" id="rm2"></span></div></div>
+      </div>
+
+      <div id="personaSelectBox" style="display:none;margin-top:14px;">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:8px">採用するターゲットを選択</div>
+          <div id="personaOptions" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
+          <button class="run-btn p3" onclick="confirmPersonaSelection()">このターゲットで進む</button>
+        </div>
+      </div>
+
+      <div id="p3Gate" style="display:none">
+        <div class="card" style="border-left:3px solid var(--p3)">
+          <div class="card-title">Phase 3 — 競合分析を実行しますか？</div>
+          <div class="card-desc">指定キーワードで上位表示されている競合記事を調査します。</div>
+          <button class="run-btn p3" id="runBtn3" onclick="runPhase3()"><span id="rb3txt">競合分析を実行する（Web検索）</span></button>
+        </div>
+      </div>
+
+      <div class="pc" id="pc3">
+        <div class="pch c3"><div class="pch-left"><span class="pbadge b3" id="b3">PHASE 3</span><span class="pch-title">競合分析</span></div><div class="pch-actions"><button class="act-btn" onclick="copyPhase(3)">コピー</button><button class="act-btn" onclick="togglePC(3)">▼</button></div></div>
+        <div class="live-log" id="ll3">
+          <div class="log-title">実行ログ</div>
+          <div class="log-steps">
+            <div class="ls" id="ls3a"><div class="ls-icon"></div><div class="ls-body">キーワードで上位記事を検索中<div class="ls-sub" id="ls3a-s"></div></div></div>
+            <div class="ls" id="ls3b"><div class="ls-icon"></div><div class="ls-body">SEO・AIOスコアを評価中<div class="ls-sub" id="ls3b-s"></div></div></div>
+            <div class="ls" id="ls3c"><div class="ls-icon"></div><div class="ls-body">タイトル被り・差別化ポイントを分析中<div class="ls-sub" id="ls3c-s"></div></div></div>
+          </div>
+          <div class="log-sep" id="sep3"><div class="log-sep-lbl">分析結果</div></div>
+        </div>
+        <div class="res-body collapsed" id="rb3"><div class="res-done-banner" id="rbn3"></div><div id="compResults"></div><div class="res-meta"><span class="mpill" id="rm3"></span></div></div>
+      </div>
+
+      <div class="p4-gate" id="p4Gate">
+        <div class="card-title" style="margin-bottom:5px">Phase 4 — 記事執筆の準備ができました</div>
+        <div class="card-desc">Phase 1・2・3 で確認した確定済みデータのみを根拠に、8,000〜10,000字の記事を執筆します。</div>
+        <ul class="p4-checklist">
+          <li>シートにない数値・実績は [要確認・追記] と明記</li>
+          <li>H1 に会社名を含めない / 各 H2 の下に H3 を 2 つ以上配置</li>
+          <li>PR表現は全体で 2 回まで / 高圧的な文体は使わない</li>
+        </ul>
+        <button class="run-btn p4" id="runBtn4" onclick="runPhase4()"><span id="rb4txt">✍ 執筆を開始する（約5〜10分）</span></button>
+      </div>
+
+      <div class="pc" id="pc4">
+        <div class="pch c4"><div class="pch-left"><span class="pbadge b4" id="b4">PHASE 4</span><span class="pch-title">執筆済み記事</span></div><div class="pch-actions"><button class="act-btn" onclick="copyPhase(4)">Markdownコピー</button><button class="act-btn" onclick="togglePC(4)">▼</button></div></div>
+        <div class="live-log" id="ll4">
+          <div class="log-title">実行ログ</div>
+          <div class="log-steps">
+            <div class="ls" id="ls4a"><div class="ls-icon"></div><div class="ls-body">確認済みデータを統合中<div class="ls-sub" id="ls4a-s"></div></div></div>
+            <div class="ls" id="ls4b"><div class="ls-icon"></div><div class="ls-body">記事構成（H2/H3）を設計中<div class="ls-sub" id="ls4b-s"></div></div></div>
+            <div class="ls" id="ls4c"><div class="ls-icon"></div><div class="ls-body">本文を執筆中（しばらくかかります）<div class="ls-sub" id="ls4c-s"></div></div></div>
+            <div class="ls" id="ls4d"><div class="ls-icon"></div><div class="ls-body">SEO・AIO評価レポートを生成中<div class="ls-sub" id="ls4d-s"></div></div></div>
+          </div>
+          <div class="log-sep" id="sep4"><div class="log-sep-lbl">執筆された記事</div></div>
+          <div class="stream-box" id="sb4"></div>
+        </div>
+        <div class="res-body collapsed" id="rb4">
+          <div class="res-done-banner" id="rbn4"></div>
+          <div class="res-content" id="rc4"></div>
+          <div class="res-meta"><span class="mpill" id="rm4"></span><span class="mpill" id="wc4"></span></div>
+          <div style="margin-top:14px">
+            <button class="small-btn primary" style="padding:8px 18px;font-size:12px" onclick="openReportFromCurrent()">制作完了レポートを見る →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- TEST -->
+    <div class="view" id="view-test">
+      <div class="page-title">テスト接続確認</div>
+      <div class="page-desc">登録済みクライアントのシート接続をテストします。</div>
+      <div class="test-notice">テスト結果は履歴に保存されません。</div>
+      <div class="card">
+        <div class="card-title">シート接続テスト</div>
+        <div class="fg">
+          <div class="fl">クライアントを選択</div>
+          <select class="fi" id="testClientSelect"></select>
+        </div>
+        <button class="run-btn p3" onclick="runTest()"><span id="testBtnTxt">接続テストを実行</span></button>
+      </div>
+      <div id="testResult" style="display:none">
+        <div class="card" style="border-left:3px solid var(--p3)">
+          <div class="card-title" style="margin-bottom:10px">テスト結果</div>
+          <div class="stream-box done" id="testOutput" style="max-height:500px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="view" id="view-history">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div><div class="page-title">過去の履歴</div><div class="page-desc" style="margin-bottom:0">クリックで制作完了レポートを開きます</div></div>
+        <span id="histTotalLabel" style="font-size:11px;color:var(--ink-muted)"></span>
+      </div>
+      <div id="histAdminControls" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:16px">
+        <div style="font-size:11px;font-weight:500;color:var(--ink-sub);margin-bottom:10px">管理者操作</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select id="histFilterPeriod" class="fi" style="width:auto;padding:6px 10px;font-size:12px" onchange="renderHistory()">
+            <option value="all">すべて表示</option>
+            <option value="7">直近7日</option>
+            <option value="30">直近30日</option>
+            <option value="90">直近90日</option>
+          </select>
+          <button class="small-btn" onclick="selectAllHist()">全件選択</button>
+          <button class="small-btn danger" id="deleteSelectedBtn" onclick="deleteSelectedHist()" style="display:none">選択削除</button>
+          <button class="small-btn danger" onclick="deleteAllHistory()">全履歴を削除</button>
+        </div>
+      </div>
+      <div class="hist-list" id="histList"></div>
+    </div>
+
+    <!-- REPORT -->
+    <div id="view-report">
+      <div class="rep-topbar">
+        <button class="back-btn" onclick="backFromReport()">← 一覧へ戻る</button>
+        <div><span style="font-size:13px;font-weight:500" id="repCo"></span><span style="font-size:11px;color:var(--ink-muted);margin-left:4px" id="repKw"></span></div>
+        <button class="rep-export" onclick="exportReport()">エクスポート</button>
+      </div>
+      <div class="rep-body">
+        <div class="metrics" id="repMetrics"></div>
+        <div class="rep-sec"><div class="rep-sec-head"><div class="rep-sec-title">想定ペルソナ</div></div><div class="rep-tags" id="repPersonaTags"></div></div>
+        <div class="rep-sec"><div class="rep-sec-head"><div class="rep-sec-title">出力した記事（冒頭）</div><button class="rep-copy-btn" onclick="copyRepArticle()">全文コピー</button></div><div class="rep-sec-body pre" id="repArticlePreview"></div></div>
+        <div class="rep-sec"><div class="rep-sec-head"><div class="rep-sec-title">スコア詳細</div></div><div id="repScores"></div></div>
+        <div class="rep-sec"><div class="rep-sec-head"><div class="rep-sec-title">改善点</div></div><div id="repKaizen"></div></div>
+        <div class="rep-sec"><div class="rep-sec-head"><div class="rep-sec-title">参照データログ（競合記事）</div></div><div id="repRefs"></div></div>
+      </div>
+    </div>
+
+    <!-- MEMO -->
+    <div class="view" id="view-memo">
+      <div class="page-title">プロンプト修正メモ</div>
+      <div class="page-desc">NG用語・気になった表現・改善提案などをメモできます。</div>
+      <div class="card">
+        <div class="memo-toolbar">
+          <select class="memo-type-select" id="memoType">
+            <option value="ng">NG用語</option>
+            <option value="note">メモ・気づき</option>
+            <option value="q">質問・要確認</option>
+          </select>
+          <button class="memo-add-btn" onclick="addMemo()">＋ 追加</button>
+        </div>
+        <textarea class="memo-textarea" id="memoText" placeholder="例：「業界No.1」は禁止用語。"></textarea>
+      </div>
+      <div class="memo-list" id="memoList"></div>
+      <div class="memo-admin-area" id="memoAdminArea" style="display:none">
+        <div style="font-size:12px;font-weight:500;color:var(--ink-sub);margin-bottom:10px">管理者操作</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="small-btn" onclick="copyAllMemos()">全メモをまとめてコピー</button>
+          <button class="small-btn danger" onclick="clearAllMemos()">全メモを削除</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div class="view" id="view-clients">
+      <div class="page-title">クライアント管理</div>
+      <div class="page-desc">会社名・呼び名・情報シートURLを登録します。</div>
+      <div class="settings-section">
+        <div class="settings-title">
+          <span>登録済みクライアント <span id="clientCountLabel" style="font-size:11px;color:var(--ink-muted);font-weight:400"></span></span>
+          <div style="display:flex;gap:8px">
+            <button class="small-btn primary" id="addClientBtn" onclick="toggleAddForm()">＋ 新規追加</button>
+            <button class="small-btn" onclick="refreshAllCaches()">↻ 全件更新</button>
+          </div>
+        </div>
+        <div class="add-client-form" id="addClientForm">
+          <div style="font-size:12px;font-weight:500;color:var(--ink-sub);margin-bottom:12px">新規クライアントを追加</div>
+          <div class="form-row">
+            <div class="fg" style="margin-bottom:0">
+              <div class="fl">会社名（完全一致で使用）</div>
+              <input type="text" class="fi" id="newClientName" placeholder="例：株式会社アップルホーム">
+            </div>
+            <div class="fg" style="margin-bottom:0">
+              <div class="fl">記事内での呼称</div>
+              <input type="text" class="fi" id="newClientHyouki" placeholder="例：アップルホーム">
+            </div>
+          </div>
+          <div class="fg" style="margin-bottom:12px">
+            <div class="fl">情報シートURL</div>
+            <input type="text" class="fi" id="newClientUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
+            <div class="fh">共有URLをそのまま貼り付けてください。タブは自動で全取得します（/api/sheets 経由）。</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="small-btn primary" id="saveClientBtn" onclick="addClient()">保存する</button>
+            <button class="small-btn" onclick="toggleAddForm()">キャンセル</button>
+          </div>
+        </div>
+        <div id="clientTableWrap" style="margin-top:4px">
+          <table class="client-table">
+            <thead><tr><th>会社名</th><th>呼称</th><th>シートURL</th><th>最終取得</th><th></th></tr></thead>
+            <tbody id="clientTableBody"></tbody>
+          </table>
+          <div id="clientEmptyMsg" style="text-align:center;padding:24px;font-size:13px;color:var(--ink-muted);display:none">クライアントが未登録です。「＋ 新規追加」から登録してください。</div>
+        </div>
+      </div>
+      <div class="info-box">シートは「リンクを知っている全員が閲覧可（または編集可）」に設定してください。<br>URLはブラウザのアドレスバーのURLをそのまま貼り付けてOKです。</div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="view" id="view-settings">
+      <div class="page-title">設定</div>
+      <div class="page-desc">ユーザー管理・データ管理の確認ができます。</div>
+      <div class="settings-section" id="settingsUserSection">
+        <div class="settings-title">ユーザー管理</div>
+        <div id="userList"></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">データ管理</div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">履歴件数</div></div>
+          <div><span id="histCountLabel" style="font-size:12px;color:var(--ink-sub)">0 件</span></div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">履歴を全削除</div><div class="settings-row-desc">元に戻せません</div></div>
+          <div><button class="small-btn danger" onclick="deleteAllHistory()">全履歴を削除</button></div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">クライアントデータを全削除</div><div class="settings-row-desc">登録済みクライアントとキャッシュを全て削除</div></div>
+          <div><button class="small-btn danger" onclick="deleteAllClients()">全クライアントを削除</button></div>
+        </div>
+      </div>
+      <div class="settings-section" id="nonAdminNotice" style="display:none">
+        <div style="padding:16px;text-align:center;color:var(--ink-muted);font-size:12px">設定の変更は管理者（admin）のみ行えます。</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="etost" id="etost"></div>
+<script>
+// ── ユーザー管理 ─────────────────────────────────────────
+function getUsers(){
+  try{
+    const saved=localStorage.getItem('comma_users');
+    if(saved)return JSON.parse(saved);
+    const defaults={admin:{pass:'comma2024',role:'admin'},demo:{pass:'demo123',role:'user'}};
+    localStorage.setItem('comma_users',JSON.stringify(defaults));
+    return defaults;
+  }catch{return{admin:{pass:'comma2024',role:'admin'}};}
+}
+function saveUsers(obj){localStorage.setItem('comma_users',JSON.stringify(obj));}
+
+// ── AUTH ─────────────────────────────────────────────────
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  const err=document.getElementById('lcErr');
+  if(!u||!p){err.textContent='ユーザー名とパスワードを入力してください';err.style.display='block';return;}
+  const users=getUsers();
+  const user=users[u];
+  if(!user||user.pass!==p){err.textContent='ユーザー名またはパスワードが正しくありません';err.style.display='block';document.getElementById('loginPass').value='';return;}
+  sessionStorage.setItem('comma_user',u);
+  sessionStorage.setItem('comma_role',user.role);
+  err.style.display='none';
+  initApp(u,user.role);
+}
+function doLogout(){
+  sessionStorage.removeItem('comma_user');
+  sessionStorage.removeItem('comma_role');
+  location.reload();
+}
+function checkAuth(){
+  const u=sessionStorage.getItem('comma_user');
+  const r=sessionStorage.getItem('comma_role');
+  if(u&&r){initApp(u,r);return true;}
+  return false;
+}
+let currentUser=null;
+function initApp(username,role){
+  currentUser={name:username,role};
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('sbUser').textContent=username+(role==='admin'?' (管理者)':'');
+  if(role!=='admin'){
+    document.getElementById('settingsUserSection').style.display='none';
+    document.getElementById('nonAdminNotice').style.display='block';
+    document.getElementById('memoAdminArea').style.display='none';
+    const ab=document.getElementById('addClientBtn');if(ab)ab.style.display='none';
+  }else{
+    document.getElementById('memoAdminArea').style.display='block';
+    renderUserList();
+  }
+  renderClientTable();renderHistory();renderMemos();updateHistCountBadge();updateMemoBadge();
+}
+
+// ── ユーザー管理UI ────────────────────────────────────────
+let editingUser=null;
+function renderUserList(){
+  const users=getUsers();
+  const list=document.getElementById('userList');
+  list.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">
+      ${Object.entries(users).map(([u,info])=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--paper);border:1px solid var(--border);border-radius:8px">
+          <span style="font-size:12px;font-weight:500;min-width:80px">${escH(u)}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 6px;border-radius:3px;background:${info.role==='admin'?'var(--gold-bg)':'var(--p2-bg)'};color:${info.role==='admin'?'var(--gold)':'var(--p2)'};border:1px solid ${info.role==='admin'?'#e8c878':'var(--p2-bd)'}">${info.role==='admin'?'管理者':'ユーザー'}</span>
+          <div style="flex:1"></div>
+          <button class="small-btn" onclick="openEditUser('${escH(u)}')">編集</button>
+          ${u!==currentUser?.name?`<button class="small-btn danger" onclick="deleteUser('${escH(u)}')">削除</button>`:'<span style="font-size:10px;color:var(--ink-muted)">自分</span>'}
+        </div>
+      `).join('')}
+    </div>
+    <button class="small-btn primary" onclick="openAddUser()" style="width:100%;padding:9px">＋ ユーザーを追加</button>
+    <div id="userEditForm" style="display:none;margin-top:14px;background:var(--paper);border:1px solid var(--border);border-radius:8px;padding:16px">
+      <div style="font-size:12px;font-weight:500;color:var(--ink-sub);margin-bottom:12px" id="userFormTitle">ユーザーを追加</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="fg" style="margin-bottom:0"><div class="fl">ユーザー名</div><input type="text" class="fi" id="editUserName" placeholder="username"></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">パスワード</div><input type="password" class="fi" id="editUserPass" placeholder="（変更しない場合は空欄）"></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">権限</div><select class="fi" id="editUserRole"><option value="user">ユーザー</option><option value="admin">管理者</option></select></div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button class="small-btn primary" onclick="saveUserEdit()" style="flex:1">保存する</button>
+          <button class="small-btn" onclick="closeUserEdit()">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function openAddUser(){
+  editingUser=null;
+  document.getElementById('userFormTitle').textContent='ユーザーを追加';
+  document.getElementById('editUserName').value='';
+  document.getElementById('editUserName').disabled=false;
+  document.getElementById('editUserPass').value='';
+  document.getElementById('editUserPass').placeholder='パスワードを入力';
+  document.getElementById('editUserRole').value='user';
+  document.getElementById('userEditForm').style.display='block';
+}
+function openEditUser(username){
+  const users=getUsers();const u=users[username];if(!u)return;
+  editingUser=username;
+  document.getElementById('userFormTitle').textContent=`「${username}」を編集`;
+  document.getElementById('editUserName').value=username;
+  document.getElementById('editUserName').disabled=true;
+  document.getElementById('editUserPass').value='';
+  document.getElementById('editUserPass').placeholder='変更しない場合は空欄';
+  document.getElementById('editUserRole').value=u.role;
+  document.getElementById('userEditForm').style.display='block';
+}
+function closeUserEdit(){document.getElementById('userEditForm').style.display='none';editingUser=null;}
+function saveUserEdit(){
+  const name=document.getElementById('editUserName').value.trim();
+  const pass=document.getElementById('editUserPass').value;
+  const role=document.getElementById('editUserRole').value;
+  if(!name){showError('ユーザー名を入力してください');return;}
+  const users=getUsers();
+  if(!editingUser&&users[name]){showError('同じユーザー名が既に存在します');return;}
+  if(!editingUser&&!pass){showError('パスワードを入力してください');return;}
+  if(editingUser){users[editingUser].role=role;if(pass)users[editingUser].pass=pass;}
+  else{users[name]={pass,role};}
+  saveUsers(users);closeUserEdit();renderUserList();
+  showError(editingUser?'更新しました':'ユーザーを追加しました',true);
+}
+function deleteUser(username){
+  if(!confirm(`「${username}」を削除しますか？`))return;
+  const users=getUsers();delete users[username];saveUsers(users);renderUserList();
+  showError('削除しました',true);
+}
+
+// ── キャッシュ ──────────────────────────────────────────
+function getCachedSheet(id){try{const r=localStorage.getItem('comma_sheet_cache_'+id);if(!r)return null;return JSON.parse(r).data||null;}catch{return null;}}
+function setCachedSheet(id,data){try{localStorage.setItem('comma_sheet_cache_'+id,JSON.stringify({savedAt:Date.now(),data}));}catch(e){console.warn(e);}}
+function clearCachedSheet(id){localStorage.removeItem('comma_sheet_cache_'+id);}
+function getCacheSavedAt(id){try{const r=localStorage.getItem('comma_sheet_cache_'+id);if(!r)return null;const t=JSON.parse(r).savedAt;return t?new Date(t).toLocaleDateString('ja-JP'):null;}catch{return null;}}
+async function fetchClientSheetData(client,forceRefresh=false){
+  if(!forceRefresh){const c=getCachedSheet(client.id);if(c)return c;}
+  const data=await fetchClientSheetDataRaw(client);
+  setCachedSheet(client.id,data);return data;
+}
+
+// ── シート取得 ────────────────────────────────────────────
+function extractSheetId(url){const m=url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);return m?m[1]:null;}
+function extractGid(url){const m=url.match(/[#?&]gid=(\d+)/);return m?m[1]:null;}
+function parseCSV(text){
+  const rows=[];let row=[],cell='',inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i],n=text[i+1];
+    if(c==='"'){if(inQ&&n==='"'){cell+='"';i++;}else inQ=!inQ;}
+    else if(c===','&&!inQ){row.push(cell);cell='';}
+    else if((c==='\n'||c==='\r')&&!inQ){if(c==='\r'&&n==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}
+    else cell+=c;
+  }
+  if(cell.length>0||row.length>0){row.push(cell);rows.push(row);}
+  return rows;
+}
+async function fetchClientSheetDataRaw(client){
+  const sheetId=client.sheetId||extractSheetId(client.url||'');
+  if(!sheetId)throw new Error('スプレッドシートIDが取得できませんでした');
+  let sheets=[];
+  try{
+    const res=await fetch('/api/sheets?sheetId='+sheetId);
+    if(res.ok){const json=await res.json();if(json.tabs&&json.tabs.length)sheets=json.tabs;}
+  }catch{}
+  if(!sheets.length){
+    const urlGid=extractGid(client.url||'');
+    const cands=urlGid?[urlGid,'0','1','2','3','4','5']:['0','1','2','3','4','5'];
+    let fails=0;
+    for(const gid of [...new Set(cands)]){
+      if(sheets.length>=4||fails>=3)break;
+      try{
+        const res=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`);
+        if(!res.ok){fails++;continue;}
+        const text=await res.text();
+        if(text.trim().length>10&&!text.trim().startsWith('<!')){sheets.push({gid,csv:text});fails=0;}
+        else fails++;
+      }catch{fails++;}
+    }
+  }
+  if(!sheets.length)throw new Error('シートのデータを取得できませんでした。URLと公開設定を確認してください。');
+  const data=parseCompanySheets(sheets);
+  const fv=(obj,kws)=>{for(const k of Object.keys(obj)){if(kws.some(w=>k.includes(w)))return obj[k];}return '';};
+  return{
+    hyouki:client.hyouki,sheetId,tabCount:sheets.length,
+    A:{会社名:client.name,記事内での呼称:client.hyouki,
+      ブランド理念:fv(data.A,['理念','想い','コンセプト','テーマ']),
+      独自の強み:fv(data.A,['強み','USP','差別化']),
+      ターゲット層:fv(data.A,['ターゲット','対象','届ける']),
+      禁止用語:fv(data.A,['禁止','NG','推奨']),
+      HP_URL:fv(data.A,['HP','URL','サイト']),
+      施工エリア:fv(data.A,['エリア','地域','施工']),
+      商品コンセプト:fv(data.A,['商品','WELL','コンセプト_説明']),
+      rawA:data.A},
+    B:{過去記事:data.B.articles.filter(a=>a.url).slice(0,10),全記事数:data.B.articles.length},
+    C:{施工事例:Object.entries(data.C).filter(([k])=>k.includes('施工')).map(([k,v])=>({key:k,value:v})),
+      お客様の声:Object.entries(data.C).filter(([k])=>k.includes('お客様')||k.includes('声')).map(([k,v])=>({key:k,value:v})),
+      こだわり:Object.entries(data.C).filter(([k])=>k.includes('こだわり')||k.includes('現場')).map(([k,v])=>({key:k,value:v})),
+      実績数値:fv(data.C,['実績','数値','成約']),
+      注意点:fv(data.C,['注意','失敗']),
+      rawC:data.C},
+  };
+}
+function parseCompanySheets(sheets){
+  const result={A:{},B:{articles:[]},C:{}};
+  sheets.forEach(({gid,csv},idx)=>{
+    const rows=parseCSV(csv);if(!rows.length)return;
+    const fc=String(rows[0]?.[0]||'').trim();
+    const isB=fc.includes('内部リンク')||fc.includes('過去記事')||fc.includes('記事');
+    const isC=fc.includes('一次情報')||fc.includes('実績')||fc.includes('心臓部')||fc.includes('事例');
+    let hi=-1;
+    for(let i=0;i<Math.min(rows.length,6);i++){
+      if(rows[i].some(c=>{const v=String(c||'').trim();return v==='項目名'||v==='項目名（ヘッダー）'||v==='会社名・屋号'||v==='記事タイトル'||v==='タイトル';})){hi=i;break;}
+    }
+    if(isB||(idx===1&&!isC)){
+      const h=hi>=0?hi:2;
+      if(rows.length>h+1){
+        const hd=rows[h].map(x=>String(x||'').trim());
+        const ti=hd.findIndex(x=>x.includes('記事タイトル')||x.includes('タイトル'));
+        const ui=hd.findIndex(x=>x.includes('URL'));
+        const ci=hd.findIndex(x=>x.includes('カテゴリ')||x.includes('ジャンル'));
+        for(let i=h+1;i<rows.length;i++){
+          const r=rows[i];
+          const title=ti>=0?String(r[ti]||'').trim():'';
+          const url=ui>=0?String(r[ui]||'').trim():'';
+          const cat=ci>=0?String(r[ci]||'').trim():'';
+          if(title||url)result.B.articles.push({title,url,category:cat});
+        }
+      }
+    }else{
+      const target=(isC||(idx===2))?result.C:result.A;
+      const h=hi>=0?hi:2;
+      for(let i=h+1;i<rows.length;i++){
+        const r=rows[i];
+        const key=String(r[0]||'').trim();
+        const sub=String(r[1]||'').trim();
+        const val=String(r[2]||'').trim();
+        const uc=String(r[3]||'').trim();
+        if(!key&&!val)continue;
+        const fk=key+(sub?'_'+sub:'');
+        if(val)target[fk]=val;
+        if(uc&&uc.startsWith('http'))target[fk+'_URL']=uc;
+      }
+    }
+  });
+  return result;
+}
+  // ── クライアント管理 ─────────────────────────────────────
+function getClients(){try{return JSON.parse(localStorage.getItem('comma_clients')||'[]');}catch{return[];}}
+function saveClients(arr){localStorage.setItem('comma_clients',JSON.stringify(arr));}
+
+async function addClient(){
+  const name=document.getElementById('newClientName').value.trim();
+  const hyouki=document.getElementById('newClientHyouki').value.trim();
+  const url=document.getElementById('newClientUrl').value.trim();
+  if(!name){showError('会社名を入力してください');return;}
+  if(!url||!url.includes('spreadsheets')){showError('正しいスプレッドシートURLを入力してください');return;}
+  const sheetId=extractSheetId(url);
+  if(!sheetId){showError('URLからスプレッドシートIDを取得できませんでした');return;}
+  const clients=getClients();
+  if(clients.find(c=>c.name===name)){showError('同じ会社名がすでに登録されています');return;}
+  const client={id:'c_'+Date.now(),name,hyouki:hyouki||name,url,sheetId,createdAt:Date.now()};
+  const btn=document.getElementById('saveClientBtn');
+  if(btn){btn.disabled=true;btn.textContent='シートを取得中...';}
+  try{
+    await fetchClientSheetDataRaw(client).then(d=>setCachedSheet(client.id,d));
+    clients.push(client);saveClients(clients);
+    ['newClientName','newClientHyouki','newClientUrl'].forEach(id=>document.getElementById(id).value='');
+    toggleAddForm(true);renderClientTable();
+    showError('クライアントを登録しました（シートデータ取得済み）',true);
+  }catch(e){
+    clients.push(client);saveClients(clients);
+    ['newClientName','newClientHyouki','newClientUrl'].forEach(id=>document.getElementById(id).value='');
+    toggleAddForm(true);renderClientTable();
+    showError('登録しましたがシート取得に失敗しました。「更新」で再取得してください。');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='保存する';}
+  }
+}
+function deleteClient(id){
+  if(!confirm('このクライアントを削除しますか？'))return;
+  clearCachedSheet(id);saveClients(getClients().filter(c=>c.id!==id));
+  renderClientTable();showError('削除しました',true);
+}
+function deleteAllClients(){
+  if(!confirm('全クライアントを削除しますか？'))return;
+  getClients().forEach(c=>clearCachedSheet(c.id));
+  localStorage.removeItem('comma_clients');renderClientTable();showError('全クライアントを削除しました',true);
+}
+function toggleAddForm(forceClose=false){
+  const f=document.getElementById('addClientForm');
+  if(forceClose||f.classList.contains('open'))f.classList.remove('open');
+  else f.classList.add('open');
+}
+function renderClientTable(){
+  const clients=getClients();
+  const tbody=document.getElementById('clientTableBody');
+  const empty=document.getElementById('clientEmptyMsg');
+  const count=document.getElementById('clientCountLabel');
+  if(count)count.textContent='（'+clients.length+'件）';
+  if(!clients.length){if(tbody)tbody.innerHTML='';if(empty)empty.style.display='block';refreshTestSelect();return;}
+  if(empty)empty.style.display='none';
+  const isAdmin=currentUser?.role==='admin';
+  tbody.innerHTML=clients.map(c=>{
+    const saved=getCacheSavedAt(c.id);
+    return`<tr>
+      <td style="font-weight:500">${escH(c.name)}</td>
+      <td style="color:var(--ink-sub)">${escH(c.hyouki)}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--p2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escH(c.url||'')}">${escH(c.url||'')}</td>
+      <td style="white-space:nowrap">
+        <span id="cacheStatus_${c.id}" style="font-size:10px;color:${saved?'var(--ok)':'var(--err)'};font-family:'IBM Plex Mono',monospace;margin-right:6px">${saved?'✓ '+saved:'⚠ 未取得'}</span>
+        ${isAdmin?`<button class="small-btn" onclick="refreshOneCache('${c.id}')">更新</button>`:''}
+      </td>
+      <td>${isAdmin?`<button class="small-btn danger" onclick="deleteClient('${c.id}')">削除</button>`:''}</td>
+    </tr>`;
+  }).join('');
+  refreshTestSelect();
+}
+async function refreshOneCache(id){
+  const client=getClients().find(c=>c.id===id);if(!client)return;
+  const el=document.getElementById('cacheStatus_'+id);
+  if(el){el.textContent='取得中...';el.style.color='var(--gold)';}
+  try{
+    await fetchClientSheetData(client,true);
+    const saved=getCacheSavedAt(id);
+    if(el){el.textContent='✓ '+saved;el.style.color='var(--ok)';}
+    showError('シートデータを更新しました',true);
+  }catch(e){
+    if(el){el.textContent='❌ 失敗';el.style.color='var(--err)';}
+    showError(String(e?.message||e));
+  }
+}
+async function refreshAllCaches(){
+  const clients=getClients();
+  if(!clients.length){showError('クライアントが登録されていません');return;}
+  let ok=0,ng=0;
+  for(const c of clients){
+    const el=document.getElementById('cacheStatus_'+c.id);
+    if(el){el.textContent='取得中...';el.style.color='var(--gold)';}
+    try{await fetchClientSheetData(c,true);if(el){el.textContent='✓ '+getCacheSavedAt(c.id);el.style.color='var(--ok)';}ok++;}
+    catch{if(el){el.textContent='❌ 失敗';el.style.color='var(--err)';}ng++;}
+  }
+  showError('更新完了: 成功'+ok+'件'+(ng?' / 失敗'+ng+'件':''),!ng);
+}
+
+// ── シート更新パネル ──────────────────────────────────────
+function openRefreshPanel(){
+  const clients=getClients();
+  if(!clients.length){showError('クライアントが登録されていません');return;}
+  const existing=document.getElementById('refreshPanel');if(existing)existing.remove();
+  const rows=clients.map(c=>{
+    const saved=getCacheSavedAt(c.id);
+    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+      <div style="flex:1"><div style="font-size:13px;font-weight:500">${escH(c.name)}</div>
+      <div style="font-size:10px;font-family:'IBM Plex Mono',monospace" id="rpStatus_${c.id}">${saved?'<span style="color:var(--ok)">✓ '+saved+'</span>':'<span style="color:var(--err)">⚠ 未取得</span>'}</div></div>
+      <button class="small-btn" onclick="refreshOneInPanel('${c.id}')">更新</button></div>`;
+  }).join('');
+  const panel=document.createElement('div');
+  panel.id='refreshPanel';panel.className='modal-overlay';
+  panel.innerHTML=`<div class="modal-box">
+    <div class="modal-head"><div class="modal-title">シートデータ更新</div><button class="modal-close" onclick="document.getElementById('refreshPanel').remove()">×</button></div>
+    <div style="font-size:12px;color:var(--ink-sub);margin-bottom:14px;line-height:1.7">シートを編集したクライアントだけ個別に更新できます。</div>
+    <div style="margin-bottom:16px">${rows}</div>
+    <div style="display:flex;gap:8px">
+      <button class="small-btn primary" style="flex:1" onclick="refreshAllInPanel()">↻ 全件更新</button>
+      <button class="small-btn" onclick="document.getElementById('refreshPanel').remove()">閉じる</button>
+    </div></div>`;
+  document.body.appendChild(panel);
+}
+async function refreshOneInPanel(id){
+  const client=getClients().find(c=>c.id===id);if(!client)return;
+  const el=document.getElementById('rpStatus_'+id);
+  if(el)el.innerHTML='<span style="color:var(--gold)">取得中...</span>';
+  try{
+    await fetchClientSheetData(client,true);
+    const saved=getCacheSavedAt(id);
+    if(el)el.innerHTML=`<span style="color:var(--ok)">✓ ${saved}</span>`;
+    const tb=document.getElementById('cacheStatus_'+id);
+    if(tb){tb.textContent='✓ '+saved;tb.style.color='var(--ok)';}
+    showError('更新しました',true);
+  }catch(e){
+    if(el)el.innerHTML='<span style="color:var(--err)">❌ 失敗</span>';
+    showError(String(e?.message||e));
+  }
+}
+async function refreshAllInPanel(){
+  const clients=getClients();
+  for(const c of clients)await refreshOneInPanel(c.id);
+  showError('全件更新が完了しました',true);
+}
+
+// ── クライアント検索UI ────────────────────────────────────
+let selectedClient=null;
+function filterClients(q){
+  const clients=getClients();const dd=document.getElementById('clientDropdown');
+  const filtered=q?clients.filter(c=>c.name.includes(q)||c.hyouki.includes(q)):clients;
+  if(!filtered.length){dd.innerHTML=`<div style="padding:10px 13px;font-size:12px;color:var(--ink-muted)">${clients.length?'一致するクライアントがありません':'クライアントが未登録です'}</div>`;}
+  else{dd.innerHTML=filtered.map(c=>`<div class="client-opt" onmousedown="selectClient('${c.id}')"><div class="client-opt-name">${escH(c.name)}</div><div class="client-opt-sub">${escH(c.hyouki)}</div></div>`).join('');}
+  dd.classList.add('open');
+}
+function openClientDropdown(){filterClients(document.getElementById('clientSearchInput').value);}
+function closeClientDropdown(){document.getElementById('clientDropdown').classList.remove('open');}
+function selectClient(id){
+  const client=getClients().find(c=>c.id===id);if(!client)return;
+  selectedClient=client;
+  document.getElementById('clientSearchInput').value='';
+  document.getElementById('clientSearchInput').placeholder=client.name;
+  const saved=getCacheSavedAt(client.id);
+  const note=saved?`<span style="font-size:10px;opacity:.65;font-weight:400"> データ: ${saved}</span>`:`<span style="font-size:10px;color:var(--err);font-weight:400"> ⚠ 未取得</span>`;
+  document.getElementById('clientBadgeText').innerHTML=`✓ ${escH(client.name)}（${escH(client.hyouki)}）${note}<button onclick="clearClientSelection()">×</button>`;
+  document.getElementById('clientSelectedBadge').style.display='block';
+  document.getElementById('clientDropdown').classList.remove('open');
+}
+function clearClientSelection(){
+  selectedClient=null;
+  document.getElementById('clientSearchInput').value='';
+  document.getElementById('clientSearchInput').placeholder='会社名・呼び名で検索...';
+  document.getElementById('clientSelectedBadge').style.display='none';
+}
+function refreshTestSelect(){
+  const sel=document.getElementById('testClientSelect');if(!sel)return;
+  const clients=getClients();
+  sel.innerHTML=clients.length?clients.map(c=>`<option value="${c.id}">${escH(c.name)}（${escH(c.hyouki)}）</option>`).join(''):'<option value="">クライアントが登録されていません</option>';
+}
+
+// ── VIEW ─────────────────────────────────────────────────
+let prevHistoryView='history';
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-report').style.display='none';
+  const vEl=document.getElementById('view-'+v);if(vEl)vEl.classList.add('active');
+  document.querySelectorAll('.sb-btn').forEach(el=>el.classList.remove('active'));
+  const nav=document.getElementById('nav-'+v);if(nav)nav.classList.add('active');
+  if(v==='history')renderHistory();
+  if(v==='memo')renderMemos();
+  if(v==='settings')document.getElementById('histCountLabel').textContent=getHistory().length+' 件';
+  if(v==='clients')renderClientTable();
+  if(v==='test')refreshTestSelect();
+}
+function openReport(s){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  const r=document.getElementById('view-report');
+  r.style.display='flex';r.style.flexDirection='column';r.style.flex='1';r.style.overflow='hidden';
+  renderReport(s);
+}
+function backFromReport(){document.getElementById('view-report').style.display='none';switchView(prevHistoryView);}
+function openReportFromCurrent(){
+  if(!S.sessionId)return;
+  const s=getHistory().find(x=>x.id===S.sessionId);
+  if(s){prevHistoryView='main';openReport(s);}
+}
+
+// ── HELPERS ──────────────────────────────────────────────
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function activateLS(id,sub=''){
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.add('active');
+  const icon=el.querySelector('.ls-icon');
+  if(icon){icon.innerHTML='●';icon.style.background='var(--gold)';icon.style.color='#fff';icon.style.fontSize='7px';}
+  const s=document.getElementById(id+'-s');if(s&&sub)s.textContent=sub;
+}
+function doneLS(id,sub=''){
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.remove('active');el.classList.add('done');
+  const icon=el.querySelector('.ls-icon');
+  if(icon){icon.innerHTML='✓';icon.style.background='var(--ok)';icon.style.color='#fff';icon.style.fontSize='10px';}
+  const s=document.getElementById(id+'-s');if(s&&sub)s.textContent='✓ '+sub;
+}
+function setWS(n,state){
+  const el=document.getElementById('ws'+n);if(!el)return;
+  el.classList.remove('active','done','running');
+  const num=el.querySelector('.ws-num');
+  if(state==='done'){el.classList.add('done');num.textContent='';}
+  else if(state==='running'){el.classList.add('active','running');num.textContent=n;}
+  else if(state==='active'){el.classList.add('active');num.textContent=n;}
+  else num.textContent=n;
+}
+function showCard(id){const el=document.getElementById(id);if(el){el.classList.add('show');setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),200);}}
+function setBadge(id,cls,text){const el=document.getElementById(id);if(el){el.className='pbadge '+cls;el.textContent=text;}}
+function showLogSep(id){const el=document.getElementById(id);if(el)el.style.display='flex';}
+function showResult(n,text,banner,meta){
+  const ll=document.getElementById('ll'+n);if(ll)ll.style.display='none';
+  const rbn=document.getElementById('rbn'+n);if(rbn)rbn.textContent=banner;
+  if(n!==3){const rc=document.getElementById('rc'+n);if(rc)rc.innerHTML=renderMD(text);}
+  if(meta){const rm=document.getElementById('rm'+n);if(rm)rm.textContent=meta;}
+  const rb=document.getElementById('rb'+n);if(rb)rb.classList.remove('collapsed');
+}
+function togglePC(n){
+  const ll=document.getElementById('ll'+n);const rb=document.getElementById('rb'+n);
+  const btn=document.querySelector('#pc'+n+' .act-btn:last-child');
+  const vis=ll.style.display!=='none'||!rb.classList.contains('collapsed');
+  if(vis){ll.style.display='none';rb.classList.add('collapsed');if(btn)btn.textContent='▶';}
+  else{ll.style.display='block';rb.classList.remove('collapsed');if(btn)btn.textContent='▼';}
+}
+function copyPhase(n){
+  const rc=document.getElementById('rc'+n);const sb=document.getElementById('sb'+n);
+  const text=rc?.innerText||sb?.innerText||'';
+  navigator.clipboard.writeText(text).then(()=>{
+    document.querySelectorAll('#pc'+n+' .act-btn').forEach(b=>{
+      if(b.textContent.includes('コピー')||b.textContent.includes('Markdown')){
+        const orig=b.textContent;b.textContent='✓ コピー済';setTimeout(()=>b.textContent=orig,2000);
+      }
+    });
+  });
+}
+function showError(msg,isOk=false){
+  const el=document.getElementById('etost');
+  el.textContent=isOk?'✓ '+msg:'⚠ '+msg;
+  el.style.background=isOk?'var(--ok)':'var(--err)';
+  el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);
+}
+function renderMD(text){
+  const esc=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return esc
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/^---$/gm,'<hr>').replace(/^[-•] (.+)$/gm,'<li>$1</li>').replace(/(<li>[\s\S]+?<\/li>)/g,'<ul>$1</ul>');
+}
+function escH(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  // ── PROMPTS ──────────────────────────────────────────────
+const COMMA_RULES=`# コンマ記事執筆ルール（全フェーズ最優先・厳守）
+
+## 基本姿勢
+- 記事は住宅検討者の不安や疑問を整理し、住宅会社への信頼形成につなげる接点として書く
+- 煽り・断定に頼らず、誠実さ・わかりやすさ・汎用性・整合性を優先する
+- 読者に考え方の軸を渡すことが目的。結論を押しつけない
+
+## 絶対禁止事項
+- 目次のような一覧表示を入れない（「この記事でわかること」3〜5行は可）
+- 数字の箇条書き・番号付きリストは使わない（箇条書き記号は「・」のみ）
+- 見出し以外を太字にしない / 赤文字を多用しない
+- 表形式は原則使用しない（WordPressで崩れるため）
+- 脚注記号・注釈番号を入れない
+- 確証が難しい数字・金額・費用相場を断定的に書かない
+- 古い制度・終了制度を現行のように書かない
+- 「住宅会社に相談するとよいでしょう」など他人まかせの案内文を書かない
+- 特定メーカー名・商品名・店舗名を安易に使わない（一般化する）
+- 年号依存表現は避ける（2024年版・最新版など）
+- 独自情報・固有名詞はそのまま残さない
+- 中古・リノベーション・賃貸を不必要に勧める内容にしない
+- 「業界No.1」「最高峰」「圧倒的」「革新的」「絶対に」「必ず」等を使わない
+- 「実例」「○選」と書くなら本文内容と数が一致していること
+
+## 数字・金額・制度の書き方
+- 必ず「一般的には」「目安として」「ケースによって異なる」等の前置きを使う
+- 住宅ローン・税金・贈与・補助金・費用相場は断定しない。地域差・時期差があることを前提に書く
+- 補助金・税制は変動があるため恒久制度のように書かない
+
+## 文章表現ルール
+- 一文一義（一つの文で一つのことを伝える）
+- 「です・ます調」基本。営業トーク調・煽り調にしない
+- 一段落が長くなりすぎない / 改行位置を意識する
+- 同じ語尾を続けすぎない
+
+## 注文住宅らしさの維持
+- 家づくりの進め方・暮らし方・間取り・動線・収納・性能・土地条件の観点を自然に入れる
+- 比較する場合は建売住宅・中古リフォームとの比較を基本とする
+- 過去記事と内容・切り口が被らないようにする
+
+## 自社案内の書き方
+- まとめ後に自然な形で1箇所のみ相談導線を置く
+- 「〜社では担当がご案内します」「お気軽にご相談ください」形式を使う
+- 「住宅会社に相談するとよいでしょう」は禁止。自社の案内姿勢を持たせる`;
+
+const P1_SYS=`あなたは記事制作前のデータ確認担当です。このフェーズでは執筆しないこと。\n${COMMA_RULES}\n渡された会社データのみを根拠として使う。外部Web情報で補完しないこと。\n\n# 出力形式\n1. 一致した会社名\n2. 参照できたシート数\n3. 抽出データ一覧\n4. 不足項目一覧\n5. 執筆可否（可 / 不可）`;
+
+const P2_SYS=`あなたはSEO/AIO記事の企画担当です。本文は書かないこと。
+${COMMA_RULES}
+
+# ペルソナ設計の考え方
+キーワードと会社データを読み込み、そのキーワードを実際に検索しそうな住宅検討者のペルソナを4案、自由に設計すること。
+ペルソナは以下の住宅検討文脈を参考にしながら、キーワードに最もマッチする人物像を具体的に想像して作ること。
+
+【参考にする住宅検討文脈】
+- 賃貸生活の不満（狭い・家賃がもったいない・収納不足・騒音・子育てしにくい）から持ち家を検討し始めた層
+- 新築注文・建売・中古リノベ・リフォームのどれにするか迷っている層
+- 土地探し・間取り・性能・資金計画を具体的に動いている層
+- 二世帯・建て替え・住み替えを検討している層
+
+各ペルソナは必ず以下の形式で1〜2行で書くこと：
+「〇〇代・〇〇（職業・家族構成）。〇〇という悩みを持ち、〇〇を検索して記事にたどり着く。検討段階：〇〇。」
+
+# 出力形式
+1. 想定キーワードと検索意図の整理
+2. ペルソナ4案（上記フォーマットで各1〜2行）
+3. おすすめの1案とその理由
+4. 競合に足りない切り口（住宅業界視点で3つ）`;
+
+const P3_SYS=`あなたはSEO/AIO分析専門家です。指定キーワードでWeb検索し競合記事を調査してください。\n必ず以下のJSON形式のみで出力。前後に説明文やコードブロック記号を含めないこと。\n{"keyword":"","competition_level":"低|中|高","competition_summary":"","competitors":[{"rank":1,"title":"","url":"","domain":"","seo_score":4,"aio_score":3,"strengths":[],"title_pattern":""}],"gap_opportunities":[],"recommended_titles":[],"overlap_risk":"低|中|高","overlap_reason":""}`;
+
+const P4_SYS=`あなたはシニア・コンテンツディレクターです。確定済みデータだけを根拠に記事を書くこと。\n${COMMA_RULES}\n\n# 最優先ルール\n- シートにない数値・実績・URLは創作しない → [要確認・追記] と明記\n\n# 執筆条件\n- 8,000〜10,000文字 / Markdown形式\n- H1は会社名を含めない\n- 各H2の下にH3を2つ以上置く\n- PR表現は全体で2回まで\n- 冒頭に「この記事でわかること」を3〜5行で書く\n\n# 記事後にJSON出力\n---\n\`\`\`json\n{"charCount":数値,"persona":"想定ペルソナ","improvement":"改善点","selfScore":数値,"refs":"参照データログ","aiScores":{"chatgpt":{"intent":0,"structure":0,"quotable":0,"eeat":0,"evidence":0,"context":0,"freshness":0},"gemini":{"originality":0,"structure":0,"authority":0,"depth":0,"recency":0,"trust":0},"claude":{"selfcontained":0,"specificity":0,"schema":0,"intent":0,"eeat":0,"readability":0},"perplexity":{"conclusion":0,"evidence":0,"originality":0,"structure":0,"eeat":0,"freshness":0}}}\n\`\`\`\n各aiScoresの合計が10点になるよう配点すること。`;
+
+// ── API ──────────────────────────────────────────────────
+function mockStream(text,boxId,ms=6){
+  return new Promise(async res=>{
+    const box=document.getElementById(boxId);
+    box.innerHTML='<span class="scursor"></span>';let out='';
+    for(let i=0;i<text.length;i++){
+      out+=text[i];box.innerHTML=escH(out)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;
+      if(i%8===0)await sleep(ms);
+    }
+    box.classList.add('done');box.innerHTML=escH(out);res(text);
+  });
+}
+const MOCK_P1=(c,d)=>`## データ確認結果\n\n**1. 会社名**\n${d.A.会社名}\n\n**2. 取得シート数**\n${d.tabCount}タブ（過去記事: ${d.B.全記事数}件）\n\n**3. 抽出データ**\n- ブランド理念：${d.A.ブランド理念||'（取得済み）'}\n- 独自の強み：${d.A.独自の強み||'（取得済み）'}\n- 記事内での呼称：${d.hyouki}\n- ターゲット層：${d.A.ターゲット層||'（取得済み）'}\n- 禁止用語：${d.A.禁止用語||'なし'}\n\n**4. 不足項目**\nなし\n\n**5. 執筆可否**\n✅ 可`;
+const MOCK_P2=(kw)=>`## 企画設計レポート\n\n**キーワード**：「${kw}」\n\n**ペルソナ4案**\n\n**① 30代・共働き夫婦（子供1人）。** 賃貸が手狭になり注文住宅を検討中。「${kw}」を検索。検討段階：情報収集初期。\n**② 40代・夫婦2人暮らし。** 建売と注文で迷っており具体的な違いを調べている。検討段階：比較検討中。\n**③ 30代前半・第二子予定。** 間取りや収納を重視し「${kw}」で検索。検討段階：具体的設計検討中。\n**④ 50代・建て替え検討中。** 現在の家が古くなり建て替えを検討。検討段階：会社選定中。\n\n**おすすめ**：**① 30代・共働き夫婦**\n\n**競合に足りない切り口**\n→ 賃貸から持ち家への移行タイミングと判断基準\n→ 子育て世代の動線・収納設計の具体例\n→ 資金計画と住宅ローンの不安解消`;
+const MOCK_P3=(kw)=>JSON.stringify({keyword:kw,competition_level:"中",competition_summary:"上位記事は大手メディアが占め一般論が多い。差別化余地がある。",competitors:[{rank:1,title:`${kw}とは？基礎から実践まで`,url:"https://example-media.jp/",domain:"example-media.jp",seo_score:5,aio_score:3,strengths:["網羅性が高い"],title_pattern:"完全ガイド型"},{rank:2,title:`注文住宅で${kw}を実現する方法`,url:"https://housing-hub.jp/",domain:"housing-hub.jp",seo_score:4,aio_score:4,strengths:["事例紹介あり"],title_pattern:"ターゲット特化型"}],gap_opportunities:["賃貸から持ち家への移行判断基準","子育て世代の具体的な間取り事例"],recommended_titles:[`${kw}で後悔しないための実践ガイド`],overlap_risk:"低",overlap_reason:"提案タイトルは差別化されており既存記事とパターンが重複しない。"});
+const MOCK_P4=(company,kw)=>`# ${kw}で理想の家づくりを実現するために\n\nこの記事でわかること：${kw}の基本的な考え方、失敗しないためのポイント、資金計画の進め方を整理します。\n\n## なぜ今、注文住宅が選ばれているのか\n\n### 賃貸から持ち家へのタイミング\n\n子どもの成長や家族構成の変化に合わせて、住まいを見直す方が増えています。\n\n### ${kw}が注目される理由\n\n画一的なデザインではなく、家族のライフスタイルに合わせた家づくりへの関心が高まっています。\n\n## 失敗しないための基本ステップ\n\n### ステップ1：資金計画から始める\n住宅ローンの返済額は、月収の25〜30%以内が一般的な目安とされています。[要確認・追記]\n\n### ステップ2：優先順位を決める\n間取り・性能・デザイン・立地など、家族で優先順位を話し合うことが重要です。\n\n## まとめ\n${kw}を実現するには、早い段階からの情報収集と資金計画が大切です。\n\n---\n\`\`\`json\n{"charCount":800,"persona":"30代・共働き夫婦・子育て世代","improvement":"FAQセクションの追加でAIOスコアが向上する見込み。","selfScore":74,"refs":"Phase3競合分析、シートデータ取得済み","aiScores":{"chatgpt":{"intent":1.6,"structure":1.5,"quotable":1.4,"eeat":1.0,"evidence":1.0,"context":0.3,"freshness":0.3},"gemini":{"originality":1.7,"structure":1.5,"authority":1.4,"depth":1.2,"recency":0.7,"trust":0.7},"claude":{"selfcontained":1.7,"specificity":1.4,"schema":1.3,"intent":1.1,"eeat":0.8,"readability":0.8},"perplexity":{"conclusion":1.5,"evidence":1.4,"originality":1.3,"structure":1.1,"eeat":1.1,"freshness":0.8}}}\n\`\`\``;
+
+async function streamClaude(sys,user,boxId,maxTokens=4000){
+  const box=document.getElementById(boxId);
+  box.innerHTML='<span class="scursor"></span>';
+  try{
+    const res=await fetch('/api/gemini/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
+    if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
+    const reader=res.body.getReader();const dec=new TextDecoder();let full='',buf='';
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data: '))continue;
+        const d=line.slice(6).trim();if(d==='[DONE]')continue;
+        try{const p=JSON.parse(d);const t=p.candidates?.[0]?.content?.parts?.[0]?.text||'';if(t){full+=t;box.innerHTML=escH(full)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;}}catch{}
+      }
+    }
+    box.classList.add('done');box.innerHTML=escH(full);return full;
+  }catch(e){
+    console.warn('API unavailable, using mock:',e.message);
+    let mock='（モック）';
+    if(boxId==='sb1'){try{const d=await fetchClientSheetData(selectedClient);mock=MOCK_P1(selectedClient,d);}catch(e2){mock='エラー: '+String(e2?.message||e2);}}
+    else if(boxId==='sb2')mock=MOCK_P2(S.keyword);
+    else if(boxId==='sb4')mock=MOCK_P4(selectedClient?.name,S.keyword);
+    return await mockStream(mock,boxId);
+  }
+}
+
+async function callClaude(sys,user,maxTokens=3000){
+  try{
+    const res=await fetch('/api/gemini',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
+    if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
+    const data=await res.json();return data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
+  }catch(e){
+    console.warn('API unavailable, using mock:',e.message);
+    await sleep(1200);return MOCK_P3(S.keyword);
+  }
+}
+  // ── STATE ────────────────────────────────────────────────
+let S={sessionId:null,company:'',keyword:'',p1:null,p2:null,p3raw:null,p4:null,selectedPersona:null};
+function newSessionId(){return'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);}
+function saveSession(){
+  if(!S.sessionId)return;
+  const sessions=getHistory();const idx=sessions.findIndex(s=>s.id===S.sessionId);
+  const item={id:S.sessionId,company:S.company,keyword:S.keyword,user:currentUser?.name,timestamp:S.createdAt||Date.now(),phases:{p1:S.p1,p2:S.p2,p3raw:S.p3raw,p4:S.p4},status:S.p4?'phase4-done':S.p3raw?'phase3-done':S.p2?'phase2-done':S.p1?'phase1-done':'new'};
+  if(idx>=0)sessions[idx]=item;else sessions.unshift(item);
+  localStorage.setItem('comma_sessions',JSON.stringify(sessions.slice(0,50)));
+  updateHistCountBadge();
+}
+function getHistory(){try{return JSON.parse(localStorage.getItem('comma_sessions')||'[]');}catch{return[];}}
+function updateHistCountBadge(){document.getElementById('histCountBadge').textContent=getHistory().length;}
+
+function newArticle(){
+  S={sessionId:null,company:'',keyword:'',p1:null,p2:null,p3raw:null,p4:null,selectedPersona:null};
+  selectedClient=null;clearClientSelection();
+  document.getElementById('keywordInput').value='';
+  [1,2,3,4].forEach(n=>{
+    const pc=document.getElementById('pc'+n);if(pc){pc.classList.remove('show');pc.style.display='none';}
+    const ll=document.getElementById('ll'+n);if(ll)ll.style.display='block';
+    const rb=document.getElementById('rb'+n);if(rb)rb.classList.add('collapsed');
+    const sb=document.getElementById('sb'+n);if(sb){sb.innerHTML='';sb.classList.remove('done');}
+    const rc=document.getElementById('rc'+n);if(rc)rc.innerHTML='';
+    ['a','b','c','d'].forEach(x=>{
+      const el=document.getElementById('ls'+n+x);
+      if(el){el.classList.remove('active','done');const icon=el.querySelector('.ls-icon');if(icon){icon.innerHTML='';icon.style.background='var(--border)';}const s=document.getElementById('ls'+n+x+'-s');if(s)s.textContent='';}
+    });
+    const sep=document.getElementById('sep'+n);if(sep)sep.style.display='none';
+  });
+  [1,2,3,4].forEach(n=>setWS(n,n===1?'active':''));
+  document.getElementById('p3Gate').style.display='none';
+  document.getElementById('p4Gate').classList.remove('show');
+  document.getElementById('compResults').innerHTML='';
+  document.getElementById('personaSelectBox').style.display='none';
+  document.getElementById('sessionLabel').textContent='新規セッション';
+  switchView('main');
+}
+
+// ── PHASE 1→2 ────────────────────────────────────────────
+async function runPhase12(){
+  if(!selectedClient){showError('クライアントを選択してください');return;}
+  const keyword=document.getElementById('keywordInput').value.trim();
+  if(!keyword){showError('キーワードを入力してください');return;}
+  S.company=selectedClient.name;S.keyword=keyword;
+  if(!S.sessionId){S.sessionId=newSessionId();S.createdAt=Date.now();}
+  document.getElementById('sessionLabel').textContent=selectedClient.name+' / '+keyword.slice(0,20);
+  const btn=document.getElementById('runBtn12');btn.disabled=true;document.getElementById('rb12txt').textContent='実行中...';
+  try{
+    showCard('pc1');setWS(1,'running');setBadge('b1','brunning','PHASE 1 実行中');await sleep(300);
+    activateLS('ls1a','キャッシュからデータを読み込み中...');
+    const data=await fetchClientSheetData(selectedClient);
+    doneLS('ls1a','データ読み込み完了');
+    activateLS('ls1b','シートデータを解析中...');await sleep(200);doneLS('ls1b',data.tabCount+'タブ取得済み');
+    activateLS('ls1c','各タブを確認中...');await sleep(200);doneLS('ls1c','過去記事 '+data.B.全記事数+' 件確認');
+    activateLS('ls1d','AI がデータを確認中...');showLogSep('sep1');
+    const links=data.B.過去記事.slice(0,5).map(a=>`  - ${a.title||'記事'}｜${a.url}`).join('\n');
+    const jirei=data.C.施工事例.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
+    const koe=data.C.お客様の声.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
+    const kodawari=data.C.こだわり.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
+    const p1u=`会社名: ${selectedClient.name}\n出力時の呼称: ${data.hyouki}\n\n=== 【A】会社基本情報 ===\nブランド理念: ${data.A.ブランド理念||'情報なし'}\n独自の強み: ${data.A.独自の強み||'情報なし'}\nターゲット層: ${data.A.ターゲット層||'情報なし'}\n禁止用語: ${data.A.禁止用語||'情報なし'}\n施工エリア: ${data.A.施工エリア||'情報なし'}\n商品コンセプト: ${data.A.商品コンセプト||'情報なし'}\nHP URL: ${data.A.HP_URL||'情報なし'}\n\n=== 【A】その他 ===\n${Object.entries(data.A.rawA||{}).map(([k,v])=>`${k}: ${v}`).join('\n')||'なし'}\n\n=== 【B】過去記事（全${data.B.全記事数}件） ===\n${links||'情報なし'}\n\n=== 【C】施工事例 ===\n${jirei}\n\n=== 【C】お客様の声 ===\n${koe}\n\n=== 【C】こだわり ===\n${kodawari}\n\n=== 【C】実績数値 ===\n${data.C.実績数値||'情報なし'}\n\n上記データを確認し指定の形式で出力してください。`;
+    const p1out=await streamClaude(P1_SYS,p1u,'sb1');S.p1=p1out;
+    doneLS('ls1d','データ確認完了');setWS(1,'done');setBadge('b1','bok','PHASE 1 完了 ✓');
+    showResult(1,p1out,'Phase 1 完了 — データ確認が完了しました','キャッシュ使用 / '+data.tabCount+'タブ');
+    saveSession();await sleep(500);
+    showCard('pc2');setWS(2,'running');setBadge('b2','brunning','PHASE 2 実行中');
+    activateLS('ls2a','データを整形中...');await sleep(300);doneLS('ls2a','整形完了');
+    activateLS('ls2b','競合傾向を分析中...');await sleep(400);doneLS('ls2b','分析完了');
+    activateLS('ls2c','AI が企画設計中...');showLogSep('sep2');
+    const p2out=await streamClaude(P2_SYS,'キーワード: '+keyword+'\n\n=== Phase 1 確認済みデータ ===\n'+p1out+'\n\n上記をもとに企画設計を行ってください。本文は書かないこと。','sb2');
+    S.p2=p2out;
+    doneLS('ls2c','企画設計完了');setWS(2,'done');setBadge('b2','bok','PHASE 2 完了 ✓');
+    showResult(2,p2out,'Phase 2 完了 — 企画設計が完了しました','キーワード: '+keyword);
+    saveSession();renderPersonaOptions();
+  }catch(e){showError(String(e?.message||e));}
+  btn.disabled=false;document.getElementById('rb12txt').textContent='▶ Phase 1→2 を連続実行する';
+}
+
+function renderPersonaOptions(){
+  const box=document.getElementById('personaOptions');
+  const text=S.p2||'';
+  const lines=text.split('\n');
+  const personas=[];
+  lines.forEach(line=>{
+    if(/[①②③④]/.test(line)){
+      const cleaned=line.replace(/\*\*/g,'').replace(/^[\s\-\*#]+/,'').trim();
+      if(cleaned.length>5)personas.push(cleaned);
+    }
+  });
+  if(!personas.length){
+    box.innerHTML='<div style="color:var(--ink-muted);font-size:12px">ペルソナを取得できませんでした</div>';
+    document.getElementById('personaSelectBox').style.display='block';
+    return;
+  }
+  const shortTitle=(str)=>{
+    const body=str.replace(/^[①②③④]\s*/,'');
+    const m=body.match(/^([^。、\(（—－\n]{1,20})/);
+    const title=m?m[1].trim():body.slice(0,15);
+    return title.length>15?title.slice(0,15)+'…':title;
+  };
+  box.innerHTML=personas.map((label,idx)=>{
+    const num=['①','②','③','④'][idx]||'';
+    const title=shortTitle(label);
+    const full=label.replace(/^[①②③④]\s*/,'');
+    return`<label style="border:1px solid var(--border);border-radius:10px;cursor:pointer;background:#fff;display:flex;flex-direction:column;gap:6px;padding:14px 16px;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor=this.querySelector('input').checked?'var(--purple)':'var(--border)'">
+      <div style="display:flex;align-items:center;gap:10px">
+        <input type="radio" name="personaChoice" value="${escH(label)}" ${idx===0?'checked':''} style="flex-shrink:0" onchange="document.querySelectorAll('#personaOptions label').forEach(l=>l.style.borderColor='var(--border)');this.closest('label').style.borderColor='var(--purple)'">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--purple-dark);font-weight:500">${num}</span>
+        <span style="font-size:13px;font-weight:500;color:var(--ink)">${escH(title)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--ink-sub);line-height:1.6;padding-left:30px">${escH(full)}</div>
+    </label>`;
+  }).join('');
+  document.getElementById('personaSelectBox').style.display='block';
+  setTimeout(()=>document.getElementById('personaSelectBox').scrollIntoView({behavior:'smooth',block:'start'}),300);
+}
+
+function confirmPersonaSelection(){
+  const sel=document.querySelector('input[name="personaChoice"]:checked');
+  if(!sel){showError('ターゲットを選択してください');return;}
+  S.selectedPersona=sel.value;
+  document.getElementById('personaSelectBox').style.display='none';
+  showError('ターゲット確定：'+sel.value.slice(0,30),true);
+  setWS(3,'active');
+  document.getElementById('p3Gate').style.display='block';
+  setTimeout(()=>document.getElementById('p3Gate').scrollIntoView({behavior:'smooth',block:'start'}),300);
+}
+
+// ── PHASE 3 ──────────────────────────────────────────────
+async function runPhase3(){
+  if(!S.p1||!S.p2){showError('Phase 1→2 を先に実行してください');return;}
+  const btn=document.getElementById('runBtn3');btn.disabled=true;document.getElementById('rb3txt').textContent='分析中...';
+  try{
+    document.getElementById('p3Gate').style.display='none';
+    showCard('pc3');setWS(3,'running');setBadge('b3','brunning','PHASE 3 実行中');
+    activateLS('ls3a','上位記事を検索中...');await sleep(500);doneLS('ls3a','Web検索実行');
+    activateLS('ls3b','SEO・AIOスコアを評価中...');await sleep(400);
+    const p3raw=await callClaude(P3_SYS,'キーワード: '+S.keyword+'\n上位記事を調査しJSON形式で出力してください。',3000);
+    S.p3raw=p3raw;
+    doneLS('ls3b','スコア評価完了');
+    activateLS('ls3c','タイトル被りを分析中...');await sleep(300);doneLS('ls3c','分析完了');
+    showLogSep('sep3');
+    let compData=null;try{const m=p3raw.match(/\{[\s\S]*\}/);if(m)compData=JSON.parse(m[0]);}catch{}
+    setWS(3,'done');setBadge('b3','bok','PHASE 3 完了 ✓');
+    document.getElementById('ll3').style.display='none';
+    if(compData)renderCompetitorResults(compData);
+    else document.getElementById('compResults').innerHTML='<div class="res-content">'+renderMD(p3raw)+'</div>';
+    document.getElementById('rbn3').textContent='Phase 3 完了 — 競合 '+(compData?.competitors?.length||'?')+' 件を分析しました';
+    document.getElementById('rm3').textContent='キーワード: '+S.keyword;
+    document.getElementById('rb3').classList.remove('collapsed');
+    saveSession();
+    setWS(4,'active');document.getElementById('p4Gate').classList.add('show');
+    setTimeout(()=>document.getElementById('p4Gate').scrollIntoView({behavior:'smooth',block:'start'}),400);
+  }catch(e){showError(String(e?.message||e));}
+  btn.disabled=false;document.getElementById('rb3txt').textContent='競合分析を実行する（Web検索）';
+}
+
+function renderCompetitorResults(d){
+  const cl={'低':'cl-low','中':'cl-mid','高':'cl-high'}[d.competition_level]||'cl-mid';
+  const or={'低':'cl-low','中':'cl-mid','高':'cl-high'}[d.overlap_risk]||'cl-mid';
+  const cards=(d.competitors||[]).map(c=>`<div class="comp-card"><div class="comp-rank">${c.rank}位</div><div class="comp-title">${escH(c.title||'')}</div><a class="comp-domain" href="${escH(c.url||'#')}" target="_blank" rel="noopener">${escH(c.domain||'')}</a><div class="comp-scores"><div class="score-item"><div class="score-label">SEO</div><div class="score-bar"><div class="score-fill fill-seo" style="width:${(c.seo_score||0)*20}%"></div></div></div><div class="score-item"><div class="score-label">AIO</div><div class="score-bar"><div class="score-fill fill-aio" style="width:${(c.aio_score||0)*20}%"></div></div></div></div><div style="display:flex;flex-wrap:wrap">${(c.strengths||[]).map(s=>`<span class="comp-tag">${escH(s)}</span>`).join('')}</div></div>`).join('');
+  const recs=(d.recommended_titles||[]).map(t=>`<div class="comp-rec-item" onclick="navigator.clipboard.writeText('${escH(t).replace(/'/g,"\\'")}').then(()=>showError('コピーしました',true))"><span>${escH(t)}</span></div>`).join('');
+  const gaps=(d.gap_opportunities||[]).map(g=>`<li style="font-size:12px;color:var(--ink-sub);padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:7px"><span style="color:var(--ok)">→</span>${escH(g)}</li>`).join('');
+  document.getElementById('compResults').innerHTML=`<div class="comp-summary"><div class="comp-summary-title">競合概況</div><span class="comp-level ${cl}">競合レベル: ${d.competition_level||'?'}</span><span class="comp-level ${or}" style="margin-left:8px">タイトル被りリスク: ${d.overlap_risk||'?'}</span><div style="font-size:12px;color:var(--ink-sub);margin-top:8px;line-height:1.7">${escH(d.competition_summary||'')} ${escH(d.overlap_reason||'')}</div></div><div class="comp-grid">${cards}</div>${gaps?`<div style="margin:12px 0"><div class="comp-summary-title" style="color:var(--p1)">差別化できる切り口</div><ul style="list-style:none">${gaps}</ul></div>`:''} ${recs?`<div style="margin-top:12px"><div style="font-size:10px;color:var(--ink-muted);margin-bottom:6px">推奨タイトル案（クリックでコピー）</div>${recs}</div>`:''}`;
+}
+
+// ── PHASE 4 ──────────────────────────────────────────────
+async function runPhase4(){
+  if(!S.p1||!S.p2){showError('Phase 1→2 を先に実行してください');return;}
+  const btn=document.getElementById('runBtn4');btn.disabled=true;document.getElementById('rb4txt').textContent='執筆中...';
+  try{
+    document.getElementById('p4Gate').style.display='none';
+    showCard('pc4');setWS(4,'running');setBadge('b4','brunning','PHASE 4 執筆中');
+    activateLS('ls4a','データを統合中...');await sleep(400);doneLS('ls4a','統合完了');
+    activateLS('ls4b','構成を設計中...');await sleep(500);doneLS('ls4b','構成設計完了');
+    activateLS('ls4c','本文を執筆中...');showLogSep('sep4');
+    const compInfo=S.p3raw?'\n\n=== Phase 3 競合分析 ===\n'+S.p3raw:'';
+    const p4out=await streamClaude(P4_SYS,'=== Phase 1 確認済みデータ ===\n'+S.p1+'\n\n=== Phase 2 企画設計 ===\n'+S.p2+compInfo+'\n\n上記をもとに記事を執筆してください。','sb4',6000);
+    S.p4=p4out;
+    doneLS('ls4c','執筆完了');activateLS('ls4d','評価レポートを生成中...');await sleep(300);doneLS('ls4d','完了');
+    setWS(4,'done');setBadge('b4','bok','PHASE 4 完了 ✓');
+    const chars=p4out.replace(/\s/g,'').length;
+    showResult(4,p4out,'Phase 4 完了 — 記事の執筆が完了しました','Markdown形式');
+    document.getElementById('wc4').textContent='約 '+chars.toLocaleString()+' 文字';
+    saveSession();
+  }catch(e){showError(String(e?.message||e));}
+  btn.disabled=false;document.getElementById('rb4txt').textContent='✍ 執筆を開始する（約5〜10分）';
+}
+  // ── REPORT ───────────────────────────────────────────────
+const AI_RUBRICS={
+  chatgpt:{name:'ChatGPT（GPT-4o）',color:'#10a37f',items:[{key:'intent',w:2.0},{key:'structure',w:2.0},{key:'quotable',w:2.0},{key:'eeat',w:1.5},{key:'evidence',w:1.5},{key:'context',w:0.5},{key:'freshness',w:0.5}]},
+  gemini:{name:'Gemini',color:'#4285f4',items:[{key:'originality',w:2.5},{key:'structure',w:2.0},{key:'authority',w:2.0},{key:'depth',w:1.5},{key:'recency',w:1.0},{key:'trust',w:1.0}]},
+  claude:{name:'Claude（Anthropic）',color:'#7F77DD',items:[{key:'selfcontained',w:2.5},{key:'specificity',w:2.0},{key:'schema',w:2.0},{key:'intent',w:1.5},{key:'eeat',w:1.0},{key:'readability',w:1.0}]},
+  perplexity:{name:'Perplexity',color:'#20808d',items:[{key:'conclusion',w:2.0},{key:'evidence',w:2.0},{key:'originality',w:2.0},{key:'structure',w:1.5},{key:'eeat',w:1.5},{key:'freshness',w:1.0}]},
+};
+let currentReportSession=null;
+function parseP4Meta(p4){
+  let meta={charCount:0,persona:'—',improvement:'—',selfScore:'—',refs:'—',aiScores:null};
+  try{const m=p4.match(/```json([\s\S]*?)```/);if(m){Object.assign(meta,JSON.parse(m[1].trim()));}}catch{}
+  if(!meta.aiScores)meta.aiScores={chatgpt:{intent:1.4,structure:1.4,quotable:1.4,eeat:1.0,evidence:1.0,context:0.3,freshness:0.3},gemini:{originality:1.8,structure:1.4,authority:1.4,depth:1.0,recency:0.7,trust:0.7},claude:{selfcontained:1.8,specificity:1.4,schema:1.4,intent:1.0,eeat:0.7,readability:0.7},perplexity:{conclusion:1.4,evidence:1.4,originality:1.4,structure:1.0,eeat:1.0,freshness:0.8}};
+  if(!meta.charCount)meta.charCount=p4.replace(/\s/g,'').length;
+  return meta;
+}
+function renderReport(s){
+  currentReportSession=s;
+  document.getElementById('repCo').textContent=s.company||'';
+  document.getElementById('repKw').textContent=s.keyword?' / '+s.keyword:'';
+  const p4=s.phases?.p4||'';const meta=parseP4Meta(p4);
+  const totals=Object.fromEntries(Object.entries(meta.aiScores).map(([k,v])=>[k,Math.round(Object.values(v).reduce((a,x)=>a+(x||0),0)*10)/10]));
+  const composite=Math.round(Object.values(totals).reduce((a,v)=>a+v,0)/Object.values(totals).length*10)/10;
+  document.getElementById('repMetrics').innerHTML=`<div class="metric"><div class="metric-lbl">文字数（概算）</div><div class="metric-val">${meta.charCount?meta.charCount.toLocaleString():'—'}</div></div><div class="metric"><div class="metric-lbl">総合AIスコア</div><div class="metric-val purple">${composite}<span style="font-size:13px;font-weight:400">/10</span></div></div><div class="metric"><div class="metric-lbl">AI自己採点</div><div class="metric-val amber">${meta.selfScore}<span style="font-size:13px;font-weight:400">点</span></div></div><div class="metric"><div class="metric-lbl">評価AI数</div><div class="metric-val" style="color:var(--ink-muted)">4</div></div>`;
+  const tags=(meta.persona&&meta.persona!=='—')?meta.persona.split(/[・、,，]/).map(t=>t.trim()).filter(Boolean):['データなし'];
+  document.getElementById('repPersonaTags').innerHTML=tags.map(t=>`<span class="rep-tag">${escH(t)}</span>`).join('');
+  const articleBody=p4.split(/```json/)[0]||p4;
+  document.getElementById('repArticlePreview').textContent=articleBody.trim().slice(0,600)+(articleBody.length>600?'\n...(以下省略)':'');
+  document.getElementById('repScores').innerHTML=Object.entries(AI_RUBRICS).map(([key,rubric])=>{
+    const scores=meta.aiScores?.[key]||{};const total=totals[key]||0;const pct=Math.round(total*10);
+    const bars=rubric.items.map(item=>{const v=scores[item.key]||0;const p=Math.round(v/item.w*100);return`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--paper)"><div style="font-size:11px;color:var(--ink-sub);width:140px;flex-shrink:0">${escH(item.key)}</div><div style="flex:1;height:4px;background:var(--paper);border-radius:2px;overflow:hidden"><div style="height:100%;width:${p}%;background:${rubric.color};border-radius:2px"></div></div><div style="font-size:11px;font-weight:500;width:44px;text-align:right;color:${rubric.color}">${v}/${item.w}</div></div>`;}).join('');
+    return`<div style="padding:14px 16px;border-bottom:.5px solid var(--border)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:10px;height:10px;border-radius:50%;background:${rubric.color};flex-shrink:0"></div><div style="font-size:12px;font-weight:500;flex:1">${escH(rubric.name)}</div><div style="font-size:18px;font-weight:500;color:${rubric.color}">${total}<span style="font-size:11px;font-weight:400;color:var(--ink-muted)">/10</span></div><div style="width:80px;height:6px;background:var(--paper);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${rubric.color};border-radius:3px"></div></div></div><div style="background:var(--paper);border-radius:6px;padding:4px 10px">${bars}</div></div>`;
+  }).join('');
+  const ki=(meta.improvement&&meta.improvement!=='—')?meta.improvement.split(/[。\n]/).filter(t=>t.trim().length>2):['データなし'];
+  document.getElementById('repKaizen').innerHTML=ki.map(k=>`<div class="kaizen-item"><div class="kaizen-dot"></div>${escH(k.trim())}</div>`).join('');
+  let compData=null;try{const m=(s.phases?.p3raw||'').match(/\{[\s\S]*\}/);if(m)compData=JSON.parse(m[0]);}catch{}
+  const refs=compData?.competitors||[];
+  document.getElementById('repRefs').innerHTML=refs.length?refs.map(c=>`<div class="ref-item"><div class="ref-rank">${c.rank}位</div><div><div class="ref-t">${escH(c.title||'')}</div><div class="ref-d">${escH(c.domain||'')}</div><div class="ref-sc"><span class="ref-sc-pill">SEO ${c.seo_score}/5</span><span class="ref-sc-pill">AIO ${c.aio_score}/5</span></div></div></div>`).join(''):'<div style="padding:14px 16px;font-size:12px;color:var(--ink-muted)">Phase 3 競合分析データなし</div>';
+}
+function copyRepArticle(){navigator.clipboard.writeText(currentReportSession?.phases?.p4||'').then(()=>showError('全文をコピーしました',true));}
+function exportReport(){
+  const s=currentReportSession;if(!s)return;
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['# 制作完了レポート\n会社: '+s.company+'\nキーワード: '+s.keyword+'\n\n'+(s.phases?.p4||'')],{type:'text/plain;charset=utf-8'}));a.download='report_'+s.company+'_'+s.keyword+'.txt';a.click();
+}
+
+// ── HISTORY ──────────────────────────────────────────────
+function renderHistory(){
+  const allSessions=getHistory();
+  const period=document.getElementById('histFilterPeriod')?.value||'all';
+  const now=Date.now();
+  const sessions=period==='all'?allSessions:allSessions.filter(s=>(now-s.timestamp)<parseInt(period)*24*60*60*1000);
+  document.getElementById('histTotalLabel').textContent=sessions.length+'件'+(period!=='all'?'（'+period+'日以内）':'');
+  const list=document.getElementById('histList');
+  if(!sessions.length){list.innerHTML='<div style="color:var(--ink-muted);font-size:13px;padding:20px 0;text-align:center">履歴がありません</div>';return;}
+  const isAdmin=currentUser?.role==='admin';
+  const dc={'phase4-done':'hd-done','phase3-done':'hd-partial','phase2-done':'hd-partial','phase1-done':'hd-partial','new':'hd-new'};
+  list.innerHTML=sessions.map(s=>{
+    const dot=dc[s.status]||'hd-new';const t=new Date(s.timestamp);
+    const phases=['p1','p2','p3raw','p4'].map((p,i)=>`<span class="hp ${s.phases&&s.phases[p]?'hp-done':'hp-skip'}">P${i+1}</span>`).join('');
+    const checkbox=isAdmin?`<input type="checkbox" class="hist-check" data-id="${s.id}" style="margin-right:8px;flex-shrink:0" onchange="updateDeleteBtn()" onclick="event.stopPropagation()">`:'';
+    return`<div class="hist-row" onclick="openHistReport('${s.id}')" style="position:relative">
+      ${checkbox}
+      <div class="hist-dot ${dot}"></div>
+      <div class="hist-info"><div class="hist-co">${escH(s.company||'不明')}</div><div class="hist-kw">${escH(s.keyword||'')}</div></div>
+      <div class="hist-right"><div class="hist-phases">${phases}</div><div class="hist-date">${t.toLocaleDateString('ja-JP')}</div></div>
+    </div>`;
+  }).join('');
+  const adminCtrl=document.getElementById('histAdminControls');
+  if(adminCtrl)adminCtrl.style.display=isAdmin?'block':'none';
+}
+function selectAllHist(){
+  const checks=document.querySelectorAll('.hist-check');
+  const allChecked=[...checks].every(c=>c.checked);
+  checks.forEach(c=>c.checked=!allChecked);updateDeleteBtn();
+}
+function updateDeleteBtn(){
+  const checked=document.querySelectorAll('.hist-check:checked').length;
+  const btn=document.getElementById('deleteSelectedBtn');
+  if(btn)btn.style.display=checked>0?'inline-block':'none';
+  if(btn&&checked>0)btn.textContent=`選択削除（${checked}件）`;
+}
+function deleteSelectedHist(){
+  const ids=[...document.querySelectorAll('.hist-check:checked')].map(c=>c.dataset.id);
+  if(!ids.length)return;
+  if(!confirm(ids.length+'件の履歴を削除しますか？'))return;
+  localStorage.setItem('comma_sessions',JSON.stringify(getHistory().filter(s=>!ids.includes(s.id))));
+  renderHistory();updateHistCountBadge();showError(ids.length+'件削除しました',true);
+}
+function openHistReport(id){const s=getHistory().find(x=>x.id===id);if(!s)return;prevHistoryView='history';openReport(s);}
+function deleteAllHistory(){if(!confirm('全ての履歴を削除しますか？'))return;localStorage.removeItem('comma_sessions');renderHistory();updateHistCountBadge();}
+
+// ── MEMO ─────────────────────────────────────────────────
+function getMemos(){try{return JSON.parse(localStorage.getItem('comma_memos')||'[]');}catch{return[];}}
+function addMemo(){
+  const text=document.getElementById('memoText').value.trim();const type=document.getElementById('memoType').value;
+  if(!text){showError('メモの内容を入力してください');return;}
+  const memos=getMemos();memos.unshift({id:Date.now(),user:currentUser?.name,timestamp:Date.now(),type,text});
+  localStorage.setItem('comma_memos',JSON.stringify(memos));document.getElementById('memoText').value='';renderMemos();updateMemoBadge();
+}
+function deleteMemo(id){localStorage.setItem('comma_memos',JSON.stringify(getMemos().filter(m=>m.id!==id)));renderMemos();updateMemoBadge();}
+function copyAllMemos(){navigator.clipboard.writeText(getMemos().map(m=>'['+m.type+'] '+m.user+': '+m.text).join('\n---\n')).then(()=>showError('コピーしました',true));}
+function clearAllMemos(){if(!confirm('全てのメモを削除しますか？'))return;localStorage.removeItem('comma_memos');renderMemos();updateMemoBadge();}
+function updateMemoBadge(){const n=getMemos().length;const b=document.getElementById('memoCountBadge');b.textContent=n;b.style.display=n>0?'inline':'none';}
+function renderMemos(){
+  const memos=getMemos();const list=document.getElementById('memoList');
+  if(!memos.length){list.innerHTML='<div style="color:var(--ink-muted);font-size:12px;padding:16px 0;text-align:center">まだメモがありません</div>';return;}
+  const tMap={ng:{cls:'mt-ng',lbl:'NG用語'},note:{cls:'mt-note',lbl:'メモ'},q:{cls:'mt-q',lbl:'要確認'}};
+  list.innerHTML=memos.map(m=>{const t=tMap[m.type]||tMap.note;const canDel=currentUser?.role==='admin'||currentUser?.name===m.user;return`<div class="memo-item"><div class="memo-item-meta"><span class="memo-user">${escH(m.user||'?')}</span><span class="memo-ts">${new Date(m.timestamp).toLocaleDateString('ja-JP')}</span><span class="memo-type-badge ${t.cls}">${t.lbl}</span></div><div class="memo-text">${escH(m.text).replace(/\n/g,'<br>')}</div>${canDel?`<button class="memo-del" onclick="deleteMemo(${m.id})">×</button>`:''}</div>`;}).join('');
+}
+
+// ── TEST ─────────────────────────────────────────────────
+async function runTest(){
+  const sel=document.getElementById('testClientSelect');
+  if(!sel||!sel.value){showError('クライアントを選択してください');return;}
+  const client=getClients().find(c=>c.id===sel.value);
+  if(!client){showError('クライアントが見つかりません');return;}
+  const btn=document.getElementById('testBtnTxt').parentElement;
+  btn.disabled=true;document.getElementById('testBtnTxt').textContent='テスト中...';
+  const out=document.getElementById('testOutput');
+  document.getElementById('testResult').style.display='block';
+  out.textContent='接続中...';
+  try{
+    const data=await fetchClientSheetData(client,true);
+    out.innerHTML=`<span style="color:var(--ok)">✓ 接続成功\n\n会社名: ${escH(client.name)}\n呼称: ${escH(client.hyouki)}\nURL: ${escH(client.url||'')}\n取得タブ数: ${data.tabCount}\n過去記事数: ${data.B.全記事数}件\n\n</span><span style="color:var(--ink-sub)">データサンプル:\n${escH(JSON.stringify({A:{ブランド理念:data.A.ブランド理念,独自の強み:data.A.独自の強み,ターゲット層:data.A.ターゲット層},B:{全記事数:data.B.全記事数,過去記事:data.B.過去記事.slice(0,2)},C:{施工事例数:data.C.施工事例.length}},null,2))}</span>`;
+    showError('接続テスト成功',true);
+  }catch(e){
+    out.innerHTML=`<span style="color:var(--err)">❌ 接続失敗\n\n${escH(String(e?.message||e))}\n\n確認事項:\n・シートURLが正しいか\n・「リンクを知っている全員が閲覧可」に設定されているか</span>`;
+    showError(String(e?.message||e));
+  }
+  btn.disabled=false;document.getElementById('testBtnTxt').textContent='接続テストを実行';
+}
+
+// ── INIT ─────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  ['loginUser','loginPass'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>e.key==='Enter'&&doLogin()));
+  checkAuth();
+});
+</script>
+</body>
+</html>
