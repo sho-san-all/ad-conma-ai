@@ -1,12 +1,12 @@
-export default async function handler(req) {
-  const { system, messages, max_tokens } = await req.json();
+export const config = { runtime: 'edge' };
+
+export default async function handler(req, res) {
+  const { system, messages, max_tokens } = req.body;
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'GEMINI_API_KEY not set' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    res.status(500).json({ error: 'GEMINI_API_KEY not set' });
+    return;
   }
 
   const contents = messages.map(m => ({
@@ -31,13 +31,20 @@ export default async function handler(req) {
 
   if (!response.ok) {
     const errText = await response.text();
-    return new Response(JSON.stringify({ error: errText }), {
-      status: response.status,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    res.status(response.status).json({ error: errText });
+    return;
   }
 
-  return new Response(response.body, {
-    headers: { 'Content-Type': 'text/event-stream' },
-  });
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    res.write(decoder.decode(value, { stream: true }));
+  }
+  res.end();
 }
