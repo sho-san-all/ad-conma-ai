@@ -468,9 +468,24 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 
     <!-- HISTORY -->
     <div class="view" id="view-history">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
         <div><div class="page-title">過去の履歴</div><div class="page-desc" style="margin-bottom:0">クリックで制作完了レポートを開きます</div></div>
         <span id="histTotalLabel" style="font-size:11px;color:var(--ink-muted)"></span>
+      </div>
+      <!-- 管理者向け削除コントロール -->
+      <div id="histAdminControls" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:16px">
+        <div style="font-size:11px;font-weight:500;color:var(--ink-sub);margin-bottom:10px">管理者操作</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select id="histFilterPeriod" class="fi" style="width:auto;padding:6px 10px;font-size:12px" onchange="renderHistory()">
+            <option value="all">すべて表示</option>
+            <option value="7">直近7日</option>
+            <option value="30">直近30日</option>
+            <option value="90">直近90日</option>
+          </select>
+          <button class="small-btn" onclick="selectAllHist()">全件選択</button>
+          <button class="small-btn danger" id="deleteSelectedBtn" onclick="deleteSelectedHist()" style="display:none">選択削除</button>
+          <button class="small-btn danger" onclick="deleteAllHistory()">全履歴を削除</button>
+        </div>
       </div>
       <div class="hist-list" id="histList"></div>
     </div>
@@ -1061,17 +1076,51 @@ function renderMD(text){
 function escH(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 // ── PROMPTS ──────────────────────────────────────────────
-const COMMA_RULES=`# コンマ記事執筆ルール（最優先）
-## 禁止事項
-- 目次のような一覧表示を入れない（この記事でわかること3行程度は可）
-- 数字の箇条書き・番号付きリストは使わない（「・」で統一）
-- 見出し以外を太字にしない / 表形式は原則使用しない
-- 確証が難しい数字・金額を断定的に書かない
-- 「業界No.1」「最高峰」「圧倒的」等の禁止用語を使わない
-## 文章ルール
-- 一文一義 / 「です・ます調」/ 営業トーク調にしない`;
+const COMMA_RULES=`# コンマ記事執筆ルール（全フェーズ最優先・厳守）
+
+## 基本姿勢
+- 記事は住宅検討者の不安や疑問を整理し、住宅会社への信頼形成につなげる接点として書く
+- 煽り・断定に頼らず、誠実さ・わかりやすさ・汎用性・整合性を優先する
+- 読者に考え方の軸を渡すことが目的。結論を押しつけない
+
+## 絶対禁止事項
+- 目次のような一覧表示を入れない（「この記事でわかること」3〜5行は可）
+- 数字の箇条書き・番号付きリストは使わない（箇条書き記号は「・」のみ）
+- 見出し以外を太字にしない / 赤文字を多用しない
+- 表形式は原則使用しない（WordPressで崩れるため）
+- 脚注記号・注釈番号を入れない
+- 確証が難しい数字・金額・費用相場を断定的に書かない
+- 古い制度・終了制度を現行のように書かない
+- 「住宅会社に相談するとよいでしょう」など他人まかせの案内文を書かない
+- 特定メーカー名・商品名・店舗名を安易に使わない（一般化する）
+- 年号依存表現は避ける（2024年版・最新版など）
+- 独自情報・固有名詞はそのまま残さない
+- 中古・リノベーション・賃貸を不必要に勧める内容にしない
+- 「業界No.1」「最高峰」「圧倒的」「革新的」「絶対に」「必ず」等を使わない
+- 「実例」「○選」と書くなら本文内容と数が一致していること
+
+## 数字・金額・制度の書き方
+- 必ず「一般的には」「目安として」「ケースによって異なる」等の前置きを使う
+- 住宅ローン・税金・贈与・補助金・費用相場は断定しない。地域差・時期差があることを前提に書く
+- 補助金・税制は変動があるため恒久制度のように書かない
+
+## 文章表現ルール
+- 一文一義（一つの文で一つのことを伝える）
+- 「です・ます調」基本。営業トーク調・煽り調にしない
+- 一段落が長くなりすぎない / 改行位置を意識する
+- 同じ語尾を続けすぎない
+
+## 注文住宅らしさの維持
+- 家づくりの進め方・暮らし方・間取り・動線・収納・性能・土地条件の観点を自然に入れる
+- 比較する場合は建売住宅・中古リフォームとの比較を基本とする
+- 過去記事と内容・切り口が被らないようにする
+
+## 自社案内の書き方
+- まとめ後に自然な形で1箇所のみ相談導線を置く
+- 「〜社では担当がご案内します」「お気軽にご相談ください」形式を使う
+- 「住宅会社に相談するとよいでしょう」は禁止。自社の案内姿勢を持たせる`;
 const P1_SYS=`あなたは記事制作前のデータ確認担当です。このフェーズでは執筆しないこと。\n${COMMA_RULES}\n渡された会社データのみを根拠として使う。外部Web情報で補完しないこと。\n\n# 出力形式\n1. 一致した会社名\n2. 参照できたシート数\n3. 抽出データ一覧\n4. 不足項目一覧\n5. 執筆可否（可 / 不可）`;
-const P2_SYS=`あなたはSEO/AIO記事の企画担当です。本文は書かないこと。\n${COMMA_RULES}\n\n# 出力形式\n1. 想定キーワード\n2. ペルソナ4案（顕在/潜在/比較検討/トレンド）\n3. おすすめの1案とその理由\n4. 競合に足りない切り口3つ\n5. 執筆前の追加質問`;
+const P2_SYS=`あなたはSEO/AIO記事の企画担当です。本文は書かないこと。\n${COMMA_RULES}\n\n# ペルソナ設計の考え方\n住宅・不動産・家づくり検討者のペルソナを設定する。検討段階と悩みの種類を具体化すること。\n例：新築検討前の情報収集段階／土地探しと並行中／住宅会社比較中／間取り・性能の具体検討段階／資金計画に不安がある／子育て・共働き・二世帯など暮らし条件が明確など\n\n# 出力形式\n1. 想定キーワードと検索意図の整理\n2. ペルソナ4案（各ペルソナに「住宅・家づくりに関する具体的な悩み・検討背景・検討段階」を明記。年代・家族構成・住宅検討状況を含める）\n3. おすすめの1案とその理由（なぜそのペルソナが最も差別化できるか）\n4. 競合に足りない切り口（住宅業界視点で3つ。注文住宅らしい視点を必ず含める）\n5. 執筆前の追加質問`;
 const P3_SYS=`あなたはSEO/AIO分析専門家です。指定キーワードでWeb検索し競合記事を調査してください。\n必ず以下のJSON形式のみで出力。前後に説明文やコードブロック記号を含めないこと。\n{"keyword":"","competition_level":"低|中|高","competition_summary":"","competitors":[{"rank":1,"title":"","url":"","domain":"","seo_score":4,"aio_score":3,"strengths":[],"title_pattern":""}],"gap_opportunities":[],"recommended_titles":[],"overlap_risk":"低|中|高","overlap_reason":""}`;
 const P4_SYS=`あなたはシニア・コンテンツディレクターです。確定済みデータだけを根拠に記事を書くこと。\n${COMMA_RULES}\n\n# 最優先ルール\n- シートにない数値・実績・URLは創作しない → [要確認・追記] と明記\n\n# 執筆条件\n- 8,000〜10,000文字 / Markdown形式\n- H1は会社名を含めない\n- 各H2の下にH3を2つ以上置く\n- PR表現は全体で2回まで\n- 冒頭に「この記事でわかること」を3〜5行で書く\n\n# 記事後にJSON出力\n---\n\`\`\`json\n{"charCount":数値,"persona":"想定ペルソナ","improvement":"改善点","selfScore":数値,"refs":"参照データログ","aiScores":{"chatgpt":{"intent":0,"structure":0,"quotable":0,"eeat":0,"evidence":0,"context":0,"freshness":0},"gemini":{"originality":0,"structure":0,"authority":0,"depth":0,"recency":0,"trust":0},"claude":{"selfcontained":0,"specificity":0,"schema":0,"intent":0,"eeat":0,"readability":0},"perplexity":{"conclusion":0,"evidence":0,"originality":0,"structure":0,"eeat":0,"freshness":0}}}\n\`\`\`\n各aiScoresの合計が10点になるよう配点すること。`;
 
@@ -1094,33 +1143,41 @@ const MOCK_P4=(company,kw)=>`# ${kw}で成果を出すための実践ガイド\n
 
 async function streamClaude(sys,user,boxId,maxTokens=4000){
   const box=document.getElementById(boxId);
-  if(!localStorage.getItem('comma_apikey')){
+  box.innerHTML='<span class="scursor"></span>';
+  try{
+    const res=await fetch('/api/gemini/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
+    if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
+    const reader=res.body.getReader();const dec=new TextDecoder();let full='',buf='';
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data: '))continue;
+        const d=line.slice(6).trim();if(d==='[DONE]')continue;
+        try{const p=JSON.parse(d);const t=p.candidates?.[0]?.content?.parts?.[0]?.text||'';if(t){full+=t;box.innerHTML=escH(full)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;}}catch{}
+      }
+    }
+    box.classList.add('done');box.innerHTML=escH(full);return full;
+  }catch(e){
+    // APIが使えない場合（ローカル開発時）はモックにフォールバック
+    console.warn('API unavailable, using mock:',e.message);
     let mock='（モック）';
-    if(boxId==='sb1'){try{const d=await fetchClientSheetData(selectedClient);mock=MOCK_P1(selectedClient,d);}catch(e){mock='エラー: '+String(e?.message||e);}}
+    if(boxId==='sb1'){try{const d=await fetchClientSheetData(selectedClient);mock=MOCK_P1(selectedClient,d);}catch(e2){mock='エラー: '+String(e2?.message||e2);}}
     else if(boxId==='sb2')mock=MOCK_P2(S.keyword);
     else if(boxId==='sb4')mock=MOCK_P4(selectedClient?.name,S.keyword);
     return await mockStream(mock,boxId);
   }
-  box.innerHTML='<span class="scursor"></span>';
-  const res=await fetch('/api/gemini/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
-  if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
-  const reader=res.body.getReader();const dec=new TextDecoder();let full='',buf='';
-  while(true){
-    const{done,value}=await reader.read();if(done)break;
-    buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();
-    for(const line of lines){
-      if(!line.startsWith('data: '))continue;
-      const d=line.slice(6).trim();if(d==='[DONE]')continue;
-      try{const p=JSON.parse(d);const t=p.candidates?.[0]?.content?.parts?.[0]?.text||'';if(t){full+=t;box.innerHTML=escH(full)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;}}catch{}
-    }
-  }
-  box.classList.add('done');box.innerHTML=escH(full);return full;
 }
+
 async function callClaude(sys,user,maxTokens=3000){
-  if(!localStorage.getItem('comma_apikey')){await sleep(1200);return MOCK_P3(S.keyword);}
-  const res=await fetch('/api/gemini',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
-  if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
-  const data=await res.json();return data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
+  try{
+    const res=await fetch('/api/gemini',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
+    if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
+    const data=await res.json();return data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
+  }catch(e){
+    console.warn('API unavailable, using mock:',e.message);
+    await sleep(1200);return MOCK_P3(S.keyword);
+  }
 }
 
 // ── STATE ────────────────────────────────────────────────
@@ -1328,17 +1385,58 @@ function exportReport(){
 
 // ── HISTORY ──────────────────────────────────────────────
 function renderHistory(){
-  const sessions=getHistory();
-  document.getElementById('histTotalLabel').textContent=sessions.length+'件';
+  const allSessions=getHistory();
+  const period=document.getElementById('histFilterPeriod')?.value||'all';
+  const now=Date.now();
+  const sessions=period==='all'?allSessions:allSessions.filter(s=>{
+    const days=parseInt(period);
+    return (now-s.timestamp)<days*24*60*60*1000;
+  });
+  document.getElementById('histTotalLabel').textContent=sessions.length+'件'+(period!=='all'?'（'+period+'日以内）':'');
   const list=document.getElementById('histList');
-  if(!sessions.length){list.innerHTML='<div style="color:var(--ink-muted);font-size:13px;padding:20px 0;text-align:center">まだ履歴がありません</div>';return;}
+  if(!sessions.length){list.innerHTML='<div style="color:var(--ink-muted);font-size:13px;padding:20px 0;text-align:center">履歴がありません</div>';return;}
+  const isAdmin=currentUser?.role==='admin';
   const dc={'phase4-done':'hd-done','phase3-done':'hd-partial','phase2-done':'hd-partial','phase1-done':'hd-partial','new':'hd-new'};
   list.innerHTML=sessions.map(s=>{
     const dot=dc[s.status]||'hd-new';const t=new Date(s.timestamp);
     const phases=['p1','p2','p3raw','p4'].map((p,i)=>`<span class="hp ${s.phases&&s.phases[p]?'hp-done':'hp-skip'}">P${i+1}</span>`).join('');
-    return`<div class="hist-row" onclick="openHistReport('${s.id}')"><div class="hist-dot ${dot}"></div><div class="hist-info"><div class="hist-co">${escH(s.company||'不明')}</div><div class="hist-kw">${escH(s.keyword||'')}</div></div><div class="hist-right"><div class="hist-phases">${phases}</div><div class="hist-date">${t.toLocaleDateString('ja-JP')}</div><div class="hist-arrow">›</div></div></div>`;
+    const checkbox=isAdmin?`<input type="checkbox" class="hist-check" data-id="${s.id}" style="margin-right:8px;flex-shrink:0" onchange="updateDeleteBtn()" onclick="event.stopPropagation()">`:'';
+    return`<div class="hist-row" onclick="openHistReport('${s.id}')" style="position:relative">
+      ${checkbox}
+      <div class="hist-dot ${dot}"></div>
+      <div class="hist-info"><div class="hist-co">${escH(s.company||'不明')}</div><div class="hist-kw">${escH(s.keyword||'')}</div></div>
+      <div class="hist-right"><div class="hist-phases">${phases}</div><div class="hist-date">${t.toLocaleDateString('ja-JP')}</div><div class="hist-arrow">›</div></div>
+    </div>`;
   }).join('');
+  // 管理者コントロール表示
+  const adminCtrl=document.getElementById('histAdminControls');
+  if(adminCtrl)adminCtrl.style.display=isAdmin?'block':'none';
 }
+
+function selectAllHist(){
+  const checks=document.querySelectorAll('.hist-check');
+  const allChecked=[...checks].every(c=>c.checked);
+  checks.forEach(c=>c.checked=!allChecked);
+  updateDeleteBtn();
+}
+
+function updateDeleteBtn(){
+  const checked=document.querySelectorAll('.hist-check:checked').length;
+  const btn=document.getElementById('deleteSelectedBtn');
+  if(btn)btn.style.display=checked>0?'inline-block':'none';
+  if(btn&&checked>0)btn.textContent=`選択削除（${checked}件）`;
+}
+
+function deleteSelectedHist(){
+  const ids=[...document.querySelectorAll('.hist-check:checked')].map(c=>c.dataset.id);
+  if(!ids.length)return;
+  if(!confirm(ids.length+'件の履歴を削除しますか？'))return;
+  const sessions=getHistory().filter(s=>!ids.includes(s.id));
+  localStorage.setItem('comma_sessions',JSON.stringify(sessions));
+  renderHistory();updateHistCountBadge();
+  showError(ids.length+'件削除しました',true);
+}
+
 function openHistReport(id){const s=getHistory().find(x=>x.id===id);if(!s)return;prevHistoryView='history';openReport(s);}
 function deleteAllHistory(){if(!confirm('全ての履歴を削除しますか？'))return;localStorage.removeItem('comma_sessions');renderHistory();updateHistCountBadge();}
 
