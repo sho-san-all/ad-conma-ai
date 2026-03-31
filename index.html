@@ -14,7 +14,6 @@
   --p1:#2d6a4f;--p1-bg:#edf7f2;--p1-bd:#a8d5be;
   --p2:#1e4a9a;--p2-bg:#eef2fb;--p2-bd:#b0c4f0;
   --p3:#b56000;--p3-bg:#fef4e6;--p3-bd:#f0c878;
-  --p4:#6d3a9c;--p4-bg:#f4eefa;--p4-bd:#c8a8e8;
   --ok:#1a7a6e;--ok-bg:#e6f5f3;
   --err:#c0392b;--err-bg:#fdecea;
   --purple:#7F77DD;--purple-bg:#EEEDFE;--purple-dark:#534AB7;
@@ -51,26 +50,24 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .sb-spacer{flex:1}
 .sb-divider{height:1px;background:rgba(255,255,255,.07);margin:4px 12px}
 .sb-footer{padding:8px 0;border-top:1px solid rgba(255,255,255,.07)}
-.sb-user{font-size:10px;color:rgba(255,255,255,.28);padding:6px 14px 6px;display:flex;align-items:center;gap:6px}
+.sb-user{font-size:10px;color:rgba(255,255,255,.28);padding:6px 14px;display:flex;align-items:center;gap:6px}
 #mainContent{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
 .topbar{background:#fff;border-bottom:1px solid var(--border);height:48px;display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:40;gap:10px;flex-shrink:0}
 .topbar-proto{font-family:'IBM Plex Mono',monospace;font-size:10px;background:#1a1a2e;color:#fff;padding:3px 8px;border-radius:4px}
-.topbar-sheets{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-muted)}
-.topbar-dot{width:6px;height:6px;background:var(--ok);border-radius:50%}
 .topbar-spacer{flex:1}
 .topbar-session{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-muted);background:var(--paper);border:1px solid var(--border);padding:3px 10px;border-radius:10px}
-.view{display:none;flex:1;padding:24px;max-width:900px;width:100%}
+.view{display:none;flex:1;padding:24px;max-width:960px;width:100%}
 .view.active{display:block;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .page-title{font-family:'Noto Serif JP',serif;font-size:18px;font-weight:600;margin-bottom:4px}
 .page-desc{font-size:12px;color:var(--ink-sub);margin-bottom:22px;line-height:1.75}
 .wizard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:20px;display:flex;gap:0;position:relative;box-shadow:var(--shadow)}
-.wizard::before{content:'';position:absolute;top:28px;left:calc(22px + 36px/2);right:calc(22px + 36px/2);height:1px;background:var(--border);z-index:0}
+.wizard::before{content:'';position:absolute;top:28px;left:calc(22px + 18px);right:calc(22px + 18px);height:1px;background:var(--border);z-index:0}
 .ws{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;z-index:1;opacity:.35;transition:opacity .4s}
 .ws.active,.ws.done{opacity:1}
 .ws-num{width:36px;height:36px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--ink-muted);transition:all .4s}
 .ws.active .ws-num{background:#1a1a2e;color:#fff}
-.ws.done .ws-num{background:var(--purple);color:#fff;font-size:14px}
+.ws.done .ws-num{background:var(--purple);color:#fff}
 .ws.running .ws-num{animation:wPulse 1s ease infinite}
 @keyframes wPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 .ws-lbl{font-size:11px;font-weight:500;text-align:center;line-height:1.3}
@@ -78,13 +75,22 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 26px;margin-bottom:18px;box-shadow:var(--shadow)}
 .card-title{font-size:14px;font-weight:500;margin-bottom:4px}
 .card-desc{font-size:12px;color:var(--ink-sub);margin-bottom:20px;line-height:1.75}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.fg{display:flex;flex-direction:column;gap:4px}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
 .fl{font-size:10px;font-weight:500;color:var(--ink-sub);letter-spacing:.06em}
 .fh{font-size:10px;color:var(--ink-muted)}
 .fi{padding:9px 13px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:13px;color:var(--ink);background:var(--paper);outline:none;transition:border-color .2s;width:100%}
 .fi:focus{border-color:#1a1a2e;background:#fff}
 .fi::placeholder{color:var(--ink-muted);font-size:12px}
+.client-search-wrap{position:relative}
+.client-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;max-height:220px;overflow-y:auto;z-index:30;box-shadow:0 4px 12px rgba(0,0,0,.08);display:none}
+.client-dropdown.open{display:block}
+.client-opt{padding:9px 13px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:.5px solid var(--paper)}
+.client-opt:last-child{border-bottom:none}
+.client-opt:hover{background:var(--purple-bg)}
+.client-opt-name{font-weight:500;color:var(--ink)}
+.client-opt-hyouki{font-size:11px;color:var(--ink-muted)}
+.client-selected-badge{display:inline-flex;align-items:center;gap:6px;background:var(--purple-bg);color:var(--purple-dark);border:1px solid #c4bff0;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:500;margin-top:6px}
+.client-selected-badge button{background:none;border:none;cursor:pointer;color:var(--ink-muted);font-size:13px;line-height:1;padding:0 2px}
 .run-btn{width:100%;padding:12px 22px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .2s}
 .run-btn:hover:not(:disabled){background:#22223a}
 .run-btn:disabled{opacity:.4;cursor:not-allowed}
@@ -118,7 +124,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .ls.active .ls-icon{background:var(--gold);color:#fff}
 .ls.done .ls-icon{background:var(--ok);color:#fff}
 .ls-sub{font-size:10px;color:var(--ink-muted);margin-top:1px}
-.log-sep{display:flex;align-items:center;gap:10px;margin:12px 0 8px}
+.log-sep{display:none;align-items:center;gap:10px;margin:12px 0 8px}
 .log-sep::before,.log-sep::after{content:'';flex:1;height:1px;background:var(--border)}
 .log-sep-lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-muted);white-space:nowrap;letter-spacing:.07em}
 .stream-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;min-height:70px;max-height:400px;overflow-y:auto;font-size:13px;line-height:1.85;color:var(--ink);white-space:pre-wrap;word-break:break-word}
@@ -135,7 +141,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .res-content h2{font-family:'Noto Serif JP',serif;font-size:15px;font-weight:600;margin:1.3em 0 .4em;border-bottom:1px solid var(--border);padding-bottom:4px}
 .res-content h3{font-size:13px;font-weight:500;margin:1.1em 0 .3em}
 .res-content strong{font-weight:500}
-.res-content ul,.res-content ol{padding-left:18px;margin:.5em 0}
+.res-content ul{padding-left:18px;margin:.5em 0}
 .res-content li{margin:.2em 0}
 .res-content code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--paper);border:1px solid var(--border);border-radius:3px;padding:1px 5px}
 .res-content hr{border:none;border-top:1px solid var(--border);margin:1.5em 0}
@@ -146,18 +152,15 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .comp-rank{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-muted);margin-bottom:4px}
 .comp-title{font-size:12px;font-weight:500;line-height:1.4;margin-bottom:4px}
 .comp-domain{font-size:10px;color:var(--p2);margin-bottom:8px;display:block;text-decoration:none}
-.comp-domain:hover{text-decoration:underline}
 .comp-scores{display:flex;gap:8px;margin-bottom:7px}
-.score-item{flex:1}
-.score-label{font-size:9px;color:var(--ink-muted);margin-bottom:2px}
+.score-item{flex:1}.score-label{font-size:9px;color:var(--ink-muted);margin-bottom:2px}
 .score-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
 .score-fill{height:100%;border-radius:2px;transition:width .6s ease}
 .fill-seo{background:var(--p2)}.fill-aio{background:var(--p3)}
-.comp-strengths{display:flex;flex-wrap:wrap;gap:3px}
 .comp-tag{font-size:10px;padding:2px 6px;background:var(--paper);border:1px solid var(--border);border-radius:3px;color:var(--ink-sub)}
 .comp-summary{background:var(--p3-bg);border:1px solid var(--p3-bd);border-radius:8px;padding:13px 16px;margin:12px 0}
 .comp-summary-title{font-size:10px;font-weight:500;color:var(--p3);margin-bottom:8px;letter-spacing:.06em}
-.comp-level{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:10px;margin-bottom:8px}
+.comp-level{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:3px 10px;border-radius:10px;margin-bottom:8px}
 .cl-low{background:#e6f5f3;color:var(--ok)}.cl-mid{background:var(--gold-bg);color:var(--gold)}.cl-high{background:var(--err-bg);color:var(--err)}
 .comp-rec-item{font-size:12px;padding:7px 11px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:4px;display:flex;align-items:flex-start;gap:7px;cursor:pointer;transition:border-color .15s}
 .comp-rec-item:hover{border-color:var(--purple)}
@@ -181,38 +184,32 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .hp-done{background:var(--purple-bg);color:var(--purple-dark)}
 .hp-skip{background:var(--paper);color:var(--ink-muted);border:1px solid var(--border)}
 .hist-date{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-muted)}
-.hist-arrow{color:var(--border-strong);font-size:14px}
 #view-report{display:none;flex:1;flex-direction:column;overflow:hidden}
 #view-report.active{display:flex}
 .rep-topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 22px;display:flex;align-items:center;gap:12px;flex-shrink:0}
-.back-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;color:var(--ink-sub);font-family:inherit;transition:all .15s}
-.back-btn:hover{border-color:var(--border-strong);color:var(--ink)}
-.rep-co{font-size:13px;font-weight:500;color:var(--ink)}
-.rep-kw{font-size:11px;color:var(--ink-muted);margin-left:4px}
+.back-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;color:var(--ink-sub);font-family:inherit}
 .rep-export{margin-left:auto;background:#1a1a2e;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:11px;cursor:pointer;font-family:inherit}
 .rep-body{flex:1;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:12px;max-width:900px;width:100%}
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .metric{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
 .metric-lbl{font-size:10px;color:var(--ink-muted);margin-bottom:4px}
 .metric-val{font-size:22px;font-weight:500;color:var(--ink)}
-.metric-val.purple{color:var(--purple-dark)}
-.metric-val.green{color:var(--p1)}
-.metric-val.amber{color:var(--p3)}
+.metric-val.purple{color:var(--purple-dark)}.metric-val.amber{color:var(--p3)}
 .rep-sec{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .rep-sec-head{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.rep-sec-title{font-size:12px;font-weight:500;color:var(--ink)}
+.rep-sec-title{font-size:12px;font-weight:500}
 .rep-copy-btn{font-size:10px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px 8px;cursor:pointer;color:var(--ink-muted);font-family:inherit}
-.rep-sec-body{padding:14px 16px;font-size:12px;color:var(--ink);line-height:1.75}
+.rep-sec-body{padding:14px 16px;font-size:12px;line-height:1.75}
 .rep-sec-body.pre{white-space:pre-wrap;font-size:12px;color:var(--ink-sub);background:#fafaf8;max-height:200px;overflow:auto}
 .rep-tags{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px}
 .rep-tag{font-size:11px;padding:3px 10px;border-radius:4px;background:var(--purple-bg);color:var(--purple-dark)}
-.kaizen-item{padding:8px 16px;border-bottom:1px solid var(--paper);display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink);line-height:1.5}
+.kaizen-item{padding:8px 16px;border-bottom:1px solid var(--paper);display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.5}
 .kaizen-item:last-child{border-bottom:none}
 .kaizen-dot{width:5px;height:5px;background:var(--p3);border-radius:50%;flex-shrink:0;margin-top:6px}
 .ref-item{padding:10px 16px;border-bottom:1px solid var(--paper);display:flex;align-items:flex-start;gap:10px}
 .ref-item:last-child{border-bottom:none}
 .ref-rank{font-size:10px;color:var(--ink-muted);width:18px;flex-shrink:0;margin-top:1px}
-.ref-t{font-size:12px;font-weight:500;color:var(--ink)}
+.ref-t{font-size:12px;font-weight:500}
 .ref-d{font-size:10px;color:var(--ink-muted);margin-top:1px}
 .ref-sc{display:flex;gap:5px;margin-top:4px}
 .ref-sc-pill{font-size:10px;padding:1px 7px;border-radius:3px;background:var(--purple-bg);color:var(--purple-dark)}
@@ -220,8 +217,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .memo-textarea{width:100%;padding:11px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:13px;resize:vertical;min-height:75px;outline:none;transition:border-color .2s;background:var(--paper)}
 .memo-textarea:focus{border-color:#1a1a2e;background:#fff}
 .memo-toolbar{display:flex;gap:10px;margin-bottom:14px;align-items:center}
-.memo-add-btn{padding:8px 18px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
-.memo-add-btn:hover{background:#22223a}
+.memo-add-btn{padding:8px 18px;background:#1a1a2e;color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;cursor:pointer}
 .memo-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
 .memo-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:13px 15px;display:flex;gap:11px;align-items:flex-start}
 .memo-item-meta{display:flex;flex-direction:column;gap:3px;flex-shrink:0;min-width:100px}
@@ -232,30 +228,36 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 .mt-note{background:var(--p2-bg);color:var(--p2);border:1px solid var(--p2-bd)}
 .mt-q{background:var(--gold-bg);color:var(--gold);border:1px solid #e8c878}
 .memo-text{flex:1;font-size:12.5px;line-height:1.7}
-.memo-del{color:var(--ink-muted);background:none;border:none;cursor:pointer;font-size:13px;padding:0 3px;opacity:.5;transition:opacity .15s}
+.memo-del{color:var(--ink-muted);background:none;border:none;cursor:pointer;font-size:13px;padding:0 3px;opacity:.5}
 .memo-del:hover{opacity:1;color:var(--err)}
 .memo-admin-area{margin-top:22px;padding-top:16px;border-top:1px solid var(--border)}
-.admin-badge{font-size:9px;background:var(--gold-bg);color:var(--gold);border:1px solid #e8c878;padding:1px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace}
 .settings-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin-bottom:16px}
-.settings-title{font-size:13px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.settings-title{font-size:13px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--border)}
 .settings-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);gap:14px}
 .settings-row:last-child{border-bottom:none}
 .settings-row-label{font-size:12px;font-weight:500}
 .settings-row-desc{font-size:10px;color:var(--ink-muted);margin-top:2px}
-.settings-input{padding:7px 11px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:12px;outline:none;width:200px}
-.settings-input:focus{border-color:#1a1a2e}
 .small-btn{padding:6px 13px;background:var(--paper);border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:11px;cursor:pointer;color:var(--ink-sub);transition:all .15s}
 .small-btn:hover{background:var(--surface);border-color:var(--border-strong);color:var(--ink)}
 .small-btn.danger{background:var(--err-bg);border-color:#f0b4b0;color:var(--err)}
-.small-btn.danger:hover{background:#fcd6d3}
-.user-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
-.user-item:last-child{border-bottom:none}
-.user-name{font-weight:500;min-width:70px}
-.user-role{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 6px;border-radius:3px}
-.ur-admin{background:var(--gold-bg);color:var(--gold);border:1px solid #e8c878}
-.ur-user{background:var(--paper);color:var(--ink-muted);border:1px solid var(--border)}
+.small-btn.primary{background:#1a1a2e;color:#fff;border-color:#1a1a2e}
+.small-btn.primary:hover{background:#22223a}
 .info-box{background:var(--gold-bg);border:1px solid #e8c878;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:10px 14px;font-size:11px;color:#7a5500;line-height:1.7;margin-top:10px;font-family:'IBM Plex Mono',monospace}
-.test-notice{background:var(--p3-bg);border:1px solid var(--p3-bd);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--p3);margin-bottom:18px;display:flex;align-items:flex-start;gap:8px}
+.client-table{width:100%;border-collapse:collapse;font-size:12px}
+.client-table th{text-align:left;padding:8px 10px;font-size:10px;font-weight:500;color:var(--ink-muted);border-bottom:1px solid var(--border);letter-spacing:.05em}
+.client-table td{padding:9px 10px;border-bottom:1px solid var(--paper);vertical-align:middle}
+.client-table tr:last-child td{border-bottom:none}
+.client-table tr:hover td{background:var(--paper)}
+.add-client-form{background:var(--paper);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:14px;display:none}
+.add-client-form.open{display:block;animation:fadeIn .2s ease}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.test-notice{background:var(--p3-bg);border:1px solid var(--p3-bd);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--p3);margin-bottom:18px}
+/* モーダル */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal-box{background:#fff;border-radius:12px;padding:24px 28px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-title{font-size:15px;font-weight:500}
+.modal-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--ink-muted);line-height:1}
 .etost{position:fixed;bottom:22px;right:22px;background:var(--err);color:#fff;padding:11px 16px;border-radius:8px;font-size:12px;max-width:380px;z-index:200;display:none;animation:tIn .2s ease}
 .etost.show{display:block}
 @keyframes tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -263,8 +265,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
   :root{--sidebar-w:0px}
   #sidebar{transform:translateX(-210px)}
   #mainContent{margin-left:0}
-  .comp-grid{grid-template-columns:1fr}
-  .field-row{grid-template-columns:1fr}
+  .comp-grid,.form-row{grid-template-columns:1fr}
   .metrics{grid-template-columns:repeat(2,1fr)}
 }
 </style>
@@ -294,16 +295,17 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
     <div class="sb-section">
       <span class="sb-label">制作フロー</span>
       <button class="sb-btn active" id="nav-main" onclick="switchView('main')"><span class="sb-btn-icon">📝</span>記事制作</button>
-      <button class="sb-btn" id="nav-test" onclick="switchView('test')"><span class="sb-btn-icon">🧪</span>テスト執筆場</button>
+      <button class="sb-btn" id="nav-test" onclick="switchView('test')"><span class="sb-btn-icon">🧪</span>テスト接続確認</button>
       <button class="sb-btn" id="nav-history" onclick="switchView('history')"><span class="sb-btn-icon">📚</span>過去の履歴<span class="sb-badge" id="histCountBadge">0</span></button>
       <button class="sb-btn" id="nav-memo" onclick="switchView('memo')"><span class="sb-btn-icon">📋</span>プロンプト修正メモ<span class="sb-badge" id="memoCountBadge" style="display:none">0</span></button>
-      <button class="sb-btn" onclick="clearCache()"><span class="sb-btn-icon">🗑</span>キャッシュクリア</button>
+      <button class="sb-btn" onclick="newArticle()"><span class="sb-btn-icon">🗑</span>執筆ログをクリア</button>
+      <button class="sb-btn" onclick="openRefreshPanel()"><span class="sb-btn-icon">🔄</span>シートデータ更新</button>
     </div>
     <div class="sb-spacer"></div>
     <div class="sb-divider"></div>
     <div class="sb-footer">
       <div class="sb-user" id="sbUser"></div>
-      <button class="sb-btn" id="nav-sheetcheck" onclick="switchView('sheetcheck')"><span class="sb-btn-icon">📄</span>シート接続確認</button>
+      <button class="sb-btn" id="nav-clients" onclick="switchView('clients')"><span class="sb-btn-icon">🏢</span>クライアント管理</button>
       <button class="sb-btn" id="nav-settings" onclick="switchView('settings')"><span class="sb-btn-icon">⚙</span>設定</button>
       <button class="sb-btn" onclick="doLogout()"><span class="sb-btn-icon">🚪</span>ログアウト</button>
     </div>
@@ -312,34 +314,37 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
   <div id="mainContent">
     <div class="topbar">
       <div class="topbar-proto">PROTOTYPE</div>
-      <div class="topbar-sheets"><span class="topbar-dot"></span>Sheets: 接続中</div>
-      <div id="topbar-mode" style="font-size:10px;padding:3px 9px;border-radius:4px;background:#EEEDFE;color:#534AB7;font-family:'IBM Plex Mono',monospace">AI: Gemini</div>
+      <div style="font-size:10px;padding:3px 9px;border-radius:4px;background:#EEEDFE;color:#534AB7;font-family:'IBM Plex Mono',monospace">AI: Gemini</div>
       <div class="topbar-spacer"></div>
       <div class="topbar-session" id="sessionLabel">新規セッション</div>
     </div>
 
     <!-- VIEW: MAIN -->
     <div class="view active" id="view-main">
-      <div class="wizard" id="wizard">
+      <div class="wizard">
         <div class="ws active" id="ws1"><div class="ws-num">1</div><div class="ws-lbl">データ確認</div><div class="ws-sub">Sheets 照合</div></div>
         <div class="ws" id="ws2"><div class="ws-num">2</div><div class="ws-lbl">企画設計</div><div class="ws-sub">ペルソナ・切り口</div></div>
         <div class="ws" id="ws3"><div class="ws-num">3</div><div class="ws-lbl">競合分析</div><div class="ws-sub">SEO/AIO調査</div></div>
         <div class="ws" id="ws4"><div class="ws-num">4</div><div class="ws-lbl">執筆</div><div class="ws-sub">8,000〜10,000字</div></div>
       </div>
-      <div class="card" id="inputCard">
+      <div class="card">
         <div class="card-title">記事制作の基本情報を入力してください</div>
-        <div class="card-desc">会社名とキーワードを入力して「実行」を押すと、Phase 1（データ確認）→ Phase 2（企画設計）が自動で連続実行されます。</div>
-        <div class="field-row">
-          <div class="fg">
-            <div class="fl">会社名（シートと完全一致）</div>
-            <input type="text" class="fi" id="companyInput" placeholder="例：株式会社コンマ">
-            <div class="fh">シートの「会社名」列と完全一致する名前を入力</div>
+        <div class="card-desc">クライアントを選択してキーワードを入力後、Phase 1→2 を実行します。</div>
+        <div class="fg">
+          <div class="fl">クライアントを選択</div>
+          <div class="client-search-wrap">
+            <input type="text" class="fi" id="clientSearchInput" placeholder="会社名・呼び名で検索..." autocomplete="off"
+              oninput="filterClients(this.value)" onfocus="openClientDropdown()" onblur="setTimeout(closeClientDropdown,150)">
+            <div class="client-dropdown" id="clientDropdown"></div>
           </div>
-          <div class="fg">
-            <div class="fl">メインキーワード</div>
-            <input type="text" class="fi" id="keywordInput" placeholder="例：コンテンツマーケティング 中小企業">
-            <div class="fh">記事のSEOターゲットになるキーワード</div>
+          <div id="clientSelectedBadge" style="display:none">
+            <span class="client-selected-badge" id="clientBadgeText">—<button onclick="clearClientSelection()">×</button></span>
           </div>
+          <div class="fh">未登録の場合は「クライアント管理」から追加してください</div>
+        </div>
+        <div class="fg">
+          <div class="fl">メインキーワード</div>
+          <input type="text" class="fi" id="keywordInput" placeholder="例：おしゃれ注文住宅　コツ">
         </div>
         <button class="run-btn" id="runBtn12" onclick="runPhase12()"><span id="rb12txt">▶ Phase 1→2 を連続実行する</span></button>
         <div class="run-hint">実行後、画面下に進行状況がリアルタイムで表示されます</div>
@@ -350,12 +355,12 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
         <div class="live-log" id="ll1">
           <div class="log-title">実行ログ</div>
           <div class="log-steps">
-            <div class="ls" id="ls1a"><div class="ls-icon"></div><div class="ls-body">Google Sheets に接続中<div class="ls-sub" id="ls1a-s"></div></div></div>
-            <div class="ls" id="ls1b"><div class="ls-icon"></div><div class="ls-body">会社名で完全一致を検索中<div class="ls-sub" id="ls1b-s"></div></div></div>
-            <div class="ls" id="ls1c"><div class="ls-icon"></div><div class="ls-body">シート【A】【B】【C】のデータを取得中<div class="ls-sub" id="ls1c-s"></div></div></div>
-            <div class="ls" id="ls1d"><div class="ls-icon"></div><div class="ls-body">Gemini AI がデータを分析中<div class="ls-sub" id="ls1d-s"></div></div></div>
+            <div class="ls" id="ls1a"><div class="ls-icon"></div><div class="ls-body">キャッシュからデータを読み込み中<div class="ls-sub" id="ls1a-s"></div></div></div>
+            <div class="ls" id="ls1b"><div class="ls-icon"></div><div class="ls-body">シートデータを解析中<div class="ls-sub" id="ls1b-s"></div></div></div>
+            <div class="ls" id="ls1c"><div class="ls-icon"></div><div class="ls-body">【A】【B】【C】タブを確認中<div class="ls-sub" id="ls1c-s"></div></div></div>
+            <div class="ls" id="ls1d"><div class="ls-icon"></div><div class="ls-body">AI がデータを確認中<div class="ls-sub" id="ls1d-s"></div></div></div>
           </div>
-          <div class="log-sep" id="sep1" style="display:none"><div class="log-sep-lbl">AI の出力</div></div>
+          <div class="log-sep" id="sep1"><div class="log-sep-lbl">AI の出力</div></div>
           <div class="stream-box" id="sb1"></div>
         </div>
         <div class="res-body collapsed" id="rb1"><div class="res-done-banner" id="rbn1"></div><div class="res-content" id="rc1"></div><div class="res-meta"><span class="mpill" id="rm1"></span></div></div>
@@ -366,11 +371,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
         <div class="live-log" id="ll2">
           <div class="log-title">実行ログ</div>
           <div class="log-steps">
-            <div class="ls" id="ls2a"><div class="ls-icon"></div><div class="ls-body">Phase 1 の確認済みデータを整形中<div class="ls-sub" id="ls2a-s"></div></div></div>
+            <div class="ls" id="ls2a"><div class="ls-icon"></div><div class="ls-body">Phase 1 データを整形中<div class="ls-sub" id="ls2a-s"></div></div></div>
             <div class="ls" id="ls2b"><div class="ls-icon"></div><div class="ls-body">キーワードの競合傾向を分析中<div class="ls-sub" id="ls2b-s"></div></div></div>
-            <div class="ls" id="ls2c"><div class="ls-icon"></div><div class="ls-body">Gemini AI が企画設計中<div class="ls-sub" id="ls2c-s"></div></div></div>
+            <div class="ls" id="ls2c"><div class="ls-icon"></div><div class="ls-body">AI が企画設計中<div class="ls-sub" id="ls2c-s"></div></div></div>
           </div>
-          <div class="log-sep" id="sep2" style="display:none"><div class="log-sep-lbl">AI の出力</div></div>
+          <div class="log-sep" id="sep2"><div class="log-sep-lbl">AI の出力</div></div>
           <div class="stream-box" id="sb2"></div>
         </div>
         <div class="res-body collapsed" id="rb2"><div class="res-done-banner" id="rbn2"></div><div class="res-content" id="rc2"></div><div class="res-meta"><span class="mpill" id="rm2"></span></div></div>
@@ -387,9 +392,8 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       <div id="p3Gate" style="display:none">
         <div class="card" style="border-left:3px solid var(--p3)">
           <div class="card-title">Phase 3 — 競合分析を実行しますか？</div>
-          <div class="card-desc">指定キーワードで上位表示されている競合記事を調査します。タイトルの被り・SEO/AIOレベル・差別化ポイントを確認してから執筆に進むことができます。</div>
+          <div class="card-desc">指定キーワードで上位表示されている競合記事を調査します。</div>
           <button class="run-btn p3" id="runBtn3" onclick="runPhase3()"><span id="rb3txt">競合分析を実行する（Web検索）</span></button>
-          <div class="run-hint">Gemini が実際にWebを検索して競合記事を調査します</div>
         </div>
       </div>
 
@@ -399,11 +403,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
           <div class="log-title">実行ログ</div>
           <div class="log-steps">
             <div class="ls" id="ls3a"><div class="ls-icon"></div><div class="ls-body">キーワードで上位記事を検索中<div class="ls-sub" id="ls3a-s"></div></div></div>
-            <div class="ls" id="ls3b"><div class="ls-icon"></div><div class="ls-body">各記事のSEO・AIOレベルを評価中<div class="ls-sub" id="ls3b-s"></div></div></div>
+            <div class="ls" id="ls3b"><div class="ls-icon"></div><div class="ls-body">SEO・AIOスコアを評価中<div class="ls-sub" id="ls3b-s"></div></div></div>
             <div class="ls" id="ls3c"><div class="ls-icon"></div><div class="ls-body">タイトル被り・差別化ポイントを分析中<div class="ls-sub" id="ls3c-s"></div></div></div>
           </div>
-          <div class="log-sep" id="sep3" style="display:none"><div class="log-sep-lbl">分析結果</div></div>
-          <div class="stream-box" id="sb3" style="display:none"></div>
+          <div class="log-sep" id="sep3"><div class="log-sep-lbl">分析結果</div></div>
         </div>
         <div class="res-body collapsed" id="rb3"><div class="res-done-banner" id="rbn3"></div><div id="compResults"></div><div class="res-meta"><span class="mpill" id="rm3"></span></div></div>
       </div>
@@ -424,12 +427,12 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
         <div class="live-log" id="ll4">
           <div class="log-title">実行ログ</div>
           <div class="log-steps">
-            <div class="ls" id="ls4a"><div class="ls-icon"></div><div class="ls-body">確認済みデータと企画・競合分析をまとめ中<div class="ls-sub" id="ls4a-s"></div></div></div>
+            <div class="ls" id="ls4a"><div class="ls-icon"></div><div class="ls-body">確認済みデータを統合中<div class="ls-sub" id="ls4a-s"></div></div></div>
             <div class="ls" id="ls4b"><div class="ls-icon"></div><div class="ls-body">記事構成（H2/H3）を設計中<div class="ls-sub" id="ls4b-s"></div></div></div>
             <div class="ls" id="ls4c"><div class="ls-icon"></div><div class="ls-body">本文を執筆中（しばらくかかります）<div class="ls-sub" id="ls4c-s"></div></div></div>
             <div class="ls" id="ls4d"><div class="ls-icon"></div><div class="ls-body">SEO・AIO評価レポートを生成中<div class="ls-sub" id="ls4d-s"></div></div></div>
           </div>
-          <div class="log-sep" id="sep4" style="display:none"><div class="log-sep-lbl">執筆された記事</div></div>
+          <div class="log-sep" id="sep4"><div class="log-sep-lbl">執筆された記事</div></div>
           <div class="stream-box" id="sb4"></div>
         </div>
         <div class="res-body collapsed" id="rb4">
@@ -437,7 +440,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
           <div class="res-content" id="rc4"></div>
           <div class="res-meta"><span class="mpill" id="rm4"></span><span class="mpill" id="wc4"></span></div>
           <div style="margin-top:14px">
-            <button class="small-btn" style="background:var(--purple);color:#fff;border-color:var(--purple);padding:8px 18px;font-size:12px" onclick="openReportFromCurrent()">制作完了レポートを見る →</button>
+            <button class="small-btn primary" style="padding:8px 18px;font-size:12px" onclick="openReportFromCurrent()">制作完了レポートを見る →</button>
           </div>
         </div>
       </div>
@@ -445,17 +448,16 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 
     <!-- VIEW: TEST -->
     <div class="view" id="view-test">
-      <div class="page-title">テスト執筆場</div>
-      <div class="page-desc">新規会社を追加したときの接続確認・Phase単体テストができます。本番データには影響しません。</div>
-      <div class="test-notice">テスト結果は履歴に保存されません。Sheetsとの接続確認・プロンプトの動作確認に使ってください。</div>
+      <div class="page-title">テスト接続確認</div>
+      <div class="page-desc">登録済みクライアントのシート接続をテストします。本番データには影響しません。</div>
+      <div class="test-notice">テスト結果は履歴に保存されません。</div>
       <div class="card">
-        <div class="card-title">Phase 1 単体テスト（Sheets 接続確認）</div>
-        <div class="card-desc">会社名を入力して、スプレッドシートから正しくデータが取得できるか確認します。</div>
-        <div class="field-row">
-          <div class="fg"><div class="fl">会社名</div><input type="text" class="fi" id="testCompany" placeholder="テストしたい会社名"></div>
-          <div class="fg"><div class="fl">テスト用キーワード（任意）</div><input type="text" class="fi" id="testKeyword" placeholder="例：採用 マーケティング"></div>
+        <div class="card-title">シート接続テスト</div>
+        <div class="fg">
+          <div class="fl">クライアントを選択</div>
+          <select class="fi" id="testClientSelect"></select>
         </div>
-        <button class="run-btn p3" onclick="runTest()"><span id="testBtnTxt">Phase 1 をテスト実行</span></button>
+        <button class="run-btn p3" onclick="runTest()"><span id="testBtnTxt">接続テストを実行</span></button>
       </div>
       <div id="testResult" style="display:none">
         <div class="card" style="border-left:3px solid var(--p3)">
@@ -471,14 +473,14 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
         <div><div class="page-title">過去の履歴</div><div class="page-desc" style="margin-bottom:0">クリックで制作完了レポートを開きます</div></div>
         <span id="histTotalLabel" style="font-size:11px;color:var(--ink-muted)"></span>
       </div>
-      <div class="hist-list" id="histList"><div style="color:var(--ink-muted);font-size:13px;padding:20px 0;text-align:center">まだ履歴がありません</div></div>
+      <div class="hist-list" id="histList"></div>
     </div>
 
     <!-- VIEW: REPORT -->
     <div id="view-report">
       <div class="rep-topbar">
         <button class="back-btn" onclick="backFromReport()">← 一覧へ戻る</button>
-        <div><span class="rep-co" id="repCo"></span><span class="rep-kw" id="repKw"></span></div>
+        <div><span style="font-size:13px;font-weight:500" id="repCo"></span><span style="font-size:11px;color:var(--ink-muted);margin-left:4px" id="repKw"></span></div>
         <button class="rep-export" onclick="exportReport()">エクスポート</button>
       </div>
       <div class="rep-body">
@@ -494,7 +496,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
     <!-- VIEW: MEMO -->
     <div class="view" id="view-memo">
       <div class="page-title">プロンプト修正メモ</div>
-      <div class="page-desc">NG用語・気になった表現・改善提案などをメモしておけます。管理者がまとめてプロンプトに反映できます。</div>
+      <div class="page-desc">NG用語・気になった表現・改善提案などをメモできます。</div>
       <div class="card">
         <div class="memo-toolbar">
           <select class="memo-type-select" id="memoType">
@@ -504,11 +506,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
           </select>
           <button class="memo-add-btn" onclick="addMemo()">＋ 追加</button>
         </div>
-        <textarea class="memo-textarea" id="memoText" placeholder="例：「業界No.1」は禁止用語。&#10;例：Phase 2 でペルソナの年齢層を必ず明記すること"></textarea>
+        <textarea class="memo-textarea" id="memoText" placeholder="例：「業界No.1」は禁止用語。"></textarea>
       </div>
       <div class="memo-list" id="memoList"></div>
       <div class="memo-admin-area" id="memoAdminArea" style="display:none">
-        <div style="font-size:12px;font-weight:500;color:var(--ink-sub);margin-bottom:10px;display:flex;align-items:center;gap:8px">管理者操作<span class="admin-badge">ADMIN</span></div>
+        <div style="font-size:12px;font-weight:500;color:var(--ink-sub);margin-bottom:10px">管理者操作</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="small-btn" onclick="copyAllMemos()">全メモをまとめてコピー</button>
           <button class="small-btn danger" onclick="clearAllMemos()">全メモを削除</button>
@@ -516,53 +518,77 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
       </div>
     </div>
 
+    <!-- VIEW: CLIENTS -->
+    <div class="view" id="view-clients">
+      <div class="page-title">クライアント管理</div>
+      <div class="page-desc">会社名・呼び名・情報シートURLを登録します。</div>
+      <div class="settings-section">
+        <div class="settings-title">
+          <span>登録済みクライアント <span id="clientCountLabel" style="font-size:11px;color:var(--ink-muted);font-weight:400"></span></span>
+          <div style="display:flex;gap:8px">
+            <button class="small-btn primary" id="addClientBtn" onclick="toggleAddForm()">＋ 新規追加</button>
+            <button class="small-btn" onclick="refreshAllCaches()">↻ 全件更新</button>
+          </div>
+        </div>
+        <div class="add-client-form" id="addClientForm">
+          <div style="font-size:12px;font-weight:500;color:var(--ink-sub);margin-bottom:12px">新規クライアントを追加</div>
+          <div class="form-row">
+            <div class="fg" style="margin-bottom:0">
+              <div class="fl">会社名（完全一致で使用）</div>
+              <input type="text" class="fi" id="newClientName" placeholder="例：株式会社アップルホーム">
+            </div>
+            <div class="fg" style="margin-bottom:0">
+              <div class="fl">記事内での呼称</div>
+              <input type="text" class="fi" id="newClientHyouki" placeholder="例：アップルホーム">
+            </div>
+          </div>
+          <div class="fg" style="margin-bottom:12px">
+            <div class="fl">情報シートURL</div>
+            <input type="text" class="fi" id="newClientUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
+            <div class="fh">「リンクを知っている全員が閲覧可」に設定されたスプレッドシートのURL</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="small-btn primary" id="saveClientBtn" onclick="addClient()">保存する</button>
+            <button class="small-btn" onclick="toggleAddForm()">キャンセル</button>
+          </div>
+        </div>
+        <div id="clientTableWrap" style="margin-top:4px">
+          <table class="client-table">
+            <thead><tr><th>会社名</th><th>呼称</th><th>シートURL</th><th>最終取得</th><th></th></tr></thead>
+            <tbody id="clientTableBody"></tbody>
+          </table>
+          <div id="clientEmptyMsg" style="text-align:center;padding:24px;font-size:13px;color:var(--ink-muted);display:none">クライアントが未登録です。「＋ 新規追加」から登録してください。</div>
+        </div>
+      </div>
+      <div class="info-box">シートは「リンクを知っている全員が閲覧可」に設定してください。<br>URLはブラウザのアドレスバーのURLをそのまま貼り付けてOKです。</div>
+    </div>
+
     <!-- VIEW: SETTINGS -->
     <div class="view" id="view-settings">
       <div class="page-title">設定</div>
-      <div class="page-desc">ユーザー管理・データ設定の確認ができます。</div>
+      <div class="page-desc">ユーザー管理・データ管理の確認ができます。</div>
       <div class="settings-section" id="settingsUserSection">
         <div class="settings-title">ユーザー管理</div>
-        <div class="user-list" id="userList"></div>
-        <div class="info-box">本番（Vercel）ではユーザーの追加・削除はVercel Dashboard → Settings → Environment Variables → USERS を編集して Redeploy します。<br>例: yamada:pass123,tanaka:abc456</div>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">データ設定</div>
-        <div class="settings-row">
-          <div><div class="settings-row-label">Google Sheets URL</div><div class="settings-row-desc">会社情報マスターシートのURL（一覧シート）</div></div>
-          <div><input type="text" class="settings-input" id="sheetsUrlInput" placeholder="https://docs.google.com/spreadsheets/d/..."><button class="small-btn" style="margin-left:8px" onclick="saveSettings()">保存</button></div>
-        </div>
-        <div class="settings-row">
-          <div><div class="settings-row-label">使用モデル</div><div class="settings-row-desc">Gemini API モデル</div></div>
-          <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-sub)">gemini-1.5-flash</span></div>
-        </div>
+        <div id="userList"></div>
+        <div class="info-box">本番（Vercel）ではVercel Dashboard → Settings → Environment Variables → USERS を編集して Redeploy します。</div>
       </div>
       <div class="settings-section">
         <div class="settings-title">データ管理</div>
         <div class="settings-row">
-          <div><div class="settings-row-label">履歴件数</div><div class="settings-row-desc">ローカルに保存されている履歴</div></div>
+          <div><div class="settings-row-label">履歴件数</div></div>
           <div><span id="histCountLabel" style="font-size:12px;color:var(--ink-sub)">0 件</span></div>
         </div>
         <div class="settings-row">
-          <div><div class="settings-row-label">履歴を全削除</div><div class="settings-row-desc">全ての履歴を削除します（元に戻せません）</div></div>
+          <div><div class="settings-row-label">履歴を全削除</div><div class="settings-row-desc">元に戻せません</div></div>
           <div><button class="small-btn danger" onclick="deleteAllHistory()">全履歴を削除</button></div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">クライアントデータを全削除</div><div class="settings-row-desc">登録済みクライアントとシートキャッシュを全て削除します</div></div>
+          <div><button class="small-btn danger" onclick="deleteAllClients()">全クライアントを削除</button></div>
         </div>
       </div>
       <div class="settings-section" id="nonAdminNotice" style="display:none">
         <div style="padding:16px;text-align:center;color:var(--ink-muted);font-size:12px">設定の変更は管理者（admin）のみ行えます。</div>
-      </div>
-    </div>
-
-    <!-- VIEW: SHEET CHECK -->
-    <div class="view" id="view-sheetcheck">
-      <div class="page-title">シート接続確認</div>
-      <div class="page-desc">GoogleスプレッドシートをCSVで取得して、接続できているか確認します。</div>
-      <div class="card">
-        <div class="card-title">Google Sheets CSV 接続テスト</div>
-        <div class="card-desc">設定画面の Google Sheets URL を使って、CSVを取得します。シート側は「リンクを知っている全員が閲覧可」にしてください。</div>
-        <button class="run-btn p3" id="sheetCheckBtn" onclick="runSheetCheck()"><span id="sheetCheckBtnTxt">CSVを取得する</span></button>
-        <div id="sheetCheckResult" style="margin-top:16px;display:none;">
-          <div class="stream-box done" id="sheetCheckOutput" style="max-height:420px"></div>
-        </div>
       </div>
     </div>
 
@@ -573,78 +599,324 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
 
 <script>
 // ══════════════════════════════════════════════════════════
-// CONFIG
+// USERS
 // ══════════════════════════════════════════════════════════
-const GEMINI_MODEL = 'gemini-1.5-flash';
-const DEMO_USERS = {admin:{pass:'comma2024',role:'admin'},demo:{pass:'demo123',role:'user'}};
+const DEMO_USERS={admin:{pass:'comma2024',role:'admin'},demo:{pass:'demo123',role:'user'}};
+let currentUser=null;
 
 // ══════════════════════════════════════════════════════════
-// AI評価ルール
+// シートキャッシュ — 登録時に1回取得、手動更新のみ、期限なし
 // ══════════════════════════════════════════════════════════
-const AI_RUBRICS = {
-  chatgpt:{name:'ChatGPT（GPT-4o）',color:'#10a37f',items:[
-    {key:'intent',label:'検索意図の適合・網羅性',weight:2.0},{key:'structure',label:'情報の構造化・論理性',weight:2.0},
-    {key:'quotable',label:'明確な結論・即答性',weight:2.0},{key:'eeat',label:'一次情報・独自性（E-E-A-T）',weight:1.5},
-    {key:'evidence',label:'根拠・信頼性',weight:1.5},{key:'context',label:'トピックの広がり・関連性',weight:0.5},{key:'freshness',label:'最新性・更新性',weight:0.5},
-  ],cite:['結論が1〜2文で明確に書かれている','数値＋条件（前提）がセットで書かれている','定義・比較・手順が構造化されている']},
-  gemini:{name:'Gemini',color:'#4285f4',items:[
-    {key:'originality',label:'情報の独自性 (Originality)',weight:2.5},{key:'structure',label:'論理構造と明瞭性 (Structure)',weight:2.0},
-    {key:'authority',label:'根拠の提示 (Source Authority)',weight:2.0},{key:'depth',label:'網羅性と具体性 (Depth)',weight:1.5},
-    {key:'recency',label:'情報の鮮度と保守 (Recency)',weight:1.0},{key:'trust',label:'E-E-A-Tの明示 (Trust)',weight:1.0},
-  ],cite:['構造化データ＋意味論的に明確な構造を持つ','独自の数値データや統計の提示','FAQ形式の集約がありAI Overviewのソースになりやすい']},
-  claude:{name:'Claude（Anthropic）',color:'#7F77DD',items:[
-    {key:'selfcontained',label:'段落の自己完結性',weight:2.5},{key:'specificity',label:'数値・固有名詞・時点の明示',weight:2.0},
-    {key:'schema',label:'構造化マークアップ・Q&A形式',weight:2.0},{key:'intent',label:'検索意図との完全一致',weight:1.5},
-    {key:'eeat',label:'E-E-A-T（経験・専門性）',weight:1.0},{key:'readability',label:'読みやすさ・文章品質',weight:1.0},
-  ],cite:['「定義文→理由→例」の三段構成が段落単位で完結している','数値・固有名詞・時点が明示されている','FAQ・定義・比較を構造化マークアップで実装している']},
-  perplexity:{name:'Perplexity',color:'#20808d',items:[
-    {key:'conclusion',label:'文章の結論明確性',weight:2.0},{key:'evidence',label:'事実性・根拠の提示',weight:2.0},
-    {key:'originality',label:'一次情報・独自性',weight:2.0},{key:'structure',label:'構造化・読み取りやすさ',weight:1.5},
-    {key:'eeat',label:'E-E-A-Tの明示',weight:1.5},{key:'freshness',label:'更新性・鮮度',weight:1.0},
-  ],cite:['1文1情報で結論→根拠→補足の順に並んでいる','表・FAQ・箇条書きがありAIが意味単位で抜き出しやすい','一次情報・独自データ・専門家コメントなど他記事にはない独自の根拠がある']},
-};
+function getCachedSheet(clientId){
+  try{
+    const raw=localStorage.getItem('comma_sheet_cache_'+clientId);
+    if(!raw)return null;
+    return JSON.parse(raw).data||null;
+  }catch{return null;}
+}
+function setCachedSheet(clientId,data){
+  try{
+    localStorage.setItem('comma_sheet_cache_'+clientId,JSON.stringify({savedAt:Date.now(),data}));
+  }catch(e){console.warn('キャッシュ保存失敗',e);}
+}
+function clearCachedSheet(clientId){
+  localStorage.removeItem('comma_sheet_cache_'+clientId);
+}
+function getCacheSavedAt(clientId){
+  try{
+    const raw=localStorage.getItem('comma_sheet_cache_'+clientId);
+    if(!raw)return null;
+    const t=JSON.parse(raw).savedAt;
+    return t?new Date(t).toLocaleDateString('ja-JP'):null;
+  }catch{return null;}
+}
 
-function calcCompositeScore(aiScores){
-  const keys=Object.keys(AI_RUBRICS);
-  const valid=keys.filter(k=>aiScores[k]!=null);
-  if(!valid.length)return 0;
-  return Math.round((valid.reduce((a,k)=>a+aiScores[k],0)/valid.length)*10)/10;
+// キャッシュ優先でデータ取得（forceRefresh=trueで強制再取得）
+async function fetchClientSheetData(client,forceRefresh=false){
+  if(!forceRefresh){
+    const cached=getCachedSheet(client.id);
+    if(cached){console.log('[Sheet] キャッシュ使用:',client.name);return cached;}
+  }
+  console.log('[Sheet] 通信取得:',client.name);
+  const data=await fetchClientSheetDataRaw(client);
+  setCachedSheet(client.id,data);
+  return data;
+}
+
+// 実通信でCSV取得→構造化
+async function fetchClientSheetDataRaw(client){
+  const sheetId=extractSheetId(client.url);
+  if(!sheetId)throw new Error('URLからスプレッドシートIDを取得できませんでした');
+  const sheets=await findAvailableGids(sheetId,4);
+  if(!sheets.length)throw new Error('シートのデータを取得できませんでした。「リンクを知っている全員が閲覧可」の設定を確認してください。');
+  const data=parseCompanySheets(sheets);
+  const findVal=(obj,kws)=>{for(const k of Object.keys(obj)){if(kws.some(w=>k.includes(w)))return obj[k];}return '';};
+  return{
+    hyouki:client.hyouki,infoUrl:client.url,sheetId,tabCount:sheets.length,
+    A:{
+      会社名:client.name,記事内での呼称:client.hyouki,
+      ブランド理念:findVal(data.A,['理念','想い','コンセプト','テーマ']),
+      独自の強み:findVal(data.A,['強み','USP','差別化']),
+      ターゲット層:findVal(data.A,['ターゲット','対象','届ける']),
+      禁止用語:findVal(data.A,['禁止','NG','推奨']),
+      HP_URL:findVal(data.A,['HP','URL','サイト']),
+      施工エリア:findVal(data.A,['エリア','地域','施工']),
+      商品コンセプト:findVal(data.A,['商品','WELL','コンセプト_説明']),
+      rawA:data.A,
+    },
+    B:{過去記事:data.B.articles.filter(a=>a.url).slice(0,10),全記事数:data.B.articles.length},
+    C:{
+      施工事例:Object.entries(data.C).filter(([k])=>k.includes('施工')).map(([k,v])=>({key:k,value:v})),
+      お客様の声:Object.entries(data.C).filter(([k])=>k.includes('お客様')||k.includes('声')).map(([k,v])=>({key:k,value:v})),
+      こだわり:Object.entries(data.C).filter(([k])=>k.includes('こだわり')||k.includes('現場')).map(([k,v])=>({key:k,value:v})),
+      実績数値:findVal(data.C,['実績','数値','成約']),
+      注意点:findVal(data.C,['注意','失敗']),
+      rawC:data.C,
+    },
+  };
 }
 
 // ══════════════════════════════════════════════════════════
-// コンマ執筆ルール
+// シート更新パネル（モーダル）
 // ══════════════════════════════════════════════════════════
-const COMMA_RULES=`
-# コンマ記事執筆ルール（全フェーズ共通・最優先）
-## 基本姿勢
-- 記事は住宅検討者の不安・疑問を整理し、住宅会社への信頼形成につなげる接点として書く
-- 煽り・断定に頼らず、誠実・わかりやすさ・汎用性・整合性を優先する
-## 禁止事項（絶対に守る）
-- 目次のような一覧表示を入れない（この記事でわかること3行程度は可）
-- 数字の箇条書き・番号付きリストは使わない（箇条書き記号は「・」で統一）
-- 見出し以外を太字にしない／赤文字を多用しない
-- 表形式は原則使用しない
-- 確証が難しい数字・金額を断定的に書かない
-- 古い制度・終了制度を現行のように書かない
-- 特定メーカー名・商品名を安易に使わない
-- 「業界No.1」「最高峰」「圧倒的」「革新的」等の禁止用語を使わない
-## 文章表現ルール
-- 一文一義 / 「です・ます調」基本 / 営業トーク調にしない
-- 「絶対に」「必ず」「間違いなく」等の強断定は避ける
-`;
+function openRefreshPanel(){
+  const clients=getClients();
+  if(!clients.length){showError('クライアントが登録されていません');return;}
+  const existing=document.getElementById('refreshPanel');
+  if(existing)existing.remove();
 
-const P1_SYS=`あなたは記事制作前のデータ確認担当です。このフェーズでは執筆してはいけません。\n${COMMA_RULES}\n# このフェーズの役割\n- 渡された会社データのみを根拠として使う\n- 外部Webの会社情報で補完してはいけない\n\n# 抽出必須項目\n会社名 / ブランド理念 / 独自の強み / ターゲット層 / 禁止用語 / 記事内での呼称 / 具体的数値・エピソード / 注意点\n\n# 出力形式（以下のみ出力）\n1. 一致した会社名\n2. 参照できたシート名\n3. 抽出データ一覧\n4. 不足項目一覧\n5. 執筆可否（可 / 不可）`;
+  const rows=clients.map(c=>{
+    const saved=getCacheSavedAt(c.id);
+    const statusHtml=saved
+      ?`<span style="color:var(--ok)">✓ ${saved}</span>`
+      :`<span style="color:var(--err)">⚠ 未取得</span>`;
+    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">${escH(c.name)}</div>
+        <div style="font-size:10px;font-family:'IBM Plex Mono',monospace" id="rpStatus_${c.id}">${statusHtml}</div>
+      </div>
+      <button class="small-btn" onclick="refreshOneInPanel('${c.id}')">更新</button>
+    </div>`;
+  }).join('');
 
-const P2_SYS=`あなたはSEO/AIO記事の企画担当です。このフェーズでは本文を書いてはいけません。\n${COMMA_RULES}\n# やること\n- キーワードに応じて4つのペルソナを提案する（顕在/潜在/比較検討/トレンド）\n- 競合に足りない一次情報の切り口を3つ提案する\n\n# 出力形式\n1. 想定キーワード\n2. ペルソナ4案（各ペルソナに「注文住宅らしい悩み・背景」を明記）\n3. おすすめの1案とその理由\n4. 競合に足りない切り口（住宅業界視点で3つ）\n5. 執筆前に必要な追加質問`;
+  const panel=document.createElement('div');
+  panel.id='refreshPanel';
+  panel.className='modal-overlay';
+  panel.innerHTML=`
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title">シートデータ更新</div>
+        <button class="modal-close" onclick="document.getElementById('refreshPanel').remove()">×</button>
+      </div>
+      <div style="font-size:12px;color:var(--ink-sub);margin-bottom:14px;line-height:1.7">
+        シートを編集したクライアントだけ個別に更新できます。
+      </div>
+      <div style="margin-bottom:16px">${rows}</div>
+      <div style="display:flex;gap:8px">
+        <button class="small-btn primary" style="flex:1" onclick="refreshAllInPanel()">↻ 全件更新</button>
+        <button class="small-btn" onclick="document.getElementById('refreshPanel').remove()">閉じる</button>
+      </div>
+    </div>`;
+  document.body.appendChild(panel);
+}
 
-const P3_SYS=`あなたはコンテンツSEO/AIO分析の専門家です。指定されたキーワードで実際にWeb検索を行い、競合記事の状況を調査してください。\n必ず以下のJSON形式のみで出力してください。前後に説明文やコードブロック記号は含めないこと。\n{"keyword":"","competition_level":"低|中|高","competition_summary":"","competitors":[{"rank":1,"title":"","url":"","domain":"","seo_score":4,"aio_score":3,"strengths":[],"title_pattern":""}],"gap_opportunities":[],"recommended_titles":[],"overlap_risk":"低|中|高","overlap_reason":""}`;
+async function refreshOneInPanel(id){
+  const client=getClients().find(c=>c.id===id);
+  if(!client)return;
+  const el=document.getElementById('rpStatus_'+id);
+  if(el)el.innerHTML='<span style="color:var(--gold)">取得中...</span>';
+  try{
+    await fetchClientSheetData(client,true);
+    const saved=getCacheSavedAt(id);
+    if(el)el.innerHTML=`<span style="color:var(--ok)">✓ ${saved}</span>`;
+    const tb=document.getElementById('cacheStatus_'+id);
+    if(tb)tb.textContent='✓ '+saved;
+    showError('更新しました',true);
+  }catch(e){
+    if(el)el.innerHTML='<span style="color:var(--err)">❌ 失敗</span>';
+    showError(String(e?.message||e));
+  }
+}
 
-const P4_SYS=`あなたはシニア・コンテンツディレクターです。確定済みデータだけを根拠に記事を書くこと。\n${COMMA_RULES}\n# 最優先ルール\n- シートにない数値・実績・URLは創作しない → [要確認・追記] と明記する\n\n# 執筆条件\n- 8,000〜10,000文字 / Markdown形式\n- H1は会社名を含めない\n- 各H2の下にH3を2つ以上置く\n- PR表現は全体で2回まで\n- 冒頭に「この記事でわかること」を3〜5行で書く\n\n# 記事後の出力（JSON形式）\n---\n\`\`\`json\n{"charCount":数値,"persona":"想定ペルソナ","improvement":"改善点","selfScore":数値,"refs":"参照データログ","aiScores":{"chatgpt":{"intent":0,"structure":0,"quotable":0,"eeat":0,"evidence":0,"context":0,"freshness":0},"gemini":{"originality":0,"structure":0,"authority":0,"depth":0,"recency":0,"trust":0},"claude":{"selfcontained":0,"specificity":0,"schema":0,"intent":0,"eeat":0,"readability":0},"perplexity":{"conclusion":0,"evidence":0,"originality":0,"structure":0,"eeat":0,"freshness":0}}}\n\`\`\`\n各aiScoresの合計が10点になるよう配点すること。`;
+async function refreshAllInPanel(){
+  const clients=getClients();
+  for(const c of clients) await refreshOneInPanel(c.id);
+  showError('全件更新が完了しました',true);
+}
+
+async function refreshAllCaches(){
+  const clients=getClients();
+  if(!clients.length){showError('クライアントが登録されていません');return;}
+  let ok=0,ng=0;
+  for(const c of clients){
+    const el=document.getElementById('cacheStatus_'+c.id);
+    if(el)el.textContent='取得中...';
+    try{
+      await fetchClientSheetData(c,true);
+      if(el)el.textContent='✓ '+getCacheSavedAt(c.id);
+      ok++;
+    }catch{
+      if(el)el.textContent='❌ 失敗';
+      ng++;
+    }
+  }
+  showError(`更新完了: 成功${ok}件${ng?' / 失敗'+ng+'件':''}`,!ng);
+}
+
+// ══════════════════════════════════════════════════════════
+// クライアント管理
+// ══════════════════════════════════════════════════════════
+function getClients(){try{return JSON.parse(localStorage.getItem('comma_clients')||'[]');}catch{return[];}}
+function saveClients(arr){localStorage.setItem('comma_clients',JSON.stringify(arr));}
+
+async function addClient(){
+  const name=document.getElementById('newClientName').value.trim();
+  const hyouki=document.getElementById('newClientHyouki').value.trim();
+  const url=document.getElementById('newClientUrl').value.trim();
+  if(!name){showError('会社名を入力してください');return;}
+  if(!url||!url.includes('spreadsheets')){showError('正しいスプレッドシートURLを入力してください');return;}
+  const clients=getClients();
+  if(clients.find(c=>c.name===name)){showError('同じ会社名がすでに登録されています');return;}
+  const client={id:'c_'+Date.now(),name,hyouki:hyouki||name,url,createdAt:Date.now()};
+  const btn=document.getElementById('saveClientBtn');
+  if(btn){btn.disabled=true;btn.textContent='シートを取得中...';}
+  try{
+    await fetchClientSheetDataRaw(client).then(d=>setCachedSheet(client.id,d));
+    clients.push(client);saveClients(clients);
+    document.getElementById('newClientName').value='';
+    document.getElementById('newClientHyouki').value='';
+    document.getElementById('newClientUrl').value='';
+    toggleAddForm(true);renderClientTable();
+    showError('クライアントを登録しました（シートデータ取得済み）',true);
+  }catch(e){
+    clients.push(client);saveClients(clients);
+    document.getElementById('newClientName').value='';
+    document.getElementById('newClientHyouki').value='';
+    document.getElementById('newClientUrl').value='';
+    toggleAddForm(true);renderClientTable();
+    showError('登録しましたがシート取得に失敗しました。「更新」で再取得してください。');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='保存する';}
+  }
+}
+
+function deleteClient(id){
+  if(!confirm('このクライアントを削除しますか？'))return;
+  clearCachedSheet(id);
+  saveClients(getClients().filter(c=>c.id!==id));
+  renderClientTable();showError('削除しました',true);
+}
+
+function deleteAllClients(){
+  if(!confirm('全クライアントを削除しますか？（キャッシュも削除されます）'))return;
+  getClients().forEach(c=>clearCachedSheet(c.id));
+  localStorage.removeItem('comma_clients');
+  renderClientTable();showError('全クライアントを削除しました',true);
+}
+
+function toggleAddForm(forceClose=false){
+  const f=document.getElementById('addClientForm');
+  if(forceClose||f.classList.contains('open'))f.classList.remove('open');
+  else f.classList.add('open');
+}
+
+function renderClientTable(){
+  const clients=getClients();
+  const tbody=document.getElementById('clientTableBody');
+  const empty=document.getElementById('clientEmptyMsg');
+  const count=document.getElementById('clientCountLabel');
+  if(count)count.textContent='（'+clients.length+'件）';
+  if(!clients.length){if(tbody)tbody.innerHTML='';if(empty)empty.style.display='block';refreshTestSelect();return;}
+  if(empty)empty.style.display='none';
+  const isAdmin=currentUser?.role==='admin';
+  tbody.innerHTML=clients.map(c=>{
+    const saved=getCacheSavedAt(c.id);
+    const statusTxt=saved?'✓ '+saved:'⚠ 未取得';
+    return`<tr>
+      <td style="font-weight:500">${escH(c.name)}</td>
+      <td style="color:var(--ink-sub)">${escH(c.hyouki)}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--p2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escH(c.url)}">${escH(c.url)}</td>
+      <td style="white-space:nowrap">
+        <span id="cacheStatus_${c.id}" style="font-size:10px;color:${saved?'var(--ok)':'var(--err)'};font-family:'IBM Plex Mono',monospace;margin-right:6px">${statusTxt}</span>
+        ${isAdmin?`<button class="small-btn" onclick="refreshOneCache('${c.id}')">更新</button>`:''}
+      </td>
+      <td>${isAdmin?`<button class="small-btn danger" onclick="deleteClient('${c.id}')">削除</button>`:''}</td>
+    </tr>`;
+  }).join('');
+  refreshTestSelect();
+}
+
+async function refreshOneCache(id){
+  const client=getClients().find(c=>c.id===id);
+  if(!client)return;
+  const el=document.getElementById('cacheStatus_'+id);
+  if(el){el.textContent='取得中...';el.style.color='var(--gold)';}
+  try{
+    await fetchClientSheetData(client,true);
+    const saved=getCacheSavedAt(id);
+    if(el){el.textContent='✓ '+saved;el.style.color='var(--ok)';}
+    showError('シートデータを更新しました',true);
+  }catch(e){
+    if(el){el.textContent='❌ 失敗';el.style.color='var(--err)';}
+    showError(String(e?.message||e));
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// クライアント検索UI
+// ══════════════════════════════════════════════════════════
+let selectedClient=null;
+
+function filterClients(q){
+  const clients=getClients();
+  const dd=document.getElementById('clientDropdown');
+  const filtered=q?clients.filter(c=>c.name.includes(q)||c.hyouki.includes(q)):clients;
+  if(!filtered.length){
+    dd.innerHTML=`<div style="padding:10px 13px;font-size:12px;color:var(--ink-muted)">${clients.length?'一致するクライアントがありません':'クライアントが未登録です'}</div>`;
+  }else{
+    dd.innerHTML=filtered.map(c=>`<div class="client-opt" onmousedown="selectClient('${c.id}')">
+      <div><div class="client-opt-name">${escH(c.name)}</div><div class="client-opt-hyouki">${escH(c.hyouki)}</div></div>
+    </div>`).join('');
+  }
+  dd.classList.add('open');
+}
+function openClientDropdown(){filterClients(document.getElementById('clientSearchInput').value);}
+function closeClientDropdown(){document.getElementById('clientDropdown').classList.remove('open');}
+
+function selectClient(id){
+  const client=getClients().find(c=>c.id===id);
+  if(!client)return;
+  selectedClient=client;
+  document.getElementById('clientSearchInput').value='';
+  document.getElementById('clientSearchInput').placeholder=client.name;
+  const saved=getCacheSavedAt(client.id);
+  const note=saved
+    ?`<span style="font-size:10px;opacity:.65;font-weight:400"> データ: ${saved}</span>`
+    :`<span style="font-size:10px;color:var(--err);font-weight:400"> ⚠ シート未取得</span>`;
+  document.getElementById('clientBadgeText').innerHTML=`✓ ${escH(client.name)}（${escH(client.hyouki)}）${note}<button onclick="clearClientSelection()">×</button>`;
+  document.getElementById('clientSelectedBadge').style.display='block';
+  document.getElementById('clientDropdown').classList.remove('open');
+}
+
+function clearClientSelection(){
+  selectedClient=null;
+  document.getElementById('clientSearchInput').value='';
+  document.getElementById('clientSearchInput').placeholder='会社名・呼び名で検索...';
+  document.getElementById('clientSelectedBadge').style.display='none';
+}
+
+function refreshTestSelect(){
+  const sel=document.getElementById('testClientSelect');
+  if(!sel)return;
+  const clients=getClients();
+  sel.innerHTML=clients.length
+    ?clients.map(c=>`<option value="${c.id}">${escH(c.name)}（${escH(c.hyouki)}）</option>`).join('')
+    :'<option value="">クライアントが登録されていません</option>';
+}
 
 // ══════════════════════════════════════════════════════════
 // AUTH
 // ══════════════════════════════════════════════════════════
-let currentUser = null;
 function doLogin(){
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value;
@@ -662,11 +934,16 @@ function initApp(username,role){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('app').style.display='flex';
   document.getElementById('sbUser').textContent=username+(role==='admin'?' (管理者)':'');
-  const savedUrl=localStorage.getItem('comma_sheets_url')||'';
-  if(savedUrl)document.getElementById('sheetsUrlInput').value=savedUrl;
-  if(role!=='admin'){document.getElementById('settingsUserSection').style.display='none';document.getElementById('nonAdminNotice').style.display='block';document.getElementById('memoAdminArea').style.display='none';}
-  else{document.getElementById('memoAdminArea').style.display='block';}
-  renderUserList();renderHistory();renderMemos();updateHistCountBadge();updateMemoBadge();
+  if(role!=='admin'){
+    document.getElementById('settingsUserSection').style.display='none';
+    document.getElementById('nonAdminNotice').style.display='block';
+    document.getElementById('memoAdminArea').style.display='none';
+    const addBtn=document.getElementById('addClientBtn');if(addBtn)addBtn.style.display='none';
+  }else{
+    document.getElementById('memoAdminArea').style.display='block';
+  }
+  renderClientTable();renderHistory();renderMemos();updateHistCountBadge();updateMemoBadge();
+  if(role==='admin')renderUserList();
 }
 
 // ══════════════════════════════════════════════════════════
@@ -682,6 +959,8 @@ function switchView(v){
   if(v==='history')renderHistory();
   if(v==='memo')renderMemos();
   if(v==='settings')document.getElementById('histCountLabel').textContent=getHistory().length+' 件';
+  if(v==='clients')renderClientTable();
+  if(v==='test')refreshTestSelect();
 }
 function openReport(s){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
@@ -760,19 +1039,14 @@ function showError(msg,isOk=false){
 function renderMD(text){
   const esc=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return esc
-    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
-    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
-    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/`([^`]+)`/g,'<code>$1</code>')
-    .replace(/^---$/gm,'<hr>')
-    .replace(/^[-•] (.+)$/gm,'<li>$1</li>')
-    .replace(/(<li>[\s\S]+?<\/li>)/g,'<ul>$1</ul>');
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/^---$/gm,'<hr>').replace(/^[-•] (.+)$/gm,'<li>$1</li>').replace(/(<li>[\s\S]+?<\/li>)/g,'<ul>$1</ul>');
 }
 function escH(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 // ══════════════════════════════════════════════════════════
-// SHEETS
+// CSV / SHEETS
 // ══════════════════════════════════════════════════════════
 function parseCSV(text){
   const rows=[];let row=[],cell='',inQ=false;
@@ -786,81 +1060,61 @@ function parseCSV(text){
   if(cell.length>0||row.length>0){row.push(cell);rows.push(row);}
   return rows;
 }
-
 function extractSheetId(url){
   const m=url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
   return m?m[1]:null;
 }
-
-// ──────────────────────────────────────────────
-// 修正①: シート一覧からgidを取得する
-// Google Sheets の HTML ページをパースしてシート名→gid の対応を取得
-// ──────────────────────────────────────────────
-async function fetchSheetGids(sheetId){
-  // sheets.googleapis.com の公開エンドポイントで全シート情報を取得
-  // フォールバック: gid=0,1,2 の順に試す
-  const fallbackGids = ['0','1','2','3','4'];
-  const available = [];
-  for(const gid of fallbackGids){
+async function findAvailableGids(sheetId,maxTabs=4){
+  const candidateGids=[];
+  try{
+    const htmlRes=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml`);
+    if(htmlRes.ok){
+      const html=await htmlRes.text();
+      const matches=[...html.matchAll(/gid[=:](\d+)/g)];
+      [...new Set(matches.map(m=>m[1]))].forEach(g=>candidateGids.push(g));
+    }
+  }catch{}
+  ['0','1','2','3','4','5'].forEach(g=>{if(!candidateGids.includes(g))candidateGids.push(g);});
+  const available=[];
+  for(const gid of candidateGids){
+    if(available.length>=maxTabs)break;
     try{
-      const url=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
-      const res=await fetch(url);
+      const res=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`);
       if(res.ok){
-        const txt=await res.text();
-        if(txt.trim().length>10) available.push(gid);
+        const text=await res.text();
+        if(text.trim().length>10)available.push({gid,csv:text});
       }
     }catch{}
   }
   return available;
 }
-
-async function fetchCsv(sheetId, gid){
-  try{
-    const url=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
-    const res=await fetch(url);
-    if(!res.ok)return null;
-    const text=await res.text();
-    return text.trim().length>5?text:null;
-  }catch{return null;}
-}
-
 function parseCompanySheets(sheets){
   const result={A:{},B:{articles:[]},C:{}};
   sheets.forEach(({gid,csv},idx)=>{
-    const rows=parseCSV(csv);
-    if(!rows.length)return;
+    const rows=parseCSV(csv);if(!rows.length)return;
     const firstCell=String(rows[0]?.[0]||'').trim();
-    const isTabB=firstCell.includes('内部リンク')||firstCell.includes('過去記事')||firstCell.includes('重複')||firstCell.includes('記事');
+    const isTabB=firstCell.includes('内部リンク')||firstCell.includes('過去記事')||firstCell.includes('記事');
     const isTabC=firstCell.includes('一次情報')||firstCell.includes('実績')||firstCell.includes('心臓部')||firstCell.includes('事例');
-
-    // ヘッダー行を探す
     let headerIdx=-1;
     for(let i=0;i<Math.min(rows.length,6);i++){
-      const hasHeader=rows[i].some(c=>{
-        const v=String(c||'').trim();
-        return v==='項目名'||v==='項目名（ヘッダー）'||v==='会社名・屋号'||v==='記事タイトル'||v==='タイトル';
-      });
-      if(hasHeader){headerIdx=i;break;}
+      if(rows[i].some(c=>{const v=String(c||'').trim();return v==='項目名'||v==='項目名（ヘッダー）'||v==='会社名・屋号'||v==='記事タイトル'||v==='タイトル';})){headerIdx=i;break;}
     }
-
     if(isTabB||(idx===1&&!isTabC)){
       const hIdx=headerIdx>=0?headerIdx:2;
       if(rows.length>hIdx+1){
         const headers=rows[hIdx].map(h=>String(h||'').trim());
-        const titleIdx=headers.findIndex(h=>h.includes('記事タイトル')||h.includes('タイトル'));
-        const urlIdx=headers.findIndex(h=>h.includes('URL'));
-        const catIdx=headers.findIndex(h=>h.includes('カテゴリ')||h.includes('ジャンル'));
-        const summaryIdx=headers.findIndex(h=>h.includes('主張')||h.includes('要約'));
+        const tIdx=headers.findIndex(h=>h.includes('記事タイトル')||h.includes('タイトル'));
+        const uIdx=headers.findIndex(h=>h.includes('URL'));
+        const cIdx=headers.findIndex(h=>h.includes('カテゴリ')||h.includes('ジャンル'));
         for(let i=hIdx+1;i<rows.length;i++){
           const row=rows[i];
-          const title=titleIdx>=0?String(row[titleIdx]||'').trim():'';
-          const url=urlIdx>=0?String(row[urlIdx]||'').trim():'';
-          const cat=catIdx>=0?String(row[catIdx]||'').trim():'';
-          const summary=summaryIdx>=0?String(row[summaryIdx]||'').trim():'';
-          if(title||url)result.B.articles.push({title,url,category:cat,summary});
+          const title=tIdx>=0?String(row[tIdx]||'').trim():'';
+          const url=uIdx>=0?String(row[uIdx]||'').trim():'';
+          const cat=cIdx>=0?String(row[cIdx]||'').trim():'';
+          if(title||url)result.B.articles.push({title,url,category:cat});
         }
       }
-    } else {
+    }else{
       const target=(isTabC||(idx===2))?result.C:result.A;
       const hIdx=headerIdx>=0?headerIdx:2;
       for(let i=hIdx+1;i<rows.length;i++){
@@ -879,265 +1133,57 @@ function parseCompanySheets(sheets){
   return result;
 }
 
-// ──────────────────────────────────────────────
-// 一覧シートから会社を検索 → 情報シートURL取得
-// ──────────────────────────────────────────────
-async function lookupCompanyUrl(companyName){
-  const rawUrl=(localStorage.getItem('comma_sheets_url')||document.getElementById('sheetsUrlInput')?.value||'').trim();
-  if(!rawUrl)throw new Error('Google Sheets URL が未設定です。設定画面で登録してください。');
-  const sheetId=extractSheetId(rawUrl);
-  if(!sheetId)throw new Error('Google Sheets のURL形式が正しくありません');
+// ══════════════════════════════════════════════════════════
+// PROMPTS
+// ══════════════════════════════════════════════════════════
+const COMMA_RULES=`# コンマ記事執筆ルール（最優先）
+## 禁止事項
+- 目次のような一覧表示を入れない（この記事でわかること3行程度は可）
+- 数字の箇条書き・番号付きリストは使わない（「・」で統一）
+- 見出し以外を太字にしない / 表形式は原則使用しない
+- 確証が難しい数字・金額を断定的に書かない
+- 「業界No.1」「最高峰」「圧倒的」等の禁止用語を使わない
+## 文章ルール
+- 一文一義 / 「です・ます調」/ 営業トーク調にしない`;
 
-  const csv=await fetchCsv(sheetId,'0');
-  if(!csv)throw new Error('一覧シートの取得に失敗しました。シートの公開設定（リンクを知っている全員が閲覧可）を確認してください。');
-
-  const rows=parseCSV(csv);
-  let headerIdx=-1;
-  for(let i=0;i<rows.length;i++){
-    if(rows[i].some(c=>String(c||'').trim()==='会社名')){headerIdx=i;break;}
-  }
-  if(headerIdx===-1)throw new Error('一覧シートに「会社名」列が見つかりません');
-
-  const headers=rows[headerIdx].map(h=>String(h||'').trim());
-  const coIdx=headers.indexOf('会社名');
-  const urlIdx=headers.indexOf('情報シートURL');
-  const hyoukiIdx=headers.indexOf('出力の表記');
-
-  for(let i=headerIdx+1;i<rows.length;i++){
-    const row=rows[i];
-    if(String(row[coIdx]||'').trim()===companyName){
-      const infoUrl=urlIdx>=0?String(row[urlIdx]||'').trim():'';
-      const hyouki=hyoukiIdx>=0&&row[hyoukiIdx]?String(row[hyoukiIdx]).trim():companyName;
-      if(!infoUrl)throw new Error(`「${companyName}」の情報シートURLが一覧シートに登録されていません`);
-      return{companyName,hyouki,infoUrl};
-    }
-  }
-  throw new Error(`「${companyName}」が一覧シートに見つかりません。会社名が完全一致しているか確認してください。`);
-}
-
-// ──────────────────────────────────────────────
-// 修正②: 情報シートの全タブをgidを動的に探して取得
-// ──────────────────────────────────────────────
-async function fetchAllCompanySheets(infoUrl){
-  const sheetId=extractSheetId(infoUrl);
-  if(!sheetId)throw new Error('情報シートURLからスプレッドシートIDを取得できませんでした');
-
-  // gid を動的に探す（0〜9まで試す）
-  const candidateGids=['0','1','2','3','4','5','6','7','8','9'];
-  const sheets=[];
-  for(const gid of candidateGids){
-    try{
-      const url=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
-      const res=await fetch(url);
-      if(!res.ok)continue;
-      const text=await res.text();
-      if(text.trim().length>10){
-        sheets.push({gid,csv:text});
-        if(sheets.length>=4)break; // 最大4タブで十分
-      }
-    }catch{}
-  }
-  if(!sheets.length)throw new Error('情報シートのデータを取得できませんでした。シートURLと公開設定を確認してください。');
-  return{sheetId,sheets};
-}
-
-async function lookupSheets(name){
-  console.log('[lookupSheets] 開始:', name);
-  const {companyName,hyouki,infoUrl}=await lookupCompanyUrl(name);
-  console.log('[lookupSheets] 情報シートURL:', infoUrl);
-  const {sheetId,sheets}=await fetchAllCompanySheets(infoUrl);
-  console.log('[lookupSheets] 取得タブ数:', sheets.length, 'gids:', sheets.map(s=>s.gid));
-  const data=parseCompanySheets(sheets);
-  const pastArticles=data.B.articles.filter(a=>a.url).slice(0,10);
-  const findVal=(obj,keywords)=>{
-    for(const k of Object.keys(obj)){if(keywords.some(kw=>k.includes(kw)))return obj[k];}return '';
-  };
-  return{
-    row:2,hyouki,infoUrl,sheetId,
-    A:{
-      会社名:companyName,記事内での呼称:hyouki,
-      ブランド理念:findVal(data.A,['理念','想い','コンセプト','テーマ']),
-      独自の強み:findVal(data.A,['強み','USP','差別化']),
-      ターゲット層:findVal(data.A,['ターゲット','対象','届ける']),
-      禁止用語:findVal(data.A,['禁止','NG','推奨']),
-      HP_URL:findVal(data.A,['HP','URL','サイト']),
-      施工エリア:findVal(data.A,['エリア','地域','施工']),
-      商品コンセプト:findVal(data.A,['商品','WELL','コンセプト_説明']),
-      rawA:data.A,
-    },
-    B:{過去記事:pastArticles,全記事数:data.B.articles.length},
-    C:{
-      施工事例:Object.entries(data.C).filter(([k])=>k.includes('施工')).map(([k,v])=>({key:k,value:v})),
-      お客様の声:Object.entries(data.C).filter(([k])=>k.includes('お客様')||k.includes('声')).map(([k,v])=>({key:k,value:v})),
-      こだわり:Object.entries(data.C).filter(([k])=>k.includes('こだわり')||k.includes('現場')).map(([k,v])=>({key:k,value:v})),
-      実績数値:findVal(data.C,['実績','数値','成約']),
-      注意点:findVal(data.C,['注意','失敗']),
-      rawC:data.C,
-    },
-  };
-}
-
-// ──────────────────────────────────────────────
-// 修正③: runSheetCheck — getSheetCsvUrl を使わず直接URLを構築
-// ──────────────────────────────────────────────
-async function runSheetCheck(){
-  const btn=document.getElementById('sheetCheckBtn');
-  const btnTxt=document.getElementById('sheetCheckBtnTxt');
-  const result=document.getElementById('sheetCheckResult');
-  const output=document.getElementById('sheetCheckOutput');
-  btn.disabled=true;btnTxt.textContent='取得中...';
-  result.style.display='block';
-  try{
-    const rawUrl=(localStorage.getItem('comma_sheets_url')||document.getElementById('sheetsUrlInput')?.value||'').trim();
-    if(!rawUrl)throw new Error('Google Sheets URLが未設定です。設定画面でURLを登録してください。');
-    const sheetId=extractSheetId(rawUrl);
-    if(!sheetId)throw new Error('URL形式が正しくありません。スプレッドシートのURLを確認してください。');
-
-    const csvUrl=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
-    const res=await fetch(csvUrl);
-    if(!res.ok)throw new Error(`CSV取得に失敗しました（HTTP ${res.status}）。シートの公開設定を「リンクを知っている全員が閲覧可」にしてください。`);
-    const text=await res.text();
-    if(!text.trim())throw new Error('CSVは取得できましたが中身が空です');
-
-    const rows=parseCSV(text);
-    const preview=rows.slice(0,10).map(r=>r.join(' | ')).join('\n');
-    output.textContent=`✅ 接続成功\n\nスプレッドシートID: ${sheetId}\nCSV URL: ${csvUrl}\n行数: ${rows.length}行\n\n--- 先頭10行プレビュー ---\n${preview}`;
-    showError('Google Sheets に接続できました',true);
-  }catch(e){
-    output.textContent='❌ 接続失敗\n\n'+String(e?.message||'不明なエラー');
-    showError(String(e?.message||'シート接続に失敗しました'));
-  }finally{btn.disabled=false;btnTxt.textContent='CSVを取得する';}
-}
+const P1_SYS=`あなたは記事制作前のデータ確認担当です。このフェーズでは執筆しないこと。\n${COMMA_RULES}\n渡された会社データのみを根拠として使う。外部Web情報で補完しないこと。\n\n# 出力形式\n1. 一致した会社名\n2. 参照できたシート数\n3. 抽出データ一覧\n4. 不足項目一覧\n5. 執筆可否（可 / 不可）`;
+const P2_SYS=`あなたはSEO/AIO記事の企画担当です。本文は書かないこと。\n${COMMA_RULES}\n\n# 出力形式\n1. 想定キーワード\n2. ペルソナ4案（顕在/潜在/比較検討/トレンド）\n3. おすすめの1案とその理由\n4. 競合に足りない切り口3つ\n5. 執筆前の追加質問`;
+const P3_SYS=`あなたはSEO/AIO分析専門家です。指定キーワードでWeb検索し競合記事を調査してください。\n必ず以下のJSON形式のみで出力。前後に説明文やコードブロック記号を含めないこと。\n{"keyword":"","competition_level":"低|中|高","competition_summary":"","competitors":[{"rank":1,"title":"","url":"","domain":"","seo_score":4,"aio_score":3,"strengths":[],"title_pattern":""}],"gap_opportunities":[],"recommended_titles":[],"overlap_risk":"低|中|高","overlap_reason":""}`;
+const P4_SYS=`あなたはシニア・コンテンツディレクターです。確定済みデータだけを根拠に記事を書くこと。\n${COMMA_RULES}\n\n# 最優先ルール\n- シートにない数値・実績・URLは創作しない → [要確認・追記] と明記\n\n# 執筆条件\n- 8,000〜10,000文字 / Markdown形式\n- H1は会社名を含めない\n- 各H2の下にH3を2つ以上置く\n- PR表現は全体で2回まで\n- 冒頭に「この記事でわかること」を3〜5行で書く\n\n# 記事後にJSON出力\n---\n\`\`\`json\n{"charCount":数値,"persona":"想定ペルソナ","improvement":"改善点","selfScore":数値,"refs":"参照データログ","aiScores":{"chatgpt":{"intent":0,"structure":0,"quotable":0,"eeat":0,"evidence":0,"context":0,"freshness":0},"gemini":{"originality":0,"structure":0,"authority":0,"depth":0,"recency":0,"trust":0},"claude":{"selfcontained":0,"specificity":0,"schema":0,"intent":0,"eeat":0,"readability":0},"perplexity":{"conclusion":0,"evidence":0,"originality":0,"structure":0,"eeat":0,"freshness":0}}}\n\`\`\`\n各aiScoresの合計が10点になるよう配点すること。`;
 
 // ══════════════════════════════════════════════════════════
-// API（Gemini / モック）
+// API（モック）
 // ══════════════════════════════════════════════════════════
-function mockStream(text,boxId,msPerChar=8){
+function mockStream(text,boxId,ms=6){
   return new Promise(async res=>{
     const box=document.getElementById(boxId);
-    box.innerHTML='<span class="scursor"></span>';
-    let out='';
+    box.innerHTML='<span class="scursor"></span>';let out='';
     for(let i=0;i<text.length;i++){
       out+=text[i];
       box.innerHTML=escH(out)+'<span class="scursor"></span>';
       box.scrollTop=box.scrollHeight;
-      if(i%8===0)await sleep(msPerChar);
+      if(i%8===0)await sleep(ms);
     }
     box.classList.add('done');box.innerHTML=escH(out);res(text);
   });
 }
-
-const MOCK_P1=(company,data)=>`## データ確認結果
-
-**1. 一致した会社名**
-${data.A.会社名}
-
-**2. 参照できたシート**
-【A】会社基本情報 ／ 【B】過去記事ログ ／ 【C】一次情報・実績数値
-
-**3. 抽出データ一覧**
-- ブランド理念：${data.A.ブランド理念||'（シートから取得）'}
-- 独自の強み：${data.A.独自の強み||'（シートから取得）'}
-- 記事内での呼称：${data.A.記事内での呼称}
-- ターゲット層：${data.A.ターゲット層||'（シートから取得）'}
-- 禁止用語：${data.A.禁止用語||'なし'}
-- 過去記事数：${data.B.全記事数}件
-- 実績数値：${data.C.実績数値||'（シートから取得）'}
-
-**4. 不足項目**
-なし（全シート取得済み）
-
-**5. 執筆可否**
-✅ 可 — 必要データはすべて取得できました。`;
-
-const MOCK_P2=(keyword,company)=>`## 企画設計レポート
-
-**1. 想定キーワード**「${keyword}」
-
-**2. ペルソナ4案**
-
-**① 顕在層（今すぐ検討）** — 30代後半・マーケター。外注先を探している。費用対効果と実績数値を重視。
-
-**② 潜在層（課題認識段階）** — 40代・中小企業経営者。何から始めればいいか分からない。
-
-**③ 比較検討層** — 広報担当・20代後半。複数社を比較中。差別化ポイント重視。
-
-**④ トレンド層** — AI時代のSEO・AIOを意識し始めた経営層。「AIに引用される記事」に関心がある。
-
-**3. おすすめペルソナ**
-**② 潜在層** — 検索ボリュームが最大。競合記事が「やり方説明」に偏っており差別化できる。
-
-**4. 競合に足りない切り口**
-→ 実際の支援数値を根拠にした具体的ROI説明
-→ 失敗パターンと回避策（業界別の注意点）
-→ AI対応を意識した記事設計の具体的メソッド
-
-**5. 執筆前の追加質問**
-読者に最終的にとってほしい行動は何ですか？`;
-
-const MOCK_P3=(keyword)=>JSON.stringify({keyword,competition_level:"中",competition_summary:"上位記事は大手メディアと専門エージェンシーが占めており一般論的な内容が多い。具体的な数値や中小企業特化の事例を持つ記事は少なく差別化余地がある。",competitors:[{rank:1,title:`${keyword}とは？基礎から実践まで完全ガイド`,url:"https://example-media.jp/",domain:"example-media.jp",seo_score:5,aio_score:3,strengths:["網羅性が高い","内部リンク構造が強い"],title_pattern:"完全ガイド型"},{rank:2,title:`中小企業が${keyword}で成果を出す方法`,url:"https://marketing-hub.jp/",domain:"marketing-hub.jp",seo_score:4,aio_score:4,strengths:["中小企業特化","事例紹介あり"],title_pattern:"ターゲット特化型"},{rank:3,title:`${keyword}の始め方と費用相場`,url:"https://biz-navi.jp/",domain:"biz-navi.jp",seo_score:4,aio_score:3,strengths:["費用情報が充実"],title_pattern:"費用特化型"},{rank:4,title:`${keyword}の事例10選`,url:"https://btob-lab.jp/",domain:"btob-lab.jp",seo_score:3,aio_score:4,strengths:["事例が豊富"],title_pattern:"事例集型"},{rank:5,title:`失敗しない${keyword}外注先の選び方`,url:"https://outsource-guide.jp/",domain:"outsource-guide.jp",seo_score:3,aio_score:2,strengths:["比較検討層に刺さる"],title_pattern:"比較・選定型"}],gap_opportunities:["実績数値を前面に出したROI特化記事","AI対応を意識した構造化コンテンツの作り方","失敗事例を正直に書いた信頼性重視コンテンツ"],recommended_titles:[`売上につながる${keyword}｜中小企業の成功事例と具体的ROI`,`AIにも評価される${keyword}の設計方法`,`${keyword}で問い合わせを増やす方法`],overlap_risk:"低",overlap_reason:"提案タイトルは数値・AI対応・担当者視点で差別化しており既存上位記事とパターンが重複しない。"});
-
-const MOCK_P4=(company,keyword)=>`# ${keyword}で中小企業が成果を出すための実践ガイド
-
-この記事でわかること：なぜ中小企業にコンテンツマーケティングが向いているのか、具体的な設計フロー、失敗パターンと回避策を整理します。
-
-## なぜ中小企業にこそ向いているのか
-
-### 大企業にはできない「一次情報」という武器がある
-
-大企業のコンテンツは組織の承認フローを経るため表現が無難になる。一方で中小企業は経営者や現場担当者が直接語れる生の声・数値・失敗談を持っている。
-
-### 検索意図の「深い層」を取れる
-
-顕在層を狙う広告とは異なり、コンテンツマーケティングは潜在層・比較検討層にリーチできる。
-
-## 記事設計の4フェーズ
-
-### フェーズ1：データ確認と執筆根拠の確定
-
-記事を書く前に会社の一次情報を徹底的に整理する。使える数値・使えない数値を区別し[要確認・追記]の項目を明示する。
-
-### フェーズ2：ペルソナと切り口の設計
-
-キーワードに対して4種のペルソナを設定し、競合が取り切れていない切り口を特定する。
-
-### フェーズ3：競合分析とタイトル設計
-
-上位5〜7記事を実際に調査しSEO・AIOスコアを評価する。タイトル被りリスクを事前に排除する。
-
-### フェーズ4：執筆と自己採点
-
-確定済みデータのみを根拠に執筆。公開前にAIが自己採点を行い改善点を明示する。
-
-## まとめ
-
-${keyword}で成果を出す企業に共通するのは「書く前の設計」に時間をかけていることだ。
-
----
-\`\`\`json
-{"charCount":1800,"persona":"30〜45歳・中小企業マーケター・経営者・広報担当","improvement":"FAQセクションを追加するとAIOスコアがさらに向上する見込み。内部リンクを2本以上設置することを推奨。","selfScore":78,"refs":"Phase3競合分析5件、シートデータ【A】【C】","aiScores":{"chatgpt":{"intent":1.6,"structure":1.6,"quotable":1.4,"eeat":1.0,"evidence":1.0,"context":0.4,"freshness":0.3},"gemini":{"originality":1.8,"structure":1.6,"authority":1.4,"depth":1.2,"recency":0.8,"trust":0.7},"claude":{"selfcontained":1.8,"specificity":1.4,"schema":1.4,"intent":1.2,"eeat":0.8,"readability":0.8},"perplexity":{"conclusion":1.6,"evidence":1.4,"originality":1.4,"structure":1.2,"eeat":1.2,"freshness":0.8}}}
-\`\`\``;
+const MOCK_P1=(c,d)=>`## データ確認結果\n\n**1. 一致した会社名**\n${d.A.会社名}\n\n**2. 参照シート数**\n${d.tabCount}タブ（過去記事: ${d.B.全記事数}件）\n\n**3. 抽出データ一覧**\n- ブランド理念：${d.A.ブランド理念||'（取得済み）'}\n- 独自の強み：${d.A.独自の強み||'（取得済み）'}\n- 記事内での呼称：${d.hyouki}\n- ターゲット層：${d.A.ターゲット層||'（取得済み）'}\n- 禁止用語：${d.A.禁止用語||'なし'}\n\n**4. 不足項目**\nなし\n\n**5. 執筆可否**\n✅ 可`;
+const MOCK_P2=(kw)=>`## 企画設計レポート\n\n**キーワード**：「${kw}」\n\n**ペルソナ4案**\n\n**① 顕在層** — 30代後半・マーケター。外注先を探している。\n**② 潜在層** — 40代・経営者。何から始めればいいか分からない。\n**③ 比較検討層** — 広報担当・20代後半。複数社を比較中。\n**④ トレンド層** — AIに引用される記事に関心がある経営層。\n\n**おすすめ**：**② 潜在層** — 競合が「やり方説明」に偏っており差別化できる。\n\n**競合に足りない切り口**\n→ 実績数値を根拠にしたROI説明\n→ 失敗パターンと回避策\n→ AI対応を意識した構造化記事の作り方`;
+const MOCK_P3=(kw)=>JSON.stringify({keyword:kw,competition_level:"中",competition_summary:"上位記事は大手メディアが占め一般論が多い。具体的事例や数値を持つ記事は少なく差別化余地がある。",competitors:[{rank:1,title:`${kw}とは？基礎から実践まで`,url:"https://example-media.jp/",domain:"example-media.jp",seo_score:5,aio_score:3,strengths:["網羅性が高い"],title_pattern:"完全ガイド型"},{rank:2,title:`中小企業が${kw}で成果を出す方法`,url:"https://marketing-hub.jp/",domain:"marketing-hub.jp",seo_score:4,aio_score:4,strengths:["事例紹介あり"],title_pattern:"ターゲット特化型"},{rank:3,title:`${kw}の始め方と費用相場`,url:"https://biz-navi.jp/",domain:"biz-navi.jp",seo_score:4,aio_score:3,strengths:["費用情報が充実"],title_pattern:"費用特化型"}],gap_opportunities:["実績数値を前面に出したROI特化記事","失敗事例を正直に書いた信頼性重視コンテンツ","AI対応を意識した構造化コンテンツ"],recommended_titles:[`売上につながる${kw}｜事例と具体的ROI`,`AIにも評価される${kw}の設計方法`],overlap_risk:"低",overlap_reason:"提案タイトルは数値・AI対応・担当者視点で差別化しており既存記事とパターンが重複しない。"});
+const MOCK_P4=(company,kw)=>`# ${kw}で成果を出すための実践ガイド\n\nこの記事でわかること：コンテンツ戦略の設計フロー、失敗パターンと回避策を整理します。\n\n## なぜ今コンテンツ戦略が重要なのか\n\n### 一次情報という差別化の武器\n\n大手メディアが提供できない生の声・現場の数値・失敗談を中小企業は持っている。\n\n### 潜在層へのアプローチ\n\n顕在層を狙う広告とは異なり、コンテンツマーケティングは潜在層・比較検討層にリーチできる。\n\n## 設計の4ステップ\n\n### ステップ1：データ確認と執筆根拠の確定\n\n記事を書く前に会社の一次情報を整理する。[要確認・追記]\n\n### ステップ2：ペルソナ設計\n\nキーワードに対して4種のペルソナを設定し差別化できる切り口を特定する。\n\n## まとめ\n\n成果を出す企業に共通するのは「書く前の設計」に時間をかけていることだ。\n\n---\n\`\`\`json\n{"charCount":1200,"persona":"30〜45歳・マーケター・経営者・広報担当","improvement":"FAQセクションの追加でAIOスコアが向上する見込み。内部リンクを2本以上設置推奨。","selfScore":76,"refs":"Phase3競合分析3件、シートデータ取得済み","aiScores":{"chatgpt":{"intent":1.6,"structure":1.5,"quotable":1.4,"eeat":1.0,"evidence":1.0,"context":0.3,"freshness":0.3},"gemini":{"originality":1.7,"structure":1.5,"authority":1.4,"depth":1.2,"recency":0.7,"trust":0.7},"claude":{"selfcontained":1.7,"specificity":1.4,"schema":1.3,"intent":1.1,"eeat":0.8,"readability":0.8},"perplexity":{"conclusion":1.5,"evidence":1.4,"originality":1.3,"structure":1.1,"eeat":1.1,"freshness":0.8}}}\n\`\`\``;
 
 async function streamClaude(sys,user,boxId,maxTokens=4000){
+  const box=document.getElementById(boxId);
   const apiKey=localStorage.getItem('comma_apikey')||'';
   if(!apiKey){
-    let mockText='';
-    if(boxId==='sb1'){
-      const co=S.company;
-      try{const data=await lookupSheets(co);mockText=MOCK_P1(co,data);}
-      catch(e){mockText=MOCK_P1(co,{A:{会社名:co,記事内での呼称:co,ブランド理念:'',独自の強み:'',ターゲット層:'',禁止用語:''},B:{過去記事:[],全記事数:0},C:{実績数値:'',注意点:''}});}
-    }
-    else if(boxId==='sb2')mockText=MOCK_P2(S.keyword,S.company);
-    else if(boxId==='sb4')mockText=MOCK_P4(S.company,S.keyword);
-    else mockText='（モック出力）';
-    return await mockStream(mockText,boxId,6);
+    let mockText='（モック出力）';
+    if(boxId==='sb1'){try{const d=await fetchClientSheetData(selectedClient);mockText=MOCK_P1(selectedClient,d);}catch(e){mockText='データ取得エラー: '+String(e?.message||e);}}
+    else if(boxId==='sb2')mockText=MOCK_P2(S.keyword);
+    else if(boxId==='sb4')mockText=MOCK_P4(selectedClient?.name,S.keyword);
+    return await mockStream(mockText,boxId);
   }
-  const box=document.getElementById(boxId);
   box.innerHTML='<span class="scursor"></span>';
-  const res=await fetch('/api/gemini/stream',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})
-  });
+  const res=await fetch('/api/gemini/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
   if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
   const reader=res.body.getReader();const dec=new TextDecoder();let full='',buf='';
   while(true){
@@ -1145,28 +1191,25 @@ async function streamClaude(sys,user,boxId,maxTokens=4000){
     buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();
     for(const line of lines){
       if(!line.startsWith('data: '))continue;
-      const data=line.slice(6).trim();if(data==='[DONE]')continue;
-      try{const parsed=JSON.parse(data);const text=parsed.candidates?.[0]?.content?.parts?.[0]?.text||'';if(text){full+=text;box.innerHTML=escH(full)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;}}catch{}
+      const d=line.slice(6).trim();if(d==='[DONE]')continue;
+      try{const p=JSON.parse(d);const t=p.candidates?.[0]?.content?.parts?.[0]?.text||'';if(t){full+=t;box.innerHTML=escH(full)+'<span class="scursor"></span>';box.scrollTop=box.scrollHeight;}}catch{}
     }
   }
   box.classList.add('done');box.innerHTML=escH(full);return full;
 }
 
-async function callClaude(sys,user,maxTokens=3000,useWebSearch=false){
+async function callClaude(sys,user,maxTokens=3000){
   const apiKey=localStorage.getItem('comma_apikey')||'';
   if(!apiKey){await sleep(1200);return MOCK_P3(S.keyword);}
-  const res=await fetch('/api/gemini',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})
-  });
+  const res=await fetch('/api/gemini',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTokens})});
   if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'API エラー '+res.status);}
   const data=await res.json();return data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
 }
 
 // ══════════════════════════════════════════════════════════
-// STATE
+// STATE & NEW ARTICLE
 // ══════════════════════════════════════════════════════════
-let S={sessionId:null,company:'',keyword:'',p1:null,p2:null,p3raw:null,p3:null,p4:null,selectedPersona:null};
+let S={sessionId:null,company:'',keyword:'',p1:null,p2:null,p3raw:null,p4:null,selectedPersona:null};
 function newSessionId(){return'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);}
 function saveSession(){
   if(!S.sessionId)return;
@@ -1179,30 +1222,29 @@ function saveSession(){
 function getHistory(){try{return JSON.parse(localStorage.getItem('comma_sessions')||'[]');}catch{return[];}}
 function updateHistCountBadge(){document.getElementById('histCountBadge').textContent=getHistory().length;}
 
-function clearCache(){
-  if(!confirm('現在の作業をリセットしますか？（履歴は削除されません）'))return;
-  S={sessionId:null,company:'',keyword:'',p1:null,p2:null,p3raw:null,p3:null,p4:null,selectedPersona:null};
+// 新規記事作成 — 作業画面のみリセット、シートキャッシュ・履歴・クライアントは触れない
+function newArticle(){
+  S={sessionId:null,company:'',keyword:'',p1:null,p2:null,p3raw:null,p4:null,selectedPersona:null};
+  selectedClient=null;clearClientSelection();
+  document.getElementById('keywordInput').value='';
   [1,2,3,4].forEach(n=>{
     const pc=document.getElementById('pc'+n);if(pc){pc.classList.remove('show');pc.style.display='none';}
     const ll=document.getElementById('ll'+n);if(ll)ll.style.display='block';
     const rb=document.getElementById('rb'+n);if(rb)rb.classList.add('collapsed');
     const sb=document.getElementById('sb'+n);if(sb){sb.innerHTML='';sb.classList.remove('done');}
     const rc=document.getElementById('rc'+n);if(rc)rc.innerHTML='';
-    ['ls'+n+'a','ls'+n+'b','ls'+n+'c','ls'+n+'d'].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el){el.classList.remove('active','done');const icon=el.querySelector('.ls-icon');if(icon){icon.innerHTML='';icon.style.background='var(--border)';}}
+    ['a','b','c','d'].forEach(x=>{
+      const el=document.getElementById('ls'+n+x);
+      if(el){el.classList.remove('active','done');const icon=el.querySelector('.ls-icon');if(icon){icon.innerHTML='';icon.style.background='var(--border)';}const s=document.getElementById('ls'+n+x+'-s');if(s)s.textContent='';}
     });
     const sep=document.getElementById('sep'+n);if(sep)sep.style.display='none';
   });
-  [1,2,3,4].forEach(n=>setWS(n,n===1?'active':'inactive'));
-  document.getElementById('ws1').classList.add('active');
+  [1,2,3,4].forEach(n=>setWS(n,n===1?'active':''));
   document.getElementById('p3Gate').style.display='none';
   document.getElementById('p4Gate').classList.remove('show');
   document.getElementById('compResults').innerHTML='';
   document.getElementById('personaSelectBox').style.display='none';
   document.getElementById('sessionLabel').textContent='新規セッション';
-  document.getElementById('companyInput').value='';
-  document.getElementById('keywordInput').value='';
   switchView('main');
 }
 
@@ -1210,101 +1252,58 @@ function clearCache(){
 // PHASE 1→2
 // ══════════════════════════════════════════════════════════
 async function runPhase12(){
-  const company=document.getElementById('companyInput').value.trim();
+  if(!selectedClient){showError('クライアントを選択してください');return;}
   const keyword=document.getElementById('keywordInput').value.trim();
-  if(!company){showError('会社名を入力してください');return;}
   if(!keyword){showError('キーワードを入力してください');return;}
-  S.company=company;S.keyword=keyword;
+  S.company=selectedClient.name;S.keyword=keyword;
   if(!S.sessionId){S.sessionId=newSessionId();S.createdAt=Date.now();}
-  document.getElementById('sessionLabel').textContent=company+' / '+keyword.slice(0,20);
+  document.getElementById('sessionLabel').textContent=selectedClient.name+' / '+keyword.slice(0,20);
   const btn=document.getElementById('runBtn12');btn.disabled=true;document.getElementById('rb12txt').textContent='実行中...';
   try{
     showCard('pc1');setWS(1,'running');setBadge('b1','brunning','PHASE 1 実行中');await sleep(300);
-    activateLS('ls1a','Sheets に接続中...');await sleep(400);doneLS('ls1a','Google Sheets に接続しました');
-    activateLS('ls1b','「'+company+'」を検索中...');
-    const data=await lookupSheets(company);await sleep(300);
-    if(!data){
-      doneLS('ls1b','');
-      document.getElementById('ls1b-s').textContent='× 「'+company+'」はシートに見つかりませんでした';
-      setBadge('b1','b1','PHASE 1');
-      showError('「'+company+'」が一覧シートに見つかりません');
-      btn.disabled=false;document.getElementById('rb12txt').textContent='▶ Phase 1→2 を連続実行する';return;
-    }
-    doneLS('ls1b','行 '+data.row+' で一致 → 情報シートに遷移しました');
-    activateLS('ls1c','シート【A】【B】【C】を取得中...');await sleep(400);
-    doneLS('ls1c','データを取得しました（過去記事: '+data.B.全記事数+'件）');
-    activateLS('ls1d','AI がデータを分析中...');showLogSep('sep1');
+    activateLS('ls1a','キャッシュからデータを読み込み中...');
+    const data=await fetchClientSheetData(selectedClient);
+    doneLS('ls1a','データ読み込み完了');
+    activateLS('ls1b','シートデータを解析中...');await sleep(200);doneLS('ls1b',data.tabCount+'タブ取得済み');
+    activateLS('ls1c','【A】【B】【C】を確認中...');await sleep(200);doneLS('ls1c','過去記事 '+data.B.全記事数+' 件確認');
+    activateLS('ls1d','AI がデータを確認中...');showLogSep('sep1');
 
-    const internalLinks=data.B.過去記事.slice(0,5).map(a=>`  - ${a.title||'記事'}｜${a.url}${a.category?' ('+a.category+')':''}`).join('\n');
+    const internalLinks=data.B.過去記事.slice(0,5).map(a=>`  - ${a.title||'記事'}｜${a.url}`).join('\n');
     const jirei=data.C.施工事例.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
     const koe=data.C.お客様の声.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
     const kodawari=data.C.こだわり.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
 
-    const p1u=`会社名: ${company}
-出力時の呼称: ${data.hyouki}
-情報シートURL: ${data.infoUrl}
-
-=== 【A】会社基本情報 ===
-ブランド理念: ${data.A.ブランド理念||'情報なし'}
-独自の強み（USP）: ${data.A.独自の強み||'情報なし'}
-ターゲット層: ${data.A.ターゲット層||'情報なし'}
-禁止・推奨用語: ${data.A.禁止用語||'情報なし'}
-施工エリア: ${data.A.施工エリア||'情報なし'}
-商品コンセプト: ${data.A.商品コンセプト||'情報なし'}
-HP URL: ${data.A.HP_URL||'情報なし'}
-
-=== 【A】その他の会社情報 ===
-${Object.entries(data.A.rawA||{}).filter(([k])=>!['ブランド理念','独自の強み','ターゲット層','禁止用語','施工エリア','商品コンセプト','HP_URL'].includes(k)).map(([k,v])=>`${k}: ${v}`).join('\n')||'なし'}
-
-=== 【B】過去記事ログ（全${data.B.全記事数}件・内部リンク候補） ===
-${internalLinks||'情報なし'}
-
-=== 【C】施工事例 ===
-${jirei}
-
-=== 【C】お客様の声 ===
-${koe}
-
-=== 【C】現場のこだわり ===
-${kodawari}
-
-=== 【C】実績・数値 ===
-${data.C.実績数値||'情報なし'}
-
-上記データを確認し、指定の形式で出力してください。`;
+    const p1u=`会社名: ${selectedClient.name}\n出力時の呼称: ${data.hyouki}\n\n=== 【A】会社基本情報 ===\nブランド理念: ${data.A.ブランド理念||'情報なし'}\n独自の強み: ${data.A.独自の強み||'情報なし'}\nターゲット層: ${data.A.ターゲット層||'情報なし'}\n禁止用語: ${data.A.禁止用語||'情報なし'}\n施工エリア: ${data.A.施工エリア||'情報なし'}\n商品コンセプト: ${data.A.商品コンセプト||'情報なし'}\nHP URL: ${data.A.HP_URL||'情報なし'}\n\n=== 【A】その他 ===\n${Object.entries(data.A.rawA||{}).map(([k,v])=>`${k}: ${v}`).join('\n')||'なし'}\n\n=== 【B】過去記事（全${data.B.全記事数}件・内部リンク候補） ===\n${internalLinks||'情報なし'}\n\n=== 【C】施工事例 ===\n${jirei}\n\n=== 【C】お客様の声 ===\n${koe}\n\n=== 【C】こだわり ===\n${kodawari}\n\n=== 【C】実績数値 ===\n${data.C.実績数値||'情報なし'}\n\n上記データを確認し指定の形式で出力してください。`;
     const p1out=await streamClaude(P1_SYS,p1u,'sb1');S.p1=p1out;
-    doneLS('ls1d','データ確認が完了しました');setWS(1,'done');setBadge('b1','bok','PHASE 1 完了 ✓');
-    showResult(1,p1out,'Phase 1 完了 — データ確認が完了しました','取得: Sheets【A】【B】【C】');
+    doneLS('ls1d','データ確認完了');setWS(1,'done');setBadge('b1','bok','PHASE 1 完了 ✓');
+    showResult(1,p1out,'Phase 1 完了 — データ確認が完了しました','キャッシュ使用 / Sheets '+data.tabCount+'タブ');
     saveSession();await sleep(500);
 
     showCard('pc2');setWS(2,'running');setBadge('b2','brunning','PHASE 2 実行中');
-    activateLS('ls2a','データを整形中...');await sleep(400);doneLS('ls2a','整形完了');
-    activateLS('ls2b','「'+keyword+'」の競合傾向を分析中...');await sleep(400);doneLS('ls2b','競合傾向の分析が完了しました');
+    activateLS('ls2a','データを整形中...');await sleep(300);doneLS('ls2a','整形完了');
+    activateLS('ls2b','競合傾向を分析中...');await sleep(400);doneLS('ls2b','分析完了');
     activateLS('ls2c','AI が企画設計中...');showLogSep('sep2');
     const p2u='キーワード: '+keyword+'\n\n=== Phase 1 確認済みデータ ===\n'+p1out+'\n\n上記をもとに企画設計を行ってください。本文は書かないこと。';
     const p2out=await streamClaude(P2_SYS,p2u,'sb2');S.p2=p2out;
-    doneLS('ls2c','企画設計が完了しました');setWS(2,'done');setBadge('b2','bok','PHASE 2 完了 ✓');
+    doneLS('ls2c','企画設計完了');setWS(2,'done');setBadge('b2','bok','PHASE 2 完了 ✓');
     showResult(2,p2out,'Phase 2 完了 — 企画設計が完了しました','キーワード: '+keyword);
-    saveSession();
-    renderPersonaOptions();
-  }catch(e){showError(e.message||String(e));}
+    saveSession();renderPersonaOptions();
+  }catch(e){showError(String(e?.message||e));}
   btn.disabled=false;document.getElementById('rb12txt').textContent='▶ Phase 1→2 を連続実行する';
 }
 
 function renderPersonaOptions(){
   const options=['顕在層（今すぐ検討）','潜在層（課題認識段階）','比較検討層','トレンド層'];
-  const list=document.getElementById('personaOptions');
-  list.innerHTML=options.map((label,idx)=>`<label style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;background:#fff;display:flex;align-items:center;gap:8px;font-size:13px"><input type="radio" name="personaChoice" value="${label}" ${idx===0?'checked':''}>${escH(label)}</label>`).join('');
+  document.getElementById('personaOptions').innerHTML=options.map((label,idx)=>`<label style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;background:#fff;display:flex;align-items:center;gap:8px;font-size:13px"><input type="radio" name="personaChoice" value="${label}" ${idx===0?'checked':''}>${escH(label)}</label>`).join('');
   document.getElementById('personaSelectBox').style.display='block';
   setTimeout(()=>document.getElementById('personaSelectBox').scrollIntoView({behavior:'smooth',block:'start'}),300);
 }
-
 function confirmPersonaSelection(){
-  const selected=document.querySelector('input[name="personaChoice"]:checked');
-  if(!selected){showError('ターゲットを選択してください');return;}
-  S.selectedPersona=selected.value;
+  const sel=document.querySelector('input[name="personaChoice"]:checked');
+  if(!sel){showError('ターゲットを選択してください');return;}
+  S.selectedPersona=sel.value;
   document.getElementById('personaSelectBox').style.display='none';
-  showError('ターゲットを選択しました：'+selected.value,true);
+  showError('ターゲット確定：'+sel.value,true);
   setWS(3,'active');
   document.getElementById('p3Gate').style.display='block';
   setTimeout(()=>document.getElementById('p3Gate').scrollIntoView({behavior:'smooth',block:'start'}),300);
@@ -1319,15 +1318,14 @@ async function runPhase3(){
   try{
     document.getElementById('p3Gate').style.display='none';
     showCard('pc3');setWS(3,'running');setBadge('b3','brunning','PHASE 3 実行中');
-    activateLS('ls3a','「'+S.keyword+'」で上位記事を検索中...');await sleep(500);doneLS('ls3a','Web検索を実行しました');
+    activateLS('ls3a','上位記事を検索中...');await sleep(500);doneLS('ls3a','Web検索実行');
     activateLS('ls3b','SEO・AIOスコアを評価中...');await sleep(400);
-    const p3u='キーワード: '+S.keyword+'\n\nこのキーワードで上位表示されている記事を実際に調査し、分析結果をJSON形式で出力してください。';
-    const p3raw=await callClaude(P3_SYS,p3u,3000,true);S.p3raw=p3raw;
-    doneLS('ls3b','スコア評価が完了しました');
-    activateLS('ls3c','タイトル被りリスクを分析中...');await sleep(300);doneLS('ls3c','タイトル分析が完了しました');
+    const p3raw=await callClaude(P3_SYS,'キーワード: '+S.keyword+'\n上位記事を調査しJSON形式で出力してください。',3000);
+    S.p3raw=p3raw;
+    doneLS('ls3b','スコア評価完了');
+    activateLS('ls3c','タイトル被りを分析中...');await sleep(300);doneLS('ls3c','分析完了');
     showLogSep('sep3');
-    let compData=null;
-    try{const m=p3raw.match(/\{[\s\S]*\}/);if(m)compData=JSON.parse(m[0]);}catch{}
+    let compData=null;try{const m=p3raw.match(/\{[\s\S]*\}/);if(m)compData=JSON.parse(m[0]);}catch{}
     setWS(3,'done');setBadge('b3','bok','PHASE 3 完了 ✓');
     document.getElementById('ll3').style.display='none';
     if(compData)renderCompetitorResults(compData);
@@ -1338,19 +1336,18 @@ async function runPhase3(){
     saveSession();
     setWS(4,'active');document.getElementById('p4Gate').classList.add('show');
     setTimeout(()=>document.getElementById('p4Gate').scrollIntoView({behavior:'smooth',block:'start'}),400);
-  }catch(e){showError(e.message||String(e));}
+  }catch(e){showError(String(e?.message||e));}
   btn.disabled=false;document.getElementById('rb3txt').textContent='競合分析を実行する（Web検索）';
 }
 
 function renderCompetitorResults(d){
   const cl={'低':'cl-low','中':'cl-mid','高':'cl-high'}[d.competition_level]||'cl-mid';
-  const orisk={'低':'cl-low','中':'cl-mid','高':'cl-high'}[d.overlap_risk]||'cl-mid';
-  const cards=(d.competitors||[]).map(c=>`<div class="comp-card"><div class="comp-rank">${c.rank}位</div><div class="comp-title">${escH(c.title||'')}</div><a class="comp-domain" href="${escH(c.url||'#')}" target="_blank" rel="noopener">${escH(c.domain||c.url||'')}</a><div class="comp-scores"><div class="score-item"><div class="score-label">SEO</div><div class="score-bar"><div class="score-fill fill-seo" style="width:${(c.seo_score||0)/5*100}%"></div></div><div style="font-size:9px;color:var(--ink-muted);margin-top:1px">${c.seo_score||'?'}/5</div></div><div class="score-item"><div class="score-label">AIO</div><div class="score-bar"><div class="score-fill fill-aio" style="width:${(c.aio_score||0)/5*100}%"></div></div><div style="font-size:9px;color:var(--ink-muted);margin-top:1px">${c.aio_score||'?'}/5</div></div></div><div class="comp-strengths">${(c.strengths||[]).map(s=>`<span class="comp-tag">${escH(s)}</span>`).join('')}</div></div>`).join('');
-  const recs=(d.recommended_titles||[]).map(t=>`<div class="comp-rec-item" onclick="useTitle('${escH(t).replace(/'/g,"\\'")}')"><span>${escH(t)}</span></div>`).join('');
-  const gaps=(d.gap_opportunities||[]).map(g=>`<li style="font-size:12px;color:var(--ink-sub);padding:5px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:7px"><span style="color:var(--ok)">→</span>${escH(g)}</li>`).join('');
-  document.getElementById('compResults').innerHTML=`<div class="comp-summary"><div class="comp-summary-title">競合概況</div><span class="comp-level ${cl}">競合レベル: ${d.competition_level||'?'}</span><span class="comp-level ${orisk}" style="margin-left:8px">タイトル被りリスク: ${d.overlap_risk||'?'}</span><div style="font-size:12px;color:var(--ink-sub);margin-top:8px;line-height:1.7">${escH(d.competition_summary||'')} ${escH(d.overlap_reason||'')}</div></div><div class="comp-grid">${cards}</div>${gaps?`<div style="margin:12px 0"><div class="comp-summary-title" style="color:var(--p1)">差別化できる切り口</div><ul style="list-style:none">${gaps}</ul></div>`:''} ${recs?`<div style="margin-top:12px"><div style="font-size:10px;color:var(--ink-muted);margin-bottom:6px">推奨タイトル案（クリックでコピー）</div>${recs}</div>`:''}`;
+  const or={'低':'cl-low','中':'cl-mid','高':'cl-high'}[d.overlap_risk]||'cl-mid';
+  const cards=(d.competitors||[]).map(c=>`<div class="comp-card"><div class="comp-rank">${c.rank}位</div><div class="comp-title">${escH(c.title||'')}</div><a class="comp-domain" href="${escH(c.url||'#')}" target="_blank" rel="noopener">${escH(c.domain||'')}</a><div class="comp-scores"><div class="score-item"><div class="score-label">SEO</div><div class="score-bar"><div class="score-fill fill-seo" style="width:${(c.seo_score||0)*20}%"></div></div></div><div class="score-item"><div class="score-label">AIO</div><div class="score-bar"><div class="score-fill fill-aio" style="width:${(c.aio_score||0)*20}%"></div></div></div></div><div style="display:flex;flex-wrap:wrap;gap:3px">${(c.strengths||[]).map(s=>`<span class="comp-tag">${escH(s)}</span>`).join('')}</div></div>`).join('');
+  const recs=(d.recommended_titles||[]).map(t=>`<div class="comp-rec-item" onclick="navigator.clipboard.writeText('${escH(t).replace(/'/g,"\\'")}').then(()=>showError('コピーしました',true))"><span>${escH(t)}</span></div>`).join('');
+  const gaps=(d.gap_opportunities||[]).map(g=>`<li style="font-size:12px;color:var(--ink-sub);padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:7px"><span style="color:var(--ok)">→</span>${escH(g)}</li>`).join('');
+  document.getElementById('compResults').innerHTML=`<div class="comp-summary"><div class="comp-summary-title">競合概況</div><span class="comp-level ${cl}">競合レベル: ${d.competition_level||'?'}</span><span class="comp-level ${or}" style="margin-left:8px">タイトル被りリスク: ${d.overlap_risk||'?'}</span><div style="font-size:12px;color:var(--ink-sub);margin-top:8px;line-height:1.7">${escH(d.competition_summary||'')} ${escH(d.overlap_reason||'')}</div></div><div class="comp-grid">${cards}</div>${gaps?`<div style="margin:12px 0"><div class="comp-summary-title" style="color:var(--p1)">差別化できる切り口</div><ul style="list-style:none">${gaps}</ul></div>`:''} ${recs?`<div style="margin-top:12px"><div style="font-size:10px;color:var(--ink-muted);margin-bottom:6px">推奨タイトル案（クリックでコピー）</div>${recs}</div>`:''}`;
 }
-function useTitle(title){navigator.clipboard.writeText(title).then(()=>showError('タイトルをコピーしました',true));}
 
 // ══════════════════════════════════════════════════════════
 // PHASE 4
@@ -1362,94 +1359,84 @@ async function runPhase4(){
     document.getElementById('p4Gate').style.display='none';
     showCard('pc4');setWS(4,'running');setBadge('b4','brunning','PHASE 4 執筆中');
     activateLS('ls4a','データを統合中...');await sleep(400);doneLS('ls4a','統合完了');
-    activateLS('ls4b','記事構成を設計中...');await sleep(500);doneLS('ls4b','構成設計完了');
+    activateLS('ls4b','構成を設計中...');await sleep(500);doneLS('ls4b','構成設計完了');
     activateLS('ls4c','本文を執筆中...');showLogSep('sep4');
     const compInfo=S.p3raw?'\n\n=== Phase 3 競合分析 ===\n'+S.p3raw:'';
     const p4u='=== Phase 1 確認済みデータ ===\n'+S.p1+'\n\n=== Phase 2 企画設計 ===\n'+S.p2+compInfo+'\n\n上記をもとに記事を執筆してください。';
     const p4out=await streamClaude(P4_SYS,p4u,'sb4',6000);S.p4=p4out;
-    doneLS('ls4c','本文の執筆が完了しました');
-    activateLS('ls4d','SEO・AIO評価レポートを生成中...');await sleep(300);doneLS('ls4d','評価レポートが生成されました');
+    doneLS('ls4c','執筆完了');activateLS('ls4d','評価レポートを生成中...');await sleep(300);doneLS('ls4d','完了');
     setWS(4,'done');setBadge('b4','bok','PHASE 4 完了 ✓');
     const chars=p4out.replace(/\s/g,'').length;
     showResult(4,p4out,'Phase 4 完了 — 記事の執筆が完了しました','Markdown形式');
     document.getElementById('wc4').textContent='約 '+chars.toLocaleString()+' 文字';
     saveSession();
-  }catch(e){showError(e.message||String(e));}
+  }catch(e){showError(String(e?.message||e));}
   btn.disabled=false;document.getElementById('rb4txt').textContent='✍ 執筆を開始する（約5〜10分）';
 }
 
 // ══════════════════════════════════════════════════════════
 // REPORT
 // ══════════════════════════════════════════════════════════
+const AI_RUBRICS={
+  chatgpt:{name:'ChatGPT（GPT-4o）',color:'#10a37f',items:[{key:'intent',w:2.0},{key:'structure',w:2.0},{key:'quotable',w:2.0},{key:'eeat',w:1.5},{key:'evidence',w:1.5},{key:'context',w:0.5},{key:'freshness',w:0.5}]},
+  gemini:{name:'Gemini',color:'#4285f4',items:[{key:'originality',w:2.5},{key:'structure',w:2.0},{key:'authority',w:2.0},{key:'depth',w:1.5},{key:'recency',w:1.0},{key:'trust',w:1.0}]},
+  claude:{name:'Claude（Anthropic）',color:'#7F77DD',items:[{key:'selfcontained',w:2.5},{key:'specificity',w:2.0},{key:'schema',w:2.0},{key:'intent',w:1.5},{key:'eeat',w:1.0},{key:'readability',w:1.0}]},
+  perplexity:{name:'Perplexity',color:'#20808d',items:[{key:'conclusion',w:2.0},{key:'evidence',w:2.0},{key:'originality',w:2.0},{key:'structure',w:1.5},{key:'eeat',w:1.5},{key:'freshness',w:1.0}]},
+};
 let currentReportSession=null;
 function parseP4Meta(p4){
   let meta={charCount:0,persona:'—',improvement:'—',selfScore:'—',refs:'—',aiScores:null};
-  try{const m=p4.match(/```json([\s\S]*?)```/);if(m){const j=JSON.parse(m[1].trim());Object.assign(meta,j);}}catch{}
-  if(!meta.aiScores){meta.aiScores={chatgpt:{intent:1.4,structure:1.4,quotable:1.4,eeat:1.0,evidence:1.0,context:0.3,freshness:0.3},gemini:{originality:1.8,structure:1.4,authority:1.4,depth:1.0,recency:0.7,trust:0.7},claude:{selfcontained:1.8,specificity:1.4,schema:1.4,intent:1.0,eeat:0.7,readability:0.7},perplexity:{conclusion:1.4,evidence:1.4,originality:1.4,structure:1.0,eeat:1.0,freshness:0.8}};}
+  try{const m=p4.match(/```json([\s\S]*?)```/);if(m){Object.assign(meta,JSON.parse(m[1].trim()));}}catch{}
+  if(!meta.aiScores)meta.aiScores={chatgpt:{intent:1.4,structure:1.4,quotable:1.4,eeat:1.0,evidence:1.0,context:0.3,freshness:0.3},gemini:{originality:1.8,structure:1.4,authority:1.4,depth:1.0,recency:0.7,trust:0.7},claude:{selfcontained:1.8,specificity:1.4,schema:1.4,intent:1.0,eeat:0.7,readability:0.7},perplexity:{conclusion:1.4,evidence:1.4,originality:1.4,structure:1.0,eeat:1.0,freshness:0.8}};
   if(!meta.charCount)meta.charCount=p4.replace(/\s/g,'').length;
   return meta;
 }
-
-function renderAiScoreSection(aiScores){
-  return Object.entries(AI_RUBRICS).map(([key,rubric])=>{
-    const scores=aiScores?.[key]||{};
-    const total=Math.round(Object.values(scores).reduce((a,v)=>a+(v||0),0)*10)/10;
-    const pct=Math.round(total*10);
-    const bars=rubric.items.map(item=>{
-      const v=scores[item.key]||0;const p=Math.round(v/item.weight*100);
-      return`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--paper)"><div style="font-size:11px;color:var(--ink-sub);width:160px;flex-shrink:0">${escH(item.label)}</div><div style="flex:1;height:4px;background:var(--paper);border-radius:2px;overflow:hidden"><div style="height:100%;width:${p}%;background:${rubric.color};border-radius:2px"></div></div><div style="font-size:11px;font-weight:500;width:52px;text-align:right;color:${rubric.color}">${v}/${item.weight}</div></div>`;
-    }).join('');
-    return`<div style="padding:14px 16px;border-bottom:0.5px solid var(--border)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:10px;height:10px;border-radius:50%;background:${rubric.color};flex-shrink:0"></div><div style="font-size:12px;font-weight:500;color:var(--ink);flex:1">${escH(rubric.name)}</div><div style="font-size:18px;font-weight:500;color:${rubric.color}">${total}<span style="font-size:11px;font-weight:400;color:var(--ink-muted)">/10</span></div><div style="width:80px;height:6px;background:var(--paper);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${rubric.color};border-radius:3px"></div></div></div><div style="background:var(--paper);border-radius:6px;padding:4px 10px">${bars}</div><div style="margin-top:10px"><div style="font-size:10px;color:var(--ink-muted);margin-bottom:4px">このAIが引用しやすい条件</div>${rubric.cite.map(c=>`<div style="font-size:11px;color:var(--ink-sub);padding:2px 0;display:flex;gap:6px"><span style="color:${rubric.color};flex-shrink:0">→</span>${escH(c)}</div>`).join('')}</div></div>`;
-  }).join('');
-}
-
 function renderReport(s){
   currentReportSession=s;
   document.getElementById('repCo').textContent=s.company||'';
   document.getElementById('repKw').textContent=s.keyword?' / '+s.keyword:'';
-  const p4=s.phases?.p4||'';
-  const meta=parseP4Meta(p4);
-  const composite=calcCompositeScore(Object.fromEntries(Object.entries(meta.aiScores).map(([k,v])=>[k,Math.round(Object.values(v).reduce((a,x)=>a+(x||0),0)*10)/10])));
-  document.getElementById('repMetrics').innerHTML=`<div class="metric"><div class="metric-lbl">文字数（概算）</div><div class="metric-val">${meta.charCount?meta.charCount.toLocaleString():'—'}</div></div><div class="metric"><div class="metric-lbl">総合AIスコア</div><div class="metric-val purple">${composite}<span style="font-size:13px;font-weight:400">/10</span></div></div><div class="metric"><div class="metric-lbl">AI自己採点</div><div class="metric-val amber">${meta.selfScore}<span style="font-size:13px;font-weight:400">点</span></div></div><div class="metric"><div class="metric-lbl">評価AI数</div><div class="metric-val" style="color:var(--ink-muted)">4<span style="font-size:13px;font-weight:400"> モデル</span></div></div>`;
-  const personaTags=(meta.persona&&meta.persona!=='—')?meta.persona.split(/[・、,，]/).map(t=>t.trim()).filter(Boolean):['データなし'];
-  document.getElementById('repPersonaTags').innerHTML=personaTags.map(t=>`<span class="rep-tag">${escH(t)}</span>`).join('');
+  const p4=s.phases?.p4||'';const meta=parseP4Meta(p4);
+  const totals=Object.fromEntries(Object.entries(meta.aiScores).map(([k,v])=>[k,Math.round(Object.values(v).reduce((a,x)=>a+(x||0),0)*10)/10]));
+  const composite=Math.round(Object.values(totals).reduce((a,v)=>a+v,0)/Object.values(totals).length*10)/10;
+  document.getElementById('repMetrics').innerHTML=`<div class="metric"><div class="metric-lbl">文字数（概算）</div><div class="metric-val">${meta.charCount?meta.charCount.toLocaleString():'—'}</div></div><div class="metric"><div class="metric-lbl">総合AIスコア</div><div class="metric-val purple">${composite}<span style="font-size:13px;font-weight:400">/10</span></div></div><div class="metric"><div class="metric-lbl">AI自己採点</div><div class="metric-val amber">${meta.selfScore}<span style="font-size:13px;font-weight:400">点</span></div></div><div class="metric"><div class="metric-lbl">評価AI数</div><div class="metric-val" style="color:var(--ink-muted)">4</div></div>`;
+  const tags=(meta.persona&&meta.persona!=='—')?meta.persona.split(/[・、,，]/).map(t=>t.trim()).filter(Boolean):['データなし'];
+  document.getElementById('repPersonaTags').innerHTML=tags.map(t=>`<span class="rep-tag">${escH(t)}</span>`).join('');
   const articleBody=p4.split(/```json/)[0]||p4;
   document.getElementById('repArticlePreview').textContent=articleBody.trim().slice(0,600)+(articleBody.length>600?'\n...(以下省略)':'');
-  document.getElementById('repScores').innerHTML=renderAiScoreSection(meta.aiScores)+`<div style="padding:12px 16px;background:var(--p2-bg);border-top:0.5px solid var(--p2-bd)"><div style="font-size:11px;color:var(--p2);line-height:1.6">※ このスコアはAIが記事本文を各モデルの評価軸に基づいて採点した参考値です。</div></div>`;
-  const kaizenItems=(meta.improvement&&meta.improvement!=='—')?meta.improvement.split(/[。\n]/).filter(t=>t.trim().length>2):['データなし'];
-  document.getElementById('repKaizen').innerHTML=kaizenItems.map(k=>`<div class="kaizen-item"><div class="kaizen-dot"></div>${escH(k.trim())}</div>`).join('');
-  const p3=s.phases?.p3raw||'';let compData=null;
-  try{const m=p3.match(/\{[\s\S]*\}/);if(m)compData=JSON.parse(m[0]);}catch{}
+  document.getElementById('repScores').innerHTML=Object.entries(AI_RUBRICS).map(([key,rubric])=>{
+    const scores=meta.aiScores?.[key]||{};const total=totals[key]||0;const pct=Math.round(total*10);
+    const bars=rubric.items.map(item=>{const v=scores[item.key]||0;const p=Math.round(v/item.w*100);return`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--paper)"><div style="font-size:11px;color:var(--ink-sub);width:140px;flex-shrink:0">${escH(item.key)}</div><div style="flex:1;height:4px;background:var(--paper);border-radius:2px;overflow:hidden"><div style="height:100%;width:${p}%;background:${rubric.color};border-radius:2px"></div></div><div style="font-size:11px;font-weight:500;width:44px;text-align:right;color:${rubric.color}">${v}/${item.w}</div></div>`;}).join('');
+    return`<div style="padding:14px 16px;border-bottom:.5px solid var(--border)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:10px;height:10px;border-radius:50%;background:${rubric.color};flex-shrink:0"></div><div style="font-size:12px;font-weight:500;flex:1">${escH(rubric.name)}</div><div style="font-size:18px;font-weight:500;color:${rubric.color}">${total}<span style="font-size:11px;font-weight:400;color:var(--ink-muted)">/10</span></div><div style="width:80px;height:6px;background:var(--paper);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${rubric.color};border-radius:3px"></div></div></div><div style="background:var(--paper);border-radius:6px;padding:4px 10px">${bars}</div></div>`;
+  }).join('');
+  const ki=(meta.improvement&&meta.improvement!=='—')?meta.improvement.split(/[。\n]/).filter(t=>t.trim().length>2):['データなし'];
+  document.getElementById('repKaizen').innerHTML=ki.map(k=>`<div class="kaizen-item"><div class="kaizen-dot"></div>${escH(k.trim())}</div>`).join('');
+  let compData=null;try{const m=(s.phases?.p3raw||'').match(/\{[\s\S]*\}/);if(m)compData=JSON.parse(m[0]);}catch{}
   const refs=compData?.competitors||[];
   document.getElementById('repRefs').innerHTML=refs.length?refs.map(c=>`<div class="ref-item"><div class="ref-rank">${c.rank}位</div><div><div class="ref-t">${escH(c.title||'')}</div><div class="ref-d">${escH(c.domain||'')}</div><div class="ref-sc"><span class="ref-sc-pill">SEO ${c.seo_score}/5</span><span class="ref-sc-pill">AIO ${c.aio_score}/5</span></div></div></div>`).join(''):'<div style="padding:14px 16px;font-size:12px;color:var(--ink-muted)">Phase 3 競合分析データなし</div>';
 }
-function copyRepArticle(){const s=currentReportSession;if(!s)return;navigator.clipboard.writeText(s.phases?.p4||'').then(()=>showError('全文をコピーしました',true));}
+function copyRepArticle(){navigator.clipboard.writeText(currentReportSession?.phases?.p4||'').then(()=>showError('全文をコピーしました',true));}
 function exportReport(){
   const s=currentReportSession;if(!s)return;
-  const text='# 制作完了レポート\n会社: '+s.company+'\nキーワード: '+s.keyword+'\n日時: '+new Date(s.timestamp).toLocaleString('ja-JP')+'\n\n'+(s.phases?.p4||'データなし');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));a.download='report_'+s.company+'_'+s.keyword+'.txt';a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['# 制作完了レポート\n会社: '+s.company+'\nキーワード: '+s.keyword+'\n\n'+(s.phases?.p4||'')],{type:'text/plain;charset=utf-8'}));a.download='report_'+s.company+'_'+s.keyword+'.txt';a.click();
 }
 
 // ══════════════════════════════════════════════════════════
 // HISTORY
 // ══════════════════════════════════════════════════════════
 function renderHistory(){
-  const sessions=getHistory();const list=document.getElementById('histList');
+  const sessions=getHistory();
   document.getElementById('histTotalLabel').textContent=sessions.length+'件';
-  if(!sessions.length){list.innerHTML='<div style="color:var(--ink-muted);font-size:13px;padding:20px 0;text-align:center">まだ履歴がありません。記事制作を実行すると自動で保存されます。</div>';return;}
-  const dotCls={'phase4-done':'hd-done','phase3-done':'hd-partial','phase2-done':'hd-partial','phase1-done':'hd-partial','new':'hd-new'};
+  const list=document.getElementById('histList');
+  if(!sessions.length){list.innerHTML='<div style="color:var(--ink-muted);font-size:13px;padding:20px 0;text-align:center">まだ履歴がありません</div>';return;}
+  const dc={'phase4-done':'hd-done','phase3-done':'hd-partial','phase2-done':'hd-partial','phase1-done':'hd-partial','new':'hd-new'};
   list.innerHTML=sessions.map(s=>{
-    const dot=dotCls[s.status]||'hd-new';const t=new Date(s.timestamp);
+    const dot=dc[s.status]||'hd-new';const t=new Date(s.timestamp);
     const phases=['p1','p2','p3raw','p4'].map((p,i)=>`<span class="hp ${s.phases&&s.phases[p]?'hp-done':'hp-skip'}">P${i+1}</span>`).join('');
     return`<div class="hist-row" onclick="openHistReport('${s.id}')"><div class="hist-dot ${dot}"></div><div class="hist-info"><div class="hist-co">${escH(s.company||'不明')}</div><div class="hist-kw">${escH(s.keyword||'')}</div></div><div class="hist-right"><div class="hist-phases">${phases}</div><div class="hist-date">${t.toLocaleDateString('ja-JP')}</div><div class="hist-arrow">›</div></div></div>`;
   }).join('');
 }
 function openHistReport(id){const s=getHistory().find(x=>x.id===id);if(!s)return;prevHistoryView='history';openReport(s);}
-function deleteAllHistory(){
-  if(!confirm('全ての履歴を削除しますか？（元に戻せません）'))return;
-  localStorage.removeItem('comma_sessions');renderHistory();updateHistCountBadge();
-  document.getElementById('histCountLabel').textContent='0 件';
-}
+function deleteAllHistory(){if(!confirm('全ての履歴を削除しますか？'))return;localStorage.removeItem('comma_sessions');renderHistory();updateHistCountBadge();}
 
 // ══════════════════════════════════════════════════════════
 // MEMO
@@ -1462,52 +1449,45 @@ function addMemo(){
   localStorage.setItem('comma_memos',JSON.stringify(memos));document.getElementById('memoText').value='';renderMemos();updateMemoBadge();
 }
 function deleteMemo(id){localStorage.setItem('comma_memos',JSON.stringify(getMemos().filter(m=>m.id!==id)));renderMemos();updateMemoBadge();}
-function copyAllMemos(){const text=getMemos().map(m=>'['+m.type.toUpperCase()+'] '+new Date(m.timestamp).toLocaleDateString('ja-JP')+' '+m.user+': '+m.text).join('\n---\n');navigator.clipboard.writeText(text).then(()=>showError('全メモをコピーしました',true));}
+function copyAllMemos(){navigator.clipboard.writeText(getMemos().map(m=>'['+m.type+'] '+m.user+': '+m.text).join('\n---\n')).then(()=>showError('コピーしました',true));}
 function clearAllMemos(){if(!confirm('全てのメモを削除しますか？'))return;localStorage.removeItem('comma_memos');renderMemos();updateMemoBadge();}
 function updateMemoBadge(){const n=getMemos().length;const b=document.getElementById('memoCountBadge');b.textContent=n;b.style.display=n>0?'inline':'none';}
 function renderMemos(){
   const memos=getMemos();const list=document.getElementById('memoList');
-  if(!memos.length){list.innerHTML='<div style="color:var(--ink-muted);font-size:12px;padding:16px 0;text-align:center">まだメモがありません。</div>';return;}
+  if(!memos.length){list.innerHTML='<div style="color:var(--ink-muted);font-size:12px;padding:16px 0;text-align:center">まだメモがありません</div>';return;}
   const tMap={ng:{cls:'mt-ng',lbl:'NG用語'},note:{cls:'mt-note',lbl:'メモ'},q:{cls:'mt-q',lbl:'要確認'}};
-  list.innerHTML=memos.map(m=>{
-    const t=tMap[m.type]||tMap.note;const canDel=currentUser?.role==='admin'||currentUser?.name===m.user;
-    return`<div class="memo-item"><div class="memo-item-meta"><span class="memo-user">${escH(m.user||'?')}</span><span class="memo-ts">${new Date(m.timestamp).toLocaleDateString('ja-JP')}</span><span class="memo-type-badge ${t.cls}">${t.lbl}</span></div><div class="memo-text">${escH(m.text).replace(/\n/g,'<br>')}</div>${canDel?`<button class="memo-del" onclick="deleteMemo(${m.id})" title="削除">×</button>`:''}</div>`;
-  }).join('');
+  list.innerHTML=memos.map(m=>{const t=tMap[m.type]||tMap.note;const canDel=currentUser?.role==='admin'||currentUser?.name===m.user;return`<div class="memo-item"><div class="memo-item-meta"><span class="memo-user">${escH(m.user||'?')}</span><span class="memo-ts">${new Date(m.timestamp).toLocaleDateString('ja-JP')}</span><span class="memo-type-badge ${t.cls}">${t.lbl}</span></div><div class="memo-text">${escH(m.text).replace(/\n/g,'<br>')}</div>${canDel?`<button class="memo-del" onclick="deleteMemo(${m.id})">×</button>`:''}</div>`;}).join('');
 }
 
 // ══════════════════════════════════════════════════════════
-// SETTINGS / TEST
+// SETTINGS
 // ══════════════════════════════════════════════════════════
 function renderUserList(){
-  if(currentUser?.role!=='admin')return;
-  document.getElementById('userList').innerHTML=Object.entries(DEMO_USERS).map(([u,info])=>`<div class="user-item"><span class="user-name">${u}</span><span class="user-role ${info.role==='admin'?'ur-admin':'ur-user'}">${info.role==='admin'?'管理者':'ユーザー'}</span><span style="font-size:10px;color:var(--ink-muted)">（本番: USERS 環境変数で管理）</span></div>`).join('');
-}
-function saveSettings(){
-  const url=document.getElementById('sheetsUrlInput').value.trim();
-  localStorage.setItem('comma_sheets_url',url);
-  showError('設定を保存しました',true);
+  document.getElementById('userList').innerHTML=Object.entries(DEMO_USERS).map(([u,info])=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="font-weight:500;min-width:70px">${u}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 6px;border-radius:3px;background:${info.role==='admin'?'var(--gold-bg)':'var(--paper)'};color:${info.role==='admin'?'var(--gold)':'var(--ink-muted)'};border:1px solid ${info.role==='admin'?'#e8c878':'var(--border)'}">${info.role==='admin'?'管理者':'ユーザー'}</span></div>`).join('');
 }
 
+// ══════════════════════════════════════════════════════════
+// TEST
+// ══════════════════════════════════════════════════════════
 async function runTest(){
-  const company=document.getElementById('testCompany').value.trim();
-  if(!company){showError('会社名を入力してください');return;}
+  const sel=document.getElementById('testClientSelect');
+  if(!sel||!sel.value){showError('クライアントを選択してください');return;}
+  const client=getClients().find(c=>c.id===sel.value);
+  if(!client){showError('クライアントが見つかりません');return;}
   const btn=document.getElementById('testBtnTxt').parentElement;
-  btn.disabled=true;document.getElementById('testBtnTxt').textContent='テスト実行中...';
+  btn.disabled=true;document.getElementById('testBtnTxt').textContent='テスト中...';
   const out=document.getElementById('testOutput');
   document.getElementById('testResult').style.display='block';
-  out.textContent='実行中...';
+  out.textContent='接続中...';
   try{
-    const data=await lookupSheets(company);
-    if(!data){
-      out.innerHTML=`<span style="color:var(--err)">× 「${escH(company)}」はシートに見つかりませんでした。\nシートの「会社名」列に完全一致する名前があるか確認してください。</span>`;
-    }else{
-      out.innerHTML=`<span style="color:var(--ok)">✓ 「${escH(company)}」を発見しました\n\n情報シートURL: ${escH(data.infoUrl)}\n過去記事数: ${data.B.全記事数}件\n\n</span><span style="color:var(--ink-sub)">取得データ詳細:\n${escH(JSON.stringify({A:data.A,B:{全記事数:data.B.全記事数,過去記事:data.B.過去記事.slice(0,3)},C:{施工事例数:data.C.施工事例.length,お客様の声数:data.C.お客様の声.length}},null,2))}</span>`;
-    }
+    const data=await fetchClientSheetData(client,true);
+    out.innerHTML=`<span style="color:var(--ok)">✓ 接続成功\n\n会社名: ${escH(client.name)}\n呼称: ${escH(client.hyouki)}\nURL: ${escH(client.url)}\n取得タブ数: ${data.tabCount}\n過去記事数: ${data.B.全記事数}件\n\n</span><span style="color:var(--ink-sub)">データサンプル:\n${escH(JSON.stringify({A:{ブランド理念:data.A.ブランド理念,独自の強み:data.A.独自の強み,ターゲット層:data.A.ターゲット層},B:{全記事数:data.B.全記事数,過去記事:data.B.過去記事.slice(0,2)},C:{施工事例数:data.C.施工事例.length}},null,2))}</span>`;
+    showError('接続テスト成功',true);
   }catch(e){
-    out.innerHTML=`<span style="color:var(--err)">❌ エラー\n\n${escH(String(e?.message||e))}</span>`;
+    out.innerHTML=`<span style="color:var(--err)">❌ 接続失敗\n\n${escH(String(e?.message||e))}\n\n確認事項:\n・シートURLが正しいか\n・「リンクを知っている全員が閲覧可」に設定されているか</span>`;
     showError(String(e?.message||e));
   }
-  btn.disabled=false;document.getElementById('testBtnTxt').textContent='Phase 1 をテスト実行';
+  btn.disabled=false;document.getElementById('testBtnTxt').textContent='接続テストを実行';
 }
 
 // ══════════════════════════════════════════════════════════
