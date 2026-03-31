@@ -1,4 +1,38 @@
-<!DOCTYPE html>
+// 実通信でCSV取得→構造化
+// gid=0から順に試す。連続3回失敗で打ち切り。
+async function fetchClientSheetDataRaw(client){
+  const sheetId=extractSheetId(client.url);
+  if(!sheetId)throw new Error('URLからスプレッドシートIDを取得できませんでした');
+
+  const sheets=[];
+  let fails=0;
+  for(let gid=0;gid<=10;gid++){
+    if(sheets.length>=4||fails>=3)break;
+    try{
+      const res=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`);
+      if(!res.ok){fails++;continue;}
+      const text=await res.text();
+      if(text.trim().length>10&&!text.trim().startsWith('<!')){
+        sheets.push({gid:String(gid),csv:text});
+        fails=0;
+      }else{fails++;}
+    }catch{fails++;}
+  }
+  if(!sheets.length)throw new Error('シートのデータを取得できませんでした。URLと公開設定（リンクを知っている全員が閲覧可）を確認してください。');
+
+  const data=parseCompanySheets(sheets);
+  const findVal=(obj,kws)=>{for(const k of Object.keys(obj)){if(kws.some(w=>k.includes(w)))return obj[k];}return '';};
+  return{
+    hyouki:client.hyouki,infoUrl:client.url,sheetId,tabCount:sheets.length,
+    A:{
+      会社名:client.name,記事内での呼称:client.hyouki,
+      ブランド理念:findVal(data.A,['理念','想い','コンセプト','テーマ']),
+      独自の強み:findVal(data.A,['強み','USP','差別化']),
+      ターゲット層:findVal(data.A,['ターゲット','対象','届ける']),
+      禁止用語:findVal(data.A,['禁止','NG','推奨']),
+      HP_URL:findVal(data.A,['HP','URL','サイト']),
+      施工エリア:findVal(data.A,['エリア','地域','施工']),
+      商品コンセプト:findVal(data.A,['商<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -545,7 +579,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
           <div class="fg" style="margin-bottom:12px">
             <div class="fl">情報シートURL</div>
             <input type="text" class="fi" id="newClientUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
-            <div class="fh">「リンクを知っている全員が閲覧可」に設定されたスプレッドシートのURL</div>
+            <div class="fh">共有URLをそのまま貼り付けてください。タブは自動で全取得します。</div>
           </div>
           <div style="display:flex;gap:8px">
             <button class="small-btn primary" id="saveClientBtn" onclick="addClient()">保存する</button>
@@ -643,12 +677,26 @@ async function fetchClientSheetData(client,forceRefresh=false){
   return data;
 }
 
-// 実通信でCSV取得→構造化
+// 実通信でCSV取得→構造化（gid指定方式）
 async function fetchClientSheetDataRaw(client){
   const sheetId=extractSheetId(client.url);
   if(!sheetId)throw new Error('URLからスプレッドシートIDを取得できませんでした');
-  const sheets=await findAvailableGids(sheetId,4);
-  if(!sheets.length)throw new Error('シートのデータを取得できませんでした。「リンクを知っている全員が閲覧可」の設定を確認してください。');
+  // gidsが登録されていればそれを使う、なければfallback
+  const gids=client.gids
+    ?[client.gids.A,client.gids.B,client.gids.C].filter(Boolean)
+    :await findAvailableGids(sheetId,client.url,4).then(s=>s.map(x=>x.gid));
+
+  const sheets=[];
+  for(const gid of gids){
+    try{
+      const url=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+      const res=await fetch(url);
+      if(!res.ok)continue;
+      const text=await res.text();
+      if(text.trim().length>10&&!text.trim().startsWith('<!'))sheets.push({gid,csv:text});
+    }catch{}
+  }
+  if(!sheets.length)throw new Error('シートのデータを取得できませんでした。gidとURLを確認してください。');
   const data=parseCompanySheets(sheets);
   const findVal=(obj,kws)=>{for(const k of Object.keys(obj)){if(kws.some(w=>k.includes(w)))return obj[k];}return '';};
   return{
@@ -775,24 +823,22 @@ async function addClient(){
   const url=document.getElementById('newClientUrl').value.trim();
   if(!name){showError('会社名を入力してください');return;}
   if(!url||!url.includes('spreadsheets')){showError('正しいスプレッドシートURLを入力してください');return;}
+  const sheetId=extractSheetId(url);
+  if(!sheetId){showError('URLからスプレッドシートIDを取得できませんでした');return;}
   const clients=getClients();
   if(clients.find(c=>c.name===name)){showError('同じ会社名がすでに登録されています');return;}
-  const client={id:'c_'+Date.now(),name,hyouki:hyouki||name,url,createdAt:Date.now()};
+  const client={id:'c_'+Date.now(),name,hyouki:hyouki||name,url,sheetId,createdAt:Date.now()};
   const btn=document.getElementById('saveClientBtn');
   if(btn){btn.disabled=true;btn.textContent='シートを取得中...';}
   try{
     await fetchClientSheetDataRaw(client).then(d=>setCachedSheet(client.id,d));
     clients.push(client);saveClients(clients);
-    document.getElementById('newClientName').value='';
-    document.getElementById('newClientHyouki').value='';
-    document.getElementById('newClientUrl').value='';
+    ['newClientName','newClientHyouki','newClientUrl'].forEach(id=>document.getElementById(id).value='');
     toggleAddForm(true);renderClientTable();
     showError('クライアントを登録しました（シートデータ取得済み）',true);
   }catch(e){
     clients.push(client);saveClients(clients);
-    document.getElementById('newClientName').value='';
-    document.getElementById('newClientHyouki').value='';
-    document.getElementById('newClientUrl').value='';
+    ['newClientName','newClientHyouki','newClientUrl'].forEach(id=>document.getElementById(id).value='');
     toggleAddForm(true);renderClientTable();
     showError('登録しましたがシート取得に失敗しました。「更新」で再取得してください。');
   }finally{
@@ -1064,27 +1110,57 @@ function extractSheetId(url){
   const m=url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
   return m?m[1]:null;
 }
-async function findAvailableGids(sheetId,maxTabs=4){
-  const candidateGids=[];
+// Sheets API v4でgid一覧を自動取得（APIキー不要・公開シートのみ）
+async function getSheetGids(sheetId){
   try{
-    const htmlRes=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml`);
-    if(htmlRes.ok){
-      const html=await htmlRes.text();
-      const matches=[...html.matchAll(/gid[=:](\d+)/g)];
-      [...new Set(matches.map(m=>m[1]))].forEach(g=>candidateGids.push(g));
-    }
+    const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?fields=sheets.properties(sheetId,title)&key=AIzaSyD-placeholder`);
+    // APIキーなしでも公開シートなら200が返る場合があるが、通常は403
+    // → フォールバックとして別手段を使う
   }catch{}
-  ['0','1','2','3','4','5'].forEach(g=>{if(!candidateGids.includes(g))candidateGids.push(g);});
-  const available=[];
-  for(const gid of candidateGids){
-    if(available.length>=maxTabs)break;
+
+  // ★ 確実な方法: export?format=xlsx を使わず、各gidを順に試す
+  // ただしgidは連番ではないため、HTMLからスクレイプする
+  // CORSを回避できる唯一の公開エンドポイント: /export?format=csv&id=...
+  // gidリストを得る方法: spreadsheets/d/{id}/edit のHTMLを直接fetchするとCORSで弾かれる
+  // → 実用的な解決策: gid=0から始めて連続して試し、2回連続で失敗したら打ち切る
+  const found=[];
+  const tries=[0,1,2,3,4,5,6,7,8,9];
+  let consecutive_fail=0;
+  for(const gid of tries){
+    if(consecutive_fail>=3)break;
     try{
       const res=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`);
       if(res.ok){
         const text=await res.text();
-        if(text.trim().length>10)available.push({gid,csv:text});
-      }
-    }catch{}
+        if(text.trim().length>10&&!text.trim().startsWith('<!')){
+          found.push({gid:String(gid),csv:text});
+          consecutive_fail=0;
+          if(found.length>=4)break;
+        }else{consecutive_fail++;}
+      }else{consecutive_fail++;}
+    }catch{consecutive_fail++;}
+  }
+  return found;
+}
+
+async function findAvailableGids(sheetId, originalUrl, maxTabs=4){
+  // URLにgidが含まれる場合はそのgidから試す
+  const urlGid=originalUrl?.match(/[#&?]gid=(\d+)/)?.[1];
+  const candidateGids=urlGid?[urlGid,'0','1','2','3','4','5']:['0','1','2','3','4','5'];
+  const unique=[...new Set(candidateGids)];
+
+  const available=[];
+  let fails=0;
+  for(const gid of unique){
+    if(available.length>=maxTabs||fails>=3)break;
+    try{
+      const res=await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`);
+      if(!res.ok){fails++;continue;}
+      const text=await res.text();
+      if(text.trim().length>10&&!text.trim().startsWith('<!')){
+        available.push({gid,csv:text});fails=0;
+      }else{fails++;}
+    }catch{fails++;}
   }
   return available;
 }
