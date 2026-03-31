@@ -1,5 +1,3 @@
-export const config = { runtime: 'edge' };
-
 export default async function handler(req) {
   const { system, messages, max_tokens } = await req.json();
 
