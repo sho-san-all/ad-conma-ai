@@ -1314,12 +1314,6 @@ async function runPhase12(){
   btn.disabled=false;document.getElementById('rb12txt').textContent='▶ Phase 1→2 を連続実行する';
 }
 
-function renderPersonaOptions(){
-  const opts=['顕在層（今すぐ検討）','潜在層（課題認識段階）','比較検討層','トレンド層'];
-  document.getElementById('personaOptions').innerHTML=opts.map((label,idx)=>`<label style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;background:#fff;display:flex;align-items:center;gap:8px;font-size:13px"><input type="radio" name="personaChoice" value="${label}" ${idx===0?'checked':''}>${escH(label)}</label>`).join('');
-  document.getElementById('personaSelectBox').style.display='block';
-  setTimeout(()=>document.getElementById('personaSelectBox').scrollIntoView({behavior:'smooth',block:'start'}),300);
-}
 function confirmPersonaSelection(){
   const sel=document.querySelector('input[name="personaChoice"]:checked');
   if(!sel){showError('ターゲットを選択してください');return;}
