@@ -896,13 +896,9 @@ function escH(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
 // ══════════════════════════════════════════════════════════
 // SHEETS
 // ══════════════════════════════════════════════════════════
-function getSheetCsvUrl(){
-  const rawUrl=(localStorage.getItem('comma_sheets_url')||document.getElementById('sheetsUrlInput')?.value||'').trim();
-  if(!rawUrl)throw new Error('Google Sheets URL が未設定です。設定画面で登録してください。');
-  const match=rawUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
-  if(!match)throw new Error('Google Sheets のURL形式が正しくありません');
-  return`https://docs.google.com/spreadsheets/d/${match[1]}/export?format=csv`;
-}
+// ══════════════════════════════════════════════════════════
+// SHEETS ユーティリティ
+// ══════════════════════════════════════════════════════════
 
 function parseCSV(text){
   const rows=[];let row=[],cell='',inQ=false;
@@ -917,25 +913,215 @@ function parseCSV(text){
   return rows;
 }
 
-async function lookupSheets(name){
-  const csvUrl=getSheetCsvUrl();
-  const res=await fetch(csvUrl);
-  if(!res.ok)throw new Error(`Google Sheets の取得に失敗しました (${res.status})。シートの公開設定を確認してください。`);
-  const text=await res.text();
-  if(!text.trim())throw new Error('シートは取得できましたが中身が空です');
-  const rows=parseCSV(text);
-  if(rows.length<2)throw new Error('シートにデータがありません');
-  const headers=rows[0].map(h=>String(h||'').trim());
+// URLからスプレッドシートIDを抽出
+function extractSheetId(url){
+  const m=url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  return m?m[1]:null;
+}
+
+// スプレッドシートIDとgidからCSV URLを生成
+function makeCsvUrl(sheetId, gid='0'){
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+}
+
+// CSV取得（失敗時はnull）
+async function fetchCsv(sheetId, gid='0'){
+  try{
+    const res=await fetch(makeCsvUrl(sheetId, gid));
+    if(!res.ok)return null;
+    const text=await res.text();
+    return text.trim()?text:null;
+  }catch{return null;}
+}
+
+// 3行目をヘッダーとして全行をオブジェクト配列に変換
+// （シートの構造：1行=役割説明、2行=空、3行=ヘッダー、4行以降=データ）
+function parseSheetData(csv, headerRow=2){
+  const rows=parseCSV(csv);
+  if(rows.length<=headerRow)return{headers:[],records:[]};
+  const headers=rows[headerRow].map(h=>String(h||'').trim());
+  const records=rows.slice(headerRow+1).map((row,ri)=>{
+    const obj={_rowNum:headerRow+ri+2};
+    headers.forEach((h,i)=>{if(h)obj[h]=String(row[i]||'').trim();});
+    return obj;
+  });
+  return{headers,records};
+}
+
+// ══════════════════════════════════════════════════════════
+// STEP 1: 一覧シートから会社を検索 → 情報シートURLを返す
+// ══════════════════════════════════════════════════════════
+async function lookupCompanyUrl(companyName){
+  const rawUrl=(localStorage.getItem('comma_sheets_url')||document.getElementById('sheetsUrlInput')?.value||'').trim();
+  if(!rawUrl)throw new Error('Google Sheets URL が未設定です。設定画面で登録してください。');
+  const sheetId=extractSheetId(rawUrl);
+  if(!sheetId)throw new Error('Google Sheets のURL形式が正しくありません');
+
+  // 一覧シートはgid=0（シート1）
+  const csv=await fetchCsv(sheetId,'0');
+  if(!csv)throw new Error('一覧シートの取得に失敗しました。シートの公開設定（リンクを知っている全員が閲覧可）を確認してください。');
+
+  const rows=parseCSV(csv);
+  // ヘッダー行を探す（「会社名」がある行）
+  let headerIdx=-1;
+  for(let i=0;i<rows.length;i++){
+    if(rows[i].some(c=>String(c||'').trim()==='会社名')){headerIdx=i;break;}
+  }
+  if(headerIdx===-1)throw new Error('一覧シートに「会社名」列が見つかりません');
+
+  const headers=rows[headerIdx].map(h=>String(h||'').trim());
   const coIdx=headers.indexOf('会社名');
-  if(coIdx===-1)throw new Error('1行目に「会社名」列がありません');
-  for(let i=1;i<rows.length;i++){
+  const urlIdx=headers.indexOf('情報シートURL');
+
+  for(let i=headerIdx+1;i<rows.length;i++){
     const row=rows[i];
-    if(String(row[coIdx]||'').trim()===name){
-      const obj={};headers.forEach((h,idx)=>{obj[h]=String(row[idx]||'').trim();});
-      return{row:i+1,A:{会社名:obj['会社名']||'',記事内での呼称:obj['記事内での呼称']||'',ブランド理念:obj['ブランド理念']||'',独自の強み:obj['独自の強み']||'',ターゲット層:obj['ターゲット層']||'',禁止用語:obj['禁止用語']||'',設立:obj['設立']||''},B:{過去記事:[]},C:{実績数値:obj['実績数値']||'',事例:obj['事例']||'',注意点:obj['注意点']||''}};
+    if(String(row[coIdx]||'').trim()===companyName){
+      const infoUrl=urlIdx>=0?String(row[urlIdx]||'').trim():'';
+      const hyouki=String(row[headers.indexOf('出力の表記')]||row[coIdx]||'').trim();
+      if(!infoUrl)throw new Error(`「${companyName}」の情報シートURLが一覧シートに登録されていません`);
+      return{companyName,hyouki,infoUrl};
     }
   }
-  return null;
+  throw new Error(`「${companyName}」が一覧シートに見つかりません。会社名が完全一致しているか確認してください。`);
+}
+
+// ══════════════════════════════════════════════════════════
+// STEP 2: 情報シートの全タブ（A・B・C）を取得
+// ══════════════════════════════════════════════════════════
+async function fetchAllCompanySheets(infoUrl){
+  const sheetId=extractSheetId(infoUrl);
+  if(!sheetId)throw new Error('情報シートURLからスプレッドシートIDを取得できませんでした');
+
+  // gid=0,1,2 の順に試してCSVを取得（タブ順）
+  const gids=['0','1','2'];
+  const sheets=[];
+  for(const gid of gids){
+    const csv=await fetchCsv(sheetId,gid);
+    if(csv)sheets.push({gid,csv});
+  }
+  if(!sheets.length)throw new Error('情報シートのデータを取得できませんでした。公開設定を確認してください。');
+  return{sheetId,sheets};
+}
+
+// ══════════════════════════════════════════════════════════
+// STEP 3: 取得した3タブを解析して構造化データに変換
+// ══════════════════════════════════════════════════════════
+function parseCompanySheets(sheets){
+  const result={A:{},B:{articles:[]},C:{}};
+
+  sheets.forEach(({gid,csv},idx)=>{
+    const rows=parseCSV(csv);
+    if(!rows.length)return;
+
+    // タブ判別：1行目のセルで役割を確認
+    const firstCell=String(rows[0]?.[0]||'').trim();
+    const isTabA=firstCell.includes('ブランド')||firstCell.includes('基本情報')||firstCell.includes('語り口');
+    const isTabB=firstCell.includes('内部リンク')||firstCell.includes('過去記事')||firstCell.includes('重複');
+    const isTabC=firstCell.includes('一次情報')||firstCell.includes('実績')||firstCell.includes('心臓部');
+
+    // ヘッダー行を探す（「項目名」または「項目名（ヘッダー）」がある行）
+    let headerIdx=-1;
+    for(let i=0;i<Math.min(rows.length,5);i++){
+      if(rows[i].some(c=>{const v=String(c||'').trim();return v==='項目名'||v==='項目名（ヘッダー）'||v==='会社名・屋号';})){
+        headerIdx=i;break;
+      }
+    }
+
+    if(isTabB || (idx===1 && !isTabA && !isTabC)){
+      // [B] 過去記事ログ：行ごとに記事として扱う
+      // ヘッダー行（3行目想定）
+      const hIdx=headerIdx>=0?headerIdx:2;
+      if(rows.length>hIdx+1){
+        const headers=rows[hIdx].map(h=>String(h||'').trim());
+        const titleIdx=headers.findIndex(h=>h.includes('記事タイトル')||h.includes('タイトル'));
+        const urlIdx=headers.findIndex(h=>h.includes('URL'));
+        const catIdx=headers.findIndex(h=>h.includes('カテゴリ')||h.includes('ジャンル'));
+        const summaryIdx=headers.findIndex(h=>h.includes('主張')||h.includes('要約')||h.includes('サマリ'));
+        for(let i=hIdx+1;i<rows.length;i++){
+          const row=rows[i];
+          const title=titleIdx>=0?String(row[titleIdx]||'').trim():'';
+          const url=urlIdx>=0?String(row[urlIdx]||'').trim():'';
+          const cat=catIdx>=0?String(row[catIdx]||'').trim():'';
+          const summary=summaryIdx>=0?String(row[summaryIdx]||'').trim():'';
+          if(title||url)result.B.articles.push({title,url,category:cat,summary});
+        }
+      }
+    } else {
+      // [A] または [C]：縦持ち（A列=項目名、B列=サブ、C列=内容/URL）
+      const target=isTabC||(idx===2&&!isTabA)?result.C:result.A;
+      const hIdx=headerIdx>=0?headerIdx:2;
+      for(let i=hIdx+1;i<rows.length;i++){
+        const row=rows[i];
+        const key=String(row[0]||'').trim();
+        const sub=String(row[1]||'').trim();
+        const val=String(row[2]||'').trim();
+        const urlCol=String(row[3]||'').trim();
+        if(!key&&!val)continue;
+        const fullKey=key+(sub?'_'+sub:'');
+        if(val)target[fullKey]=val;
+        if(urlCol&&urlCol.startsWith('http'))target[fullKey+'_URL']=urlCol;
+      }
+    }
+  });
+
+  return result;
+}
+
+// ══════════════════════════════════════════════════════════
+// メイン lookupSheets（既存コードとの互換性維持）
+// ══════════════════════════════════════════════════════════
+async function lookupSheets(name){
+  // STEP1: 一覧から情報シートURL取得
+  const {companyName, hyouki, infoUrl} = await lookupCompanyUrl(name);
+
+  // STEP2: 情報シートの全タブ取得
+  const {sheetId, sheets} = await fetchAllCompanySheets(infoUrl);
+
+  // STEP3: 解析
+  const data = parseCompanySheets(sheets);
+
+  // 過去記事URLを最大10件取得
+  const pastArticles = data.B.articles.filter(a=>a.url).slice(0,10);
+
+  // A・Cから主要項目を抽出（キー名は柔軟にマッチ）
+  const findVal=(obj,keywords)=>{
+    for(const k of Object.keys(obj)){
+      if(keywords.some(kw=>k.includes(kw)))return obj[k];
+    }
+    return '';
+  };
+
+  return {
+    row: 2,
+    hyouki,
+    infoUrl,
+    sheetId,
+    A: {
+      会社名: companyName,
+      記事内での呼称: hyouki,
+      ブランド理念: findVal(data.A,['理念','想い','コンセプト','テーマ']),
+      独自の強み: findVal(data.A,['強み','USP','差別化']),
+      ターゲット層: findVal(data.A,['ターゲット','対象','届ける']),
+      禁止用語: findVal(data.A,['禁止','NG','推奨']),
+      HP_URL: findVal(data.A,['HP','URL','サイト']),
+      施工エリア: findVal(data.A,['エリア','地域','施工']),
+      商品コンセプト: findVal(data.A,['商品','WELL','コンセプト_説明']),
+      店舗情報: findVal(data.A,['店舗']),
+      rawA: data.A,  // 全データも保持
+    },
+    B: {
+      過去記事: pastArticles,
+      全記事数: data.B.articles.length,
+    },
+    C: {
+      施工事例: Object.entries(data.C).filter(([k])=>k.includes('施工')).map(([k,v])=>({key:k,value:v})),
+      お客様の声: Object.entries(data.C).filter(([k])=>k.includes('お客様')||k.includes('声')).map(([k,v])=>({key:k,value:v})),
+      こだわり: Object.entries(data.C).filter(([k])=>k.includes('こだわり')||k.includes('現場')).map(([k,v])=>({key:k,value:v})),
+      実績数値: findVal(data.C,['実績','数値','成約']),
+      注意点: findVal(data.C,['注意','失敗']),
+      rawC: data.C,  // 全データも保持
+    },
+  };
 }
 
 async function runSheetCheck(){
@@ -1216,13 +1402,57 @@ async function runPhase12(){
       doneLS('ls1b','');
       document.getElementById('ls1b-s').textContent='× 「'+company+'」はシートに見つかりませんでした';
       setBadge('b1','b1','PHASE 1');
-      showError('「'+company+'」がシートに見つかりません');
+      showError('「'+company+'」が一覧シートに見つかりません');
       btn.disabled=false;document.getElementById('rb12txt').textContent='▶ Phase 1→2 を連続実行する';return;
     }
-    doneLS('ls1b','行 '+data.row+' で一致を確認しました');
-    activateLS('ls1c','シート【A】【B】【C】を取得中...');await sleep(400);doneLS('ls1c','データを取得しました');
+    doneLS('ls1b','行 '+data.row+' で一致 → 情報シートに遷移しました');
+    activateLS('ls1c','シート【A】【B】【C】を取得中...');await sleep(400);doneLS('ls1c','3タブのデータを取得しました（記事数: '+data.B.全記事数+'件）');
     activateLS('ls1d','Gemini AI が分析中...');showLogSep('sep1');
-    const p1u='会社名: '+company+'\n\n=== 【A】会社基本情報 ===\n'+JSON.stringify(data.A,null,2)+'\n\n=== 【B】過去記事ログ ===\n'+JSON.stringify(data.B,null,2)+'\n\n=== 【C】一次情報・実績数値 ===\n'+JSON.stringify(data.C,null,2)+'\n\n上記データを確認し、指定の形式で出力してください。';
+
+    // 過去記事URLリスト（最大2本を内部リンク用に明示）
+    const topArticles=data.B.過去記事.slice(0,5);
+    const internalLinks=topArticles.map(a=>`  - ${a.title||'記事'}｜${a.url}${a.category?' ('+a.category+')':''}`).join('\n');
+
+    // C・施工事例まとめ
+    const jirei=data.C.施工事例.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
+    const koewake=data.C.お客様の声.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
+    const kodawari=data.C.こだわり.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
+
+    const p1u=`会社名: ${company}
+出力時の呼称: ${data.hyouki}
+情報シートURL: ${data.infoUrl}
+
+=== 【A】会社基本情報 ===
+ブランド理念: ${data.A.ブランド理念||'情報なし'}
+独自の強み（USP）: ${data.A.独自の強み||'情報なし'}
+ターゲット層: ${data.A.ターゲット層||'情報なし'}
+禁止・推奨用語: ${data.A.禁止用語||'情報なし'}
+施工エリア: ${data.A.施工エリア||'情報なし'}
+商品コンセプト: ${data.A.商品コンセプト||'情報なし'}
+HP URL: ${data.A.HP_URL||'情報なし'}
+
+=== 【A】その他の会社情報（全項目）===
+${Object.entries(data.A.rawA).filter(([k])=>!['ブランド理念','独自の強み','ターゲット層','禁止用語','施工エリア','商品コンセプト','HP_URL'].includes(k)).map(([k,v])=>`${k}: ${v}`).join('\n')||'なし'}
+
+=== 【B】過去記事ログ（内部リンク候補・全${data.B.全記事数}件） ===
+※記事本文には以下URLから最低2本を自然な文脈で内部リンクとして設置すること
+${internalLinks||'情報なし'}
+
+=== 【C】施工事例 ===
+${jirei}
+
+=== 【C】お客様の声 ===
+${koewake}
+
+=== 【C】現場のこだわり ===
+${kodawari}
+
+=== 【C】その他の一次情報 ===
+実績数値: ${data.C.実績数値||'情報なし'}
+注意点: ${data.C.注意点||'情報なし'}
+
+上記データを確認し、指定の形式で出力してください。
+【重要】URLがある場合は「内部リンクに使えそうなURL一覧」として必ず提示してください。`;
     const p1out=await streamClaude(P1_SYS,p1u,'sb1');S.p1=p1out;
     doneLS('ls1d','データ確認が完了しました');setWS(1,'done');setBadge('b1','bok','PHASE 1 完了 ✓');
     showResult(1,p1out,'Phase 1 完了 — データ確認が完了しました','取得: Sheets【A】【B】【C】');
