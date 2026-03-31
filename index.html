@@ -277,9 +277,9 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--i
     <div class="lc-sub">CONTENT PRODUCTION SYSTEM</div>
     <div class="lc-err" id="lcErr"></div>
     <label class="lc-lbl">ユーザー名</label>
-    <input type="text" id="loginUser" class="lc-inp" placeholder="username" autocomplete="username">
+   <input type="text" id="loginUser" class="lc-inp" placeholder="username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
     <label class="lc-lbl">パスワード</label>
-    <input type="password" id="loginPass" class="lc-inp" placeholder="password" autocomplete="current-password">
+    <input type="password" id="loginPass" class="lc-inp" placeholder="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="lc-btn" onclick="doLogin()">ログイン</button>
   </div>
 </div>
