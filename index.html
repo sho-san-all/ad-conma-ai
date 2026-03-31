@@ -1140,8 +1140,7 @@ ${COMMA_RULES}
 1. 想定キーワードと検索意図の整理
 2. ペルソナ4案（上記フォーマットで各1〜2行）
 3. おすすめの1案とその理由
-4. 競合に足りない切り口（住宅業界視点で3つ）
-5. 執筆前の追加質問`;
+4. 競合に足りない切り口（住宅業界視点で3つ）`;
 
 function renderPersonaOptions(){
   const box=document.getElementById('personaOptions');
@@ -1158,8 +1157,7 @@ function renderPersonaOptions(){
     }
   });
   // 抽出できなかった場合のフォールバック
-  const opts=personas.length>=2?personas:['顕在層（今すぐ検討）','潜在層（課題認識段階）','比較検討層','トレンド層'];
-
+　const opts=personas.length>=2?personas:[];
   box.innerHTML=opts.map((label,idx)=>`
     <label style="
       border:1px solid var(--border);border-radius:8px;padding:12px 14px;
