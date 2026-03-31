@@ -1071,14 +1071,21 @@ function parseCompanySheets(sheets){
 // メイン lookupSheets（既存コードとの互換性維持）
 // ══════════════════════════════════════════════════════════
 async function lookupSheets(name){
+  console.log('[lookupSheets] 開始:', name);
   // STEP1: 一覧から情報シートURL取得
   const {companyName, hyouki, infoUrl} = await lookupCompanyUrl(name);
+  console.log('[lookupSheets] 情報シートURL:', infoUrl);
 
   // STEP2: 情報シートの全タブ取得
   const {sheetId, sheets} = await fetchAllCompanySheets(infoUrl);
+  console.log('[lookupSheets] 取得したシート数:', sheets.length, 'gids:', sheets.map(s=>s.gid));
 
   // STEP3: 解析
   const data = parseCompanySheets(sheets);
+  console.log('[lookupSheets] 解析結果 A keys:', Object.keys(data.A));
+  console.log('[lookupSheets] 解析結果 B articles:', data.B.articles.length);
+  console.log('[lookupSheets] 解析結果 C keys:', Object.keys(data.C));
+  console.log('[lookupSheets] B articles sample:', JSON.stringify(data.B.articles.slice(0,3)));
 
   // 過去記事URLを最大10件取得
   const pastArticles = data.B.articles.filter(a=>a.url).slice(0,10);
