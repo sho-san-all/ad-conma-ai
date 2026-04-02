@@ -1342,13 +1342,14 @@ async function runPhase12(){
 function renderPersonaOptions(){
   const box=document.getElementById('personaOptions');
   const text=S.p2||'';
-  const lines=text.split('\n');
   const personas=[];
-  lines.forEach(line=>{
-    if(/[①②③④]/.test(line)){
-      const cleaned=line.replace(/\*\*/g,'').replace(/^[\s\-\*#]+/,'').trim();
-      if(cleaned.length>5)personas.push(cleaned);
-    }
+  // ①②③④を区切り文字として分割（1行まとめ出力にも対応）
+  const section=text.split('【差別化')[0];
+  const segments=section.split(/(?=[①②③④])/);
+  segments.forEach(seg=>{
+    if(!/[①②③④]/.test(seg))return;
+    const cleaned=seg.replace(/\*\*/g,'').replace(/\n/g,' ').trim();
+    if(cleaned.length>5)personas.push(cleaned);
   });
   if(!personas.length){
     box.innerHTML='<div style="color:var(--ink-muted);font-size:12px">ペルソナを取得できませんでした</div>';
