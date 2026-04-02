@@ -12,11 +12,14 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         system_instruction: { parts: [{ text: system }] },
         contents,
+        tools: [{ google_search: {} }],
         generationConfig: { maxOutputTokens: max_tokens || 4000 }
       }),
     }
   );
   const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const parts = data.candidates?.[0]?.content?.parts || [];
+  const text = parts.filter(p => p.text).map(p => p.text).join('') || '';
   res.status(200).json({ content: [{ type: 'text', text }] });
 }
+
