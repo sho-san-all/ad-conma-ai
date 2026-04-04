@@ -1355,12 +1355,12 @@ async function runPhase12(){
     activateLS('ls1b','シートデータを解析中...');await sleep(200);doneLS('ls1b',data.tabCount+'タブ取得済み');
     activateLS('ls1c','各タブを確認中...');await sleep(200);doneLS('ls1c','過去記事 '+data.B.全記事数+' 件 / シート3タブ確認済み');
     activateLS('ls1d','AI がキーワードに合わせてピックアップ中...');showLogSep('sep1');
-    const links=data.B.過去記事.slice(0,20).map(a=>`  - [${a.category||'未分類'}]「${a.title}」${a.keywords?'KW:'+a.keywords:''}${a.summary?' / '+a.summary.slice(0,40):''}｜${a.url}`).join('\n');
+    const links=data.B.過去記事.slice(0,10).map(a=>`  - [${a.category||'未分類'}]「${a.title}」${a.keywords?'KW:'+a.keywords.slice(0,30):''}｜${a.url}`).join('\n');
     const jirei=data.C.施工事例.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
     const koe=data.C.お客様の声.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
     const kodawari=data.C.こだわり.map(e=>`  - ${e.key}: ${e.value}`).join('\n')||'情報なし';
     const p1u=`キーワード: ${keyword}\n会社名: ${selectedClient.name}\n出力時の呼称: ${data.hyouki}\n\n=== シート1：【A】会社基本情報（ブランドの核） ===\nブランド理念: ${data.A.ブランド理念||'情報なし'}\n独自の強み: ${data.A.独自の強み||'情報なし'}\nターゲット層: ${data.A.ターゲット層||'情報なし'}\n禁止用語: ${data.A.禁止用語||'情報なし'}\n施工エリア: ${data.A.施工エリア||'情報なし'}\n商品コンセプト: ${data.A.商品コンセプト||'情報なし'}\nHP URL: ${data.A.HP_URL||'情報なし'}\n\n=== 【A】その他 ===\n${Object.entries(data.A.rawA||{}).map(([k,v])=>`${k}: ${v}`).join('\n')||'なし'}\n\n=== シート2：【B】過去記事ログ（全${data.B.全記事数}件） ===\n${links||'情報なし'}\n\n=== シート3：【C】施工事例 ===\n${jirei}\n\n=== 【C】お客様の声 ===\n${koe}\n\n=== 【C】こだわり ===\n${kodawari}\n\n=== 【C】実績数値 ===\n${data.C.実績数値||'情報なし'}\n\n上記データをもとに3セクション形式で出力してください。`;
-    const p1out=await streamClaude(P1_SYS,p1u,'sb1',1500);S.p1=p1out;
+    const p1out=await streamClaude(P1_SYS,p1u,'sb1',3000);S.p1=p1out;
     doneLS('ls1d','ピックアップ完了');setWS(1,'done');setBadge('b1','bok','PHASE 1 完了 ✓');
     showResult(1,p1out,'Phase 1 完了 — データ確認が完了しました','キャッシュ使用 / '+data.tabCount+'タブ');
     saveSession();await sleep(500);
@@ -1673,4 +1673,3 @@ window.addEventListener('load',()=>{
 </script>
 </body>
 </html>
-
